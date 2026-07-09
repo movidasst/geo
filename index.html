@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#00205b">
+    
+    <title>La Movida SST Plus - Mapa de Integrantes</title>
+    
+    <!-- Etiquetas SEO y Open Graph para WhatsApp/Redes -->
+    <meta property="og:title" content="Mapa de Integrantes - La Movida SST Plus">
+    <meta property="og:description" content="Visualiza en tiempo real la distribución de prevencionistas a nivel nacional por Estado y Municipio.">
+    <meta property="og:image" content="https://assets.poap.xyz/ff0a7e68-7080-4798-af10-4a481f762e71.jpeg">
+    <meta property="og:url" content="https://www.movidasst.com">
+    <meta property="og:type" content="website">
+
+    <!-- Fuentes y Tailwind -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Leaflet CSS y MarkerCluster -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Outfit', 'sans-serif'] },
+                    colors: {
+                        movida: {
+                            navy: '#00205b', teal: '#007b85', green: '#70ad47', yellow: '#ffb600', bg: '#f8fafc'
+                        }
+                    },
+                    boxShadow: {
+                        'glass': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
+                        'glow': '0 0 15px rgba(0, 123, 133, 0.3)'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Outfit', sans-serif; background-color: #f8fafc; overflow: hidden; overscroll-behavior-y: none; }
+        
+        #map-container { height: 100vh; width: 100vw; position: absolute; top: 0; left: 0; z-index: 10; }
+        .leaflet-control-zoom { display: none; } /* Ocultar botones de zoom para mayor limpieza */
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(226, 232, 240, 0.8); box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05); border-radius: 1.5rem;
+        }
+
+        /* Estilos del Cluster */
+        .marker-cluster-small, .marker-cluster-medium, .marker-cluster-large { background-color: rgba(0, 123, 133, 0.3) !important; }
+        .marker-cluster-small div, .marker-cluster-medium div, .marker-cluster-large div {
+            background-color: rgba(0, 32, 91, 0.9) !important; color: white !important; font-family: 'Outfit', sans-serif; font-weight: bold;
+        }
+
+        /* Estilos del Popup del Mapa */
+        .leaflet-popup-content-wrapper { border-radius: 16px; border-top: 4px solid #007b85; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+        .leaflet-popup-content { margin: 16px; font-family: 'Outfit', sans-serif; }
+        
+        /* Contenedor del Dashboard */
+        #dashboard-view { 
+            height: 100vh; width: 100vw; position: absolute; top: 0; left: 0; 
+            z-index: 20; background-color: #f8fafc; overflow-y: auto; padding-bottom: 110px; padding-top: 85px; 
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* Transiciones de Vistas */
+        .view-hidden { transform: translateX(100%); opacity: 0; pointer-events: none; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .view-active { transform: translateX(0); opacity: 1; pointer-events: auto; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        
+        /* Barra de navegación inferior */
+        #bottom-nav { z-index: 50; padding-bottom: env(safe-area-inset-bottom); }
+        .nav-item.active { color: #007b85; font-weight: 700; }
+        .nav-item.active .icon-container { background-color: #e8fcf0; transform: translateY(-4px); }
+
+        /* Píldoras de filtro */
+        .filter-pill { white-space: nowrap; transition: all 0.2s; }
+        .filter-pill.active { background-color: #00205b; color: white; border-color: #00205b; }
+        .hide-scroll::-webkit-scrollbar { display: none; }
+        .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Bottom Sheet (Panel de Filtros Avanzados) */
+        #advanced-filters-sheet { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    </style>
+</head>
+<body class="text-slate-600 antialiased selection:bg-movida-teal selection:text-white">
+
+    <header class="fixed top-0 left-0 right-0 z-[60] bg-white/90 backdrop-blur-md border-b border-slate-200 px-4 py-3 flex items-center justify-between shadow-sm">
+        <div class="flex items-center gap-3">
+            <img src="https://assets.poap.xyz/ff0a7e68-7080-4798-af10-4a481f762e71.jpeg" alt="Logo" class="w-10 h-10 rounded-full border-2 border-movida-teal object-cover">
+            <div>
+                <h1 class="text-movida-navy font-extrabold text-lg leading-tight">La Movida SST Plus</h1>
+                <p class="text-movida-teal text-[10px] font-bold uppercase tracking-wider">Integrantes por estado y municipio</p>
+            </div>
+        </div>
+        <div id="loading-indicator" class="hidden text-movida-teal"><i class="fa-solid fa-circle-notch fa-spin text-xl"></i></div>
+    </header>
+
+    <!-- Sistema de Alertas Toast (No intrusivo) -->
+    <div id="toast-notification" class="fixed top-20 left-1/2 transform -translate-x-1/2 z-[1000] bg-movida-navy/95 backdrop-blur-sm text-white px-5 py-2.5 rounded-full shadow-lg opacity-0 pointer-events-none transition-opacity duration-300 text-xs font-bold flex items-center gap-2 whitespace-nowrap">
+        <i id="toast-icon" class="fa-solid fa-info-circle"></i> <span id="toast-text">Notificación</span>
+    </div>
+
+    <main id="map-view" class="view-active absolute inset-0 z-10">
+        
+        <!-- Píldoras de Filtro Rápido -->
+        <div class="absolute top-[70px] left-0 w-full z-[400] px-3 py-2 overflow-x-auto hide-scroll flex gap-2">
+            <button onclick="setFiltroPildora('todos', this)" class="filter-pill active bg-white text-movida-navy border border-slate-200 px-4 py-1.5 rounded-full text-xs font-bold shadow-sm">Todos</button>
+            <button onclick="setFiltroPildora('mujeres', this)" class="filter-pill bg-white text-slate-500 border border-slate-200 px-4 py-1.5 rounded-full text-xs font-bold shadow-sm">Solo Mujeres</button>
+            <button onclick="setFiltroPildora('buscando', this)" class="filter-pill bg-white text-slate-500 border border-slate-200 px-4 py-1.5 rounded-full text-xs font-bold shadow-sm">Buscando Empleo</button>
+            <!-- Nuevo botón para Filtros Avanzados -->
+            <button onclick="abrirFiltrosAvanzados()" class="filter-pill bg-movida-teal text-white border border-movida-teal px-4 py-1.5 rounded-full text-xs font-bold shadow-sm flex items-center gap-1">
+                <i class="fa-solid fa-sliders"></i> Avanzados
+            </button>
+        </div>
+        
+        <!-- Botones Flotantes (GPS y Mapa de Calor) -->
+        <div class="absolute top-[130px] right-3 z-[400] flex flex-col gap-3">
+            <button id="btn-locate" onclick="localizarUsuario()" class="w-11 h-11 bg-white rounded-full shadow-glass text-movida-navy border border-slate-100 flex items-center justify-center text-lg active:scale-95 transition-transform">
+                <i class="fa-solid fa-crosshairs"></i>
+            </button>
+            <button id="btn-heatmap" onclick="toggleHeatmap()" class="w-11 h-11 bg-white rounded-full shadow-glass text-movida-teal border border-slate-100 flex items-center justify-center text-lg active:scale-95 transition-transform">
+                <i class="fa-solid fa-fire"></i>
+            </button>
+        </div>
+
+        <!-- Indicador Flotante Inferior -->
+        <div class="absolute bottom-[90px] left-1/2 transform -translate-x-1/2 z-[400] bg-white/95 backdrop-blur-md px-4 py-2.5 rounded-2xl shadow-glass border border-slate-200 flex items-center gap-3 transition-all">
+            <div class="bg-movida-teal/10 w-9 h-9 rounded-full flex items-center justify-center shrink-0">
+                <i class="fa-solid fa-users text-movida-teal text-sm"></i>
+            </div>
+            <div class="pr-2">
+                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider m-0 leading-tight">En Pantalla</p>
+                <p class="text-xl font-black text-movida-navy m-0 leading-tight" id="map-visible-count">0</p>
+            </div>
+        </div>
+
+        <!-- Contenedor Real del Mapa Leaflet -->
+        <div id="map-container"></div>
+    </main>
+
+    <!-- Fondo oscuro -->
+    <div id="filter-backdrop" onclick="cerrarFiltrosAvanzados()" class="fixed inset-0 z-[450] bg-movida-navy/40 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300"></div>
+    
+    <!-- Panel Deslizable -->
+    <div id="advanced-filters-sheet" class="fixed inset-x-0 bottom-[60px] z-[500] bg-white rounded-t-3xl shadow-[0_-10px_40px_rgba(0,0,0,0.1)] transform translate-y-full px-6 py-6 flex flex-col">
+        <div class="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-5"></div>
+        <h3 class="text-movida-navy font-black text-lg mb-4"><i class="fa-solid fa-filter text-movida-teal mr-2"></i> Filtros Analíticos</h3>
+        
+        <div class="space-y-4">
+            <div>
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">Nivel Académico</label>
+                <select id="select-academico" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-medium text-movida-navy focus:outline-none focus:border-movida-teal">
+                    <option value="todos">Cualquier Nivel</option>
+                    <option value="Doctorado">Doctores</option>
+                    <option value="Postgrado">Postgraduados / Especialistas</option>
+                    <option value="Profesional">Profesionales Universitarios</option>
+                    <option value="T.S.U.">Técnicos Superiores (T.S.U.)</option>
+                </select>
+            </div>
+            
+            <div>
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">Buscar Profesión Específica</label>
+                <div class="relative">
+                    <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400"></i>
+                    <input type="text" id="input-profesion" placeholder="Ej. Médico, Ingeniero, Bombero..." class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-3 text-sm font-medium text-movida-navy focus:outline-none focus:border-movida-teal">
+                </div>
+            </div>
+
+            <div class="flex gap-3 pt-4">
+                <button onclick="limpiarFiltrosAvanzados()" class="flex-1 bg-slate-100 text-slate-600 font-bold py-3 rounded-xl active:scale-95 transition-transform">Limpiar</button>
+                <button onclick="aplicarFiltrosGlobales(); cerrarFiltrosAvanzados()" class="flex-[2] bg-movida-teal text-white font-bold py-3 rounded-xl shadow-md active:scale-95 transition-transform">Aplicar Filtros</button>
+            </div>
+        </div>
+    </div>
+
+    <main id="dashboard-view" class="view-hidden absolute inset-0 z-20">
+        <div class="p-4 space-y-5 max-w-lg mx-auto">
+            <div id="error-message" class="hidden bg-red-50 border border-red-200 text-red-700 p-4 rounded-xl text-sm font-medium"></div>
+
+            <div class="grid grid-cols-3 gap-2 mt-2">
+                <div class="glass-card p-3 flex flex-col items-center justify-center text-center">
+                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wide">Total Red</p>
+                    <p class="text-2xl font-extrabold text-movida-navy mt-1" id="dash-total">0</p>
+                </div>
+                <div class="glass-card p-3 flex flex-col items-center justify-center text-center">
+                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wide">Estados</p>
+                    <p class="text-2xl font-extrabold text-movida-teal mt-1" id="dash-estados">0</p>
+                </div>
+                <div class="glass-card p-3 flex flex-col items-center justify-center text-center">
+                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wide">Municipios</p>
+                    <p class="text-2xl font-extrabold text-movida-green mt-1" id="dash-municipios">0</p>
+                </div>
+            </div>
+
+            <div class="glass-card p-5">
+                <h3 class="text-movida-navy font-bold text-sm uppercase tracking-wide mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-graduation-cap text-movida-teal"></i> Nivel Académico Superior
+                </h3>
+                <div class="flex justify-around items-center text-center">
+                    <div>
+                        <div class="w-14 h-14 rounded-full bg-movida-teal/10 flex items-center justify-center mx-auto mb-2 border border-movida-teal/20">
+                            <i class="fa-solid fa-award text-2xl text-movida-teal"></i>
+                        </div>
+                        <p class="text-lg font-black text-movida-navy" id="stat-postgrado">0%</p>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase">Postgrado</p>
+                    </div>
+                    <div>
+                        <div class="w-14 h-14 rounded-full bg-movida-yellow/10 flex items-center justify-center mx-auto mb-2 border border-movida-yellow/30">
+                            <i class="fa-solid fa-microscope text-2xl text-movida-yellow"></i>
+                        </div>
+                        <p class="text-lg font-black text-movida-navy" id="stat-doctorado">0%</p>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase">Doctorado</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div class="glass-card p-5">
+                    <h3 class="text-movida-navy font-bold text-sm uppercase tracking-wide mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-venus-mars text-movida-teal"></i> Género
+                    </h3>
+                    <div class="relative h-48 w-full flex justify-center"><canvas id="chartGenero"></canvas></div>
+                </div>
+                <div class="glass-card p-5">
+                    <h3 class="text-movida-navy font-bold text-sm uppercase tracking-wide mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-id-card text-movida-teal"></i> Rango de Edades
+                    </h3>
+                    <div class="relative h-48 w-full"><canvas id="chartEdad"></canvas></div>
+                </div>
+            </div>
+
+            <div class="glass-card p-5">
+                <h3 class="text-movida-navy font-bold text-sm uppercase tracking-wide mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-briefcase text-movida-teal"></i> Estatus Laboral
+                </h3>
+                <div class="relative h-32 w-full"><canvas id="chartLaboral"></canvas></div>
+            </div>
+
+            <div class="glass-card p-5">
+                <h3 class="text-movida-navy font-bold text-sm uppercase tracking-wide mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-user-doctor text-movida-teal"></i> Top 5 Profesiones
+                </h3>
+                <div id="professions-list" class="space-y-3"><p class="text-center text-slate-400 text-sm">Analizando perfiles...</p></div>
+            </div>
+
+            <div class="glass-card p-5">
+                <h3 class="text-movida-navy font-bold text-sm uppercase tracking-wide mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-map-location-dot text-movida-teal"></i> Desglose Geográfico
+                </h3>
+                <div id="states-list" class="space-y-3"><p class="text-center text-slate-400 text-sm py-4">Sincronizando...</p></div>
+            </div>
+
+            <footer class="mt-8 mb-6 pb-4">
+                <div class="glass-card p-6 text-center">
+                    <h4 class="text-movida-navy font-extrabold text-lg">La Movida de SST Plus</h4>
+                    <p class="text-movida-teal text-xs font-bold uppercase tracking-widest mt-1 mb-4">De la reacción a la prevención</p>
+                    
+                    <div class="space-y-2 text-sm text-slate-500">
+                        <p><strong>Elaborado por:</strong> David Linares Brea</p>
+                        <p><i class="fa-solid fa-envelope mr-1 text-movida-teal"></i> info@movidasst.com</p>
+                        <p><i class="fa-solid fa-globe mr-1 text-movida-teal"></i> <a href="https://www.movidasst.com" target="_blank" class="text-movida-navy font-bold">www.movidasst.com</a></p>
+                    </div>
+
+                    <div class="mt-6 pt-5 border-t border-slate-100">
+                        <p class="text-[0.75rem] font-bold text-slate-400 uppercase tracking-widest mb-4">Síguenos en nuestras redes</p>
+                        <div class="flex justify-center items-center gap-4">
+                            <a href="https://www.instagram.com/movidasst/" target="_blank" aria-label="Instagram" class="flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-tr from-[#f9ce34] via-[#ee2a7b] to-[#6228d7] text-white shadow-md active:scale-95"><i class="fa-brands fa-instagram text-xl"></i></a>
+                            <a href="https://web.facebook.com/movidadsst" target="_blank" aria-label="Facebook" class="flex items-center justify-center w-12 h-12 rounded-full bg-[#1877F2] text-white shadow-md active:scale-95"><i class="fa-brands fa-facebook-f text-xl"></i></a>
+                            <a href="https://x.com/movidasst" target="_blank" aria-label="X (Twitter)" class="flex items-center justify-center w-12 h-12 rounded-full bg-[#000000] text-white border border-slate-800 shadow-md active:scale-95">
+                                <svg class="w-5 h-5 fill-white" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 7.746 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.285L1.254 2.25h6.88l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                            </a>
+                            <a href="https://www.linkedin.com/company/movidasst/" target="_blank" aria-label="LinkedIn" class="flex items-center justify-center w-12 h-12 rounded-full bg-[#0A66C2] text-white shadow-md active:scale-95"><i class="fa-brands fa-linkedin-in text-xl"></i></a>
+                        </div>
+                    </div>
+                    <div class="mt-6 pt-4 border-t border-slate-100">
+                        <a href="https://whatsapp.com/channel/0029Va0mlH5Jf05mrcCz8r3e" target="_blank" class="inline-flex items-center gap-2 bg-slate-50 hover:bg-movida-green/10 text-movida-green border border-movida-green/30 px-4 py-3 rounded-xl transition-colors font-bold text-sm"><i class="fa-brands fa-whatsapp text-lg"></i> Únete a nuestro Canal Oficial</a>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </main>
+
+    <!-- Barra de Navegación Inferior -->
+    <nav id="bottom-nav" class="fixed bottom-0 w-full bg-white/90 backdrop-blur-lg border-t border-slate-200 pt-2 pb-2 px-6 flex justify-around items-center shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
+        <button onclick="switchTab('map-view')" id="btn-map-view" class="nav-item active flex flex-col items-center p-2 w-20 transition-colors">
+            <div class="icon-container w-10 h-10 flex items-center justify-center rounded-full transition-all duration-300"><i class="fa-solid fa-map text-xl"></i></div>
+            <span class="text-[10px] uppercase tracking-wider mt-1 font-medium">Mapa</span>
+        </button>
+        <button onclick="switchTab('dashboard-view')" id="btn-dashboard-view" class="nav-item text-slate-400 flex flex-col items-center p-2 w-20 transition-colors">
+            <div class="icon-container w-10 h-10 flex items-center justify-center rounded-full transition-all duration-300"><i class="fa-solid fa-chart-pie text-xl"></i></div>
+            <span class="text-[10px] uppercase tracking-wider mt-1 font-medium">Analytics</span>
+        </button>
+    </nav>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
+    <!-- Librería de Mapa de Calor (Heatmap) -->
+    <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+
+    <script>
+        let map;
+        let markersCluster;
+        let heatmapLayer = null;
+        let chartInstances = { lab: null, gen: null, edad: null };
+        let globalData = []; 
+        
+        // Estado Global de los Filtros
+        let filtrosActive = {
+            pildora: 'todos', // todos, mujeres, buscando, independientes
+            academico: 'todos',
+            profesionBusqueda: '',
+            modoHeatmap: false
+        };
+
+        const geodata = {
+            municipios: {
+                "Distrito Capital_Libertador": { lat: 10.4806, lng: -66.9036 }, "Miranda_Sucre": { lat: 10.4894, lng: -66.8124 },
+                "Miranda_Chacao": { lat: 10.4950, lng: -66.8492 }, "Miranda_Baruta": { lat: 10.4358, lng: -66.8744 },
+                "Zulia_Maracaibo": { lat: 10.6316, lng: -71.6406 }, "Zulia_San Francisco": { lat: 10.5606, lng: -71.6471 },
+                "Carabobo_Valencia": { lat: 10.1620, lng: -68.0077 }, "Carabobo_San Diego": { lat: 10.2605, lng: -67.9547 },
+                "Lara_Iribarren": { lat: 10.0678, lng: -69.3468 }, "Aragua_Girardot": { lat: 10.2469, lng: -67.5958 },
+                "Anzoátegui_Simón Bolívar": { lat: 10.1362, lng: -64.6861 }, "Bolívar_Caroní": { lat: 8.3644, lng: -62.6689 },
+                "Táchira_San Cristóbal": { lat: 7.7669, lng: -72.2250 }, "Mérida_Libertador": { lat: 8.5952, lng: -71.1433 },
+                "Falcón_Miranda": { lat: 11.4045, lng: -69.6734 }, "Nueva Esparta_Mariño": { lat: 10.9575, lng: -63.8647 },
+                "Sucre_Sucre": { lat: 10.4539, lng: -64.1825 }, "Barinas_Barinas": { lat: 8.6225, lng: -70.2075 }
+            },
+            estados: {
+                "Distrito Capital": { lat: 10.48, lng: -66.90 }, "Zulia": { lat: 10.30, lng: -72.00 },
+                "Carabobo": { lat: 10.16, lng: -68.00 }, "Lara": { lat: 10.06, lng: -69.30 },
+                "Aragua": { lat: 10.24, lng: -67.50 }, "Anzoátegui": { lat: 9.30, lng: -64.30 },
+                "Miranda": { lat: 10.20, lng: -66.30 }, "Bolívar": { lat: 6.50, lng: -63.50 },
+                "Táchira": { lat: 7.80, lng: -72.10 }, "Mérida": { lat: 8.50, lng: -71.10 },
+                "Falcón": { lat: 11.00, lng: -69.50 }, "Nueva Esparta": { lat: 11.00, lng: -64.00 },
+                "Sucre": { lat: 10.50, lng: -63.00 }, "Barinas": { lat: 8.00, lng: -70.00 },
+                "Apure": { lat: 7.50, lng: -68.50 }, "Guárico": { lat: 8.80, lng: -66.50 },
+                "Portuguesa": { lat: 9.00, lng: -69.20 }, "Cojedes": { lat: 9.50, lng: -68.50 },
+                "Yaracuy": { lat: 10.30, lng: -68.70 }, "Trujillo": { lat: 9.30, lng: -70.50 },
+                "Monagas": { lat: 9.50, lng: -63.00 }, "Delta Amacuro": { lat: 8.50, lng: -61.50 },
+                "Amazonas": { lat: 3.50, lng: -66.00 }, "La Guaira": { lat: 10.60, lng: -66.90 }
+            }
+        };
+
+        function initMap() {
+            // LÍMITES ESTRICTOS A VENEZUELA
+            const venezuelaBounds = L.latLngBounds(L.latLng(0.5, -73.5), L.latLng(12.5, -59.5));
+
+            map = L.map('map-container', {
+                zoomControl: false, maxBounds: venezuelaBounds, maxBoundsViscosity: 0.9, minZoom: 5
+            }).setView([7.523, -66.178], 6);
+
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; OpenStreetMap', subdomains: 'abcd', maxZoom: 19
+            }).addTo(map);
+
+            // CLUSTERING + SPIDERFY (Para separar puntos en la misma ciudad)
+            markersCluster = L.markerClusterGroup({
+                showCoverageOnHover: false,
+                maxClusterRadius: 40,
+                spiderfyOnMaxZoom: true,   // Desplegar telaraña si hay muchos juntos
+                zoomToBoundsOnClick: true  // Acercarse al tocar cluster
+            });
+            map.addLayer(markersCluster);
+
+            // Eventos del GPS nativo de Leaflet
+            map.on('locationfound', function(e) {
+                mostrarNotificacion('Ubicación obtenida exitosamente', 'fa-check');
+                // Agregar un punto pulsante donde está el usuario (Opcional)
+                L.circleMarker(e.latlng, { radius: 8, fillColor: '#ffb600', color: '#fff', weight: 2, opacity: 1, fillOpacity: 0.8 }).addTo(map).bindPopup("Estás aquí").openPopup();
+            });
+            map.on('locationerror', function(e) { mostrarNotificacion('No se pudo acceder al GPS', 'fa-triangle-exclamation'); });
+        }
+
+        // Utilidad de notificaciones
+        function mostrarNotificacion(texto, iconoClass) {
+            const toast = document.getElementById('toast-notification');
+            document.getElementById('toast-icon').className = `fa-solid ${iconoClass}`;
+            document.getElementById('toast-text').innerText = texto;
+            toast.classList.remove('opacity-0');
+            setTimeout(() => toast.classList.add('opacity-0'), 3500);
+        }
+
+        // Geolocalización
+        function localizarUsuario() {
+            if(navigator.vibrate) navigator.vibrate(50);
+            mostrarNotificacion('Buscando tu ubicación...', 'fa-location-crosshairs fa-spin');
+            map.locate({setView: true, maxZoom: 12});
+        }
+
+        async function fetchYProcesarDatos() {
+            document.getElementById('loading-indicator').classList.remove('hidden');
+            const URL_API = 'https://script.google.com/macros/s/AKfycbxFEC6VMB92T6dYTPDblrMpHVKoRo0N7g3jUnFsCx5aN5OtHuFocPkKNXlBcHYAlbvX/exec?tipo=analitica';
+            
+            try {
+                const res = await fetch(URL_API);
+                if(!res.ok) throw new Error("Fallo en red.");
+                const json = await res.json();
+                
+                if(json.result === "success" && json.data) {
+                    // PRE-PROCESAMIENTO INTELIGENTE (Se hace una sola vez al cargar)
+                    json.data.forEach(item => {
+                        // 1. Limpiar Laboral
+                        let lab = (item.laboral || "").toString().trim();
+                        item._laboral_clean = (lab === "Dependiente" || lab === "Independiente" || lab === "Desempleado") ? lab : "Buscando";
+                        
+                        // 2. Definir Nivel Académico Único
+                        let nivelAcad = "Profesional";
+                        if (item.doctorado && item.doctorado.trim() !== "") nivelAcad = "Doctorado";
+                        else if (item.postgrado && item.postgrado.trim() !== "") nivelAcad = "Postgrado";
+                        else if (item.grado && item.grado.toLowerCase().includes('tsu')) nivelAcad = "T.S.U.";
+                        item._nivel_acad = nivelAcad;
+
+                        // 3. Normalizar Profesión / Carrera
+                        let prof = "Prevencionista SST";
+                        if(item.carrera && item.carrera.trim() !== "") {
+                            prof = item.carrera.toString().trim().toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""); 
+                            if(prof.includes("ING") && prof.includes("INDUSTRIAL")) prof = "INGENIERÍA INDUSTRIAL";
+                            else if((prof.includes("TSU") || prof.includes("TECNICO")) && prof.includes("SEGURIDAD")) prof = "TSU SEGURIDAD INDUSTRIAL";
+                            else if(prof.includes("MEDIC") || prof.includes("SALUD OCUPACIONAL")) prof = "MÉDICO OCUPACIONAL";
+                            else if(prof.includes("ENFERMER")) prof = "ENFERMERÍA OCUPACIONAL";
+                            else if(prof.includes("AMBIENT")) prof = "INGENIERÍA AMBIENTAL";
+                            else if(prof.includes("BOMBERO") || prof.includes("RESCATE")) prof = "BOMBERO / RESCATISTA";
+                        }
+                        item._profesion_clean = prof;
+                    });
+
+                    globalData = json.data;
+                    aplicarFiltrosGlobales(); // Dibuja el mapa inicialmente
+                    procesarDatosParaDashboard(globalData); // Alimenta el dashboard
+                }
+            } catch (error) {
+                console.error(error);
+                mostrarNotificacion('Error cargando base de datos', 'fa-triangle-exclamation');
+            } finally {
+                document.getElementById('loading-indicator').classList.add('hidden');
+            }
+        }
+
+        function setFiltroPildora(tipo, btnEl) {
+            if(navigator.vibrate) navigator.vibrate(30);
+            filtrosActive.pildora = tipo;
+            document.querySelectorAll('.filter-pill').forEach(btn => {
+                if(!btn.innerHTML.includes('Avanzados')){
+                    btn.classList.remove('active', 'bg-movida-navy', 'text-white');
+                    btn.classList.add('bg-white', 'text-slate-500');
+                }
+            });
+            btnEl.classList.remove('bg-white', 'text-slate-500');
+            btnEl.classList.add('active', 'bg-movida-navy', 'text-white');
+            aplicarFiltrosGlobales();
+        }
+
+        function abrirFiltrosAvanzados() {
+            document.getElementById('filter-backdrop').classList.remove('hidden');
+            setTimeout(() => {
+                document.getElementById('filter-backdrop').classList.remove('opacity-0');
+                document.getElementById('advanced-filters-sheet').classList.remove('translate-y-full');
+            }, 10);
+        }
+
+        function cerrarFiltrosAvanzados() {
+            document.getElementById('advanced-filters-sheet').classList.add('translate-y-full');
+            document.getElementById('filter-backdrop').classList.add('opacity-0');
+            setTimeout(() => document.getElementById('filter-backdrop').classList.add('hidden'), 300);
+        }
+
+        function limpiarFiltrosAvanzados() {
+            document.getElementById('select-academico').value = 'todos';
+            document.getElementById('input-profesion').value = '';
+            filtrosActive.academico = 'todos';
+            filtrosActive.profesionBusqueda = '';
+            aplicarFiltrosGlobales();
+            cerrarFiltrosAvanzados();
+            mostrarNotificacion('Filtros avanzados limpiados', 'fa-eraser');
+        }
+
+        function toggleHeatmap() {
+            filtrosActive.modoHeatmap = !filtrosActive.modoHeatmap;
+            const btn = document.getElementById('btn-heatmap');
+            if(filtrosActive.modoHeatmap) {
+                btn.classList.add('bg-movida-navy', 'text-white'); btn.classList.remove('bg-white', 'text-movida-teal');
+                mostrarNotificacion('Mapa de Calor activado', 'fa-fire');
+            } else {
+                btn.classList.remove('bg-movida-navy', 'text-white'); btn.classList.add('bg-white', 'text-movida-teal');
+                mostrarNotificacion('Marcadores activados', 'fa-location-dot');
+            }
+            aplicarFiltrosGlobales();
+        }
+
+        function aplicarFiltrosGlobales() {
+            // Recoger valores del Bottom Sheet
+            filtrosActive.academico = document.getElementById('select-academico').value;
+            filtrosActive.profesionBusqueda = document.getElementById('input-profesion').value.trim().toUpperCase();
+
+            // Limpiar Mapa
+            markersCluster.clearLayers();
+            if(heatmapLayer) map.removeLayer(heatmapLayer);
+            
+            let countVisibles = 0;
+            let heatPoints = []; // Para el mapa de calor
+
+            globalData.forEach(item => {
+                if(!item.estado) return;
+
+                // CONDICIONES DE FILTRADO
+                // 1. Filtro Píldora Rápida
+                if (filtrosActive.pildora === 'mujeres' && item.genero !== 'Femenino') return;
+                if (filtrosActive.pildora === 'buscando' && item._laboral_clean !== 'Desempleado') return;
+                
+                // 2. Filtro Avanzado Académico
+                if (filtrosActive.academico !== 'todos' && item._nivel_acad !== filtrosActive.academico) return;
+                
+                // 3. Filtro Avanzado Profesión (Búsqueda por texto)
+                if (filtrosActive.profesionBusqueda !== "" && !item._profesion_clean.includes(filtrosActive.profesionBusqueda)) return;
+
+                // SI PASA TODOS LOS FILTROS, DIBUJAR:
+                countVisibles++;
+                
+                let est = item.estado.trim();
+                let mun = (item.municipio || "").trim();
+                let baseCoords = geodata.municipios[`${est}_${mun}`] || geodata.estados[est] || { lat: 8.0, lng: -66.0 };
+                
+                // Variación matemática minúscula (0.01) para que agrupen pero permitan el Spiderfy
+                let lat = baseCoords.lat + (Math.random() * 0.02 - 0.01);
+                let lng = baseCoords.lng + (Math.random() * 0.02 - 0.01);
+
+                if (filtrosActive.modoHeatmap) {
+                    heatPoints.push([lat, lng, 1]); // Lat, Lng, Intensidad
+                } else {
+                    let pinColor = item.genero === 'Femenino' ? '#70ad47' : '#007b85';
+                    let textoLaboral = item._laboral_clean === 'Desempleado' ? 'Buscando Oportunidades' : item._laboral_clean;
+
+                    const marker = L.circleMarker([lat, lng], { radius: 8, fillColor: pinColor, color: "#ffffff", weight: 2, fillOpacity: 0.9 });
+                    
+                    // Tarjeta de Perfil Profesional Súper Optimizada (Sin Edad)
+                    marker.bindPopup(`
+                        <div class="text-left w-[220px]">
+                            <div class="flex items-center gap-3 mb-3 border-b border-slate-100 pb-3">
+                                <div class="w-10 h-10 rounded-full flex items-center justify-center text-white text-lg shadow-sm shrink-0" style="background-color:${pinColor}">
+                                    <i class="fa-solid ${item.genero === 'Femenino' ? 'fa-venus' : 'fa-mars'}"></i>
+                                </div>
+                                <div>
+                                    <p class="font-extrabold text-movida-navy text-[11px] leading-tight mb-0.5 capitalize">${item._profesion_clean.toLowerCase()}</p>
+                                    <p class="text-[10px] font-bold text-movida-teal uppercase tracking-wide">${item._nivel_acad}</p>
+                                </div>
+                            </div>
+                            <div class="space-y-1.5">
+                                <p class="text-xs text-slate-600 m-0 leading-tight"><i class="fa-solid fa-location-dot text-slate-400 w-4 text-center mr-1"></i> ${est}, ${mun || 'Capital'}</p>
+                                <p class="text-xs text-slate-600 font-medium m-0 leading-tight"><i class="fa-solid fa-briefcase text-slate-400 w-4 text-center mr-1"></i> ${textoLaboral}</p>
+                            </div>
+                        </div>
+                    `);
+                    markersCluster.addLayer(marker);
+                }
+            });
+            
+            // Dibujar calor o marcadores según el modo
+            if (filtrosActive.modoHeatmap && heatPoints.length > 0) {
+                // Radio amplio y difuminado para que se vea como mancha térmica
+                heatmapLayer = L.heatLayer(heatPoints, {radius: 35, blur: 25, maxZoom: 8, gradient: {0.4: 'green', 0.65: 'yellow', 1: 'red'}}).addTo(map);
+            }
+
+            // Actualizar el número en pantalla
+            const mapCountEl = document.getElementById('map-visible-count');
+            if(mapCountEl) mapCountEl.innerText = countVisibles;
+        }
+
+        function procesarDatosParaDashboard(data) {
+            let porEstado = {}; let porMunicipio = new Set();
+            let genData = { 'Masculino': 0, 'Femenino': 0 };
+            let labData = { 'Dependiente': 0, 'Independiente': 0, 'Buscando': 0 };
+            let edadData = { '< 30': 0, '31 - 40': 0, '41 - 50': 0, '50+': 0 };
+            let carreras = {};
+            let statsAcademico = { totalValido: 0, postgrado: 0, doctorado: 0 };
+            
+            data.forEach(item => {
+                if(item.estado) {
+                    let e = item.estado.trim();
+                    if(!porEstado[e]) porEstado[e] = 0;
+                    porEstado[e]++;
+                    if(item.municipio) porMunicipio.add(e + "_" + item.municipio.trim());
+                }
+                
+                if(item.genero === "Masculino" || item.genero === "Femenino") genData[item.genero]++;
+                
+                // Laboral validado puro
+                if(item._laboral_clean === "Dependiente") labData['Dependiente']++;
+                else if(item._laboral_clean === "Independiente") labData['Independiente']++;
+                else if(item._laboral_clean === "Desempleado") labData['Buscando']++;
+
+                if(item.edad) {
+                    let e = parseInt(item.edad);
+                    if(!isNaN(e)) {
+                        if(e <= 30) edadData['< 30']++;
+                        else if(e <= 40) edadData['31 - 40']++;
+                        else if(e <= 50) edadData['41 - 50']++;
+                        else edadData['50+']++;
+                    }
+                }
+
+                if(item._nivel_acad) statsAcademico.totalValido++;
+                if(item._nivel_acad === "Postgrado") statsAcademico.postgrado++;
+                if(item._nivel_acad === "Doctorado") statsAcademico.doctorado++;
+
+                let prof = item._profesion_clean;
+                if(!carreras[prof]) carreras[prof] = 0;
+                carreras[prof]++;
+            });
+
+            document.getElementById('dash-total').innerText = data.length;
+            document.getElementById('dash-estados').innerText = Object.keys(porEstado).length;
+            document.getElementById('dash-municipios').innerText = porMunicipio.size;
+
+            if(statsAcademico.totalValido > 0) {
+                document.getElementById('stat-postgrado').innerText = Math.round((statsAcademico.postgrado / statsAcademico.totalValido) * 100) + "%";
+                document.getElementById('stat-doctorado').innerText = Math.round((statsAcademico.doctorado / statsAcademico.totalValido) * 100) + "%";
+            }
+
+            dibujarTopCarreras(carreras);
+            dibujarListaEstados(porEstado);
+            dibujarGraficos(genData, labData, edadData);
+        }
+
+        // Helpers de Dibujo UI (Intactos)
+        function dibujarTopCarreras(carrerasObj) {
+            const listDiv = document.getElementById('professions-list'); listDiv.innerHTML = '';
+            const sorted = Object.keys(carrerasObj).sort((a,b) => carrerasObj[b] - carrerasObj[a]).slice(0, 5);
+            if(sorted.length === 0) return listDiv.innerHTML = '<p class="text-sm text-slate-400 text-center">No hay datos suficientes.</p>';
+
+            sorted.forEach((carrera, index) => {
+                let color = index === 0 ? 'text-movida-yellow' : (index === 1 ? 'text-slate-400' : (index === 2 ? 'text-amber-700' : 'text-movida-teal/50'));
+                listDiv.innerHTML += `
+                    <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-100">
+                        <div class="flex items-center gap-3 overflow-hidden">
+                            <span class="font-black ${color} w-4 text-center">${index + 1}</span>
+                            <span class="font-semibold text-slate-700 text-xs truncate">${carrera}</span>
+                        </div>
+                        <span class="text-xs font-bold bg-white text-movida-navy border border-slate-200 px-2 py-1 rounded-md">${carrerasObj[carrera]}</span>
+                    </div>`;
+            });
+        }
+
+        function dibujarListaEstados(porEstado) {
+            const sortedStates = Object.keys(porEstado).sort((a,b) => porEstado[b] - porEstado[a]);
+            const listDiv = document.getElementById('states-list'); listDiv.innerHTML = '';
+            let maxCount = porEstado[sortedStates[0]];
+
+            sortedStates.forEach(estado => {
+                let width = (porEstado[estado] / maxCount) * 100;
+                listDiv.innerHTML += `
+                    <div class="bg-white p-3 rounded-xl border border-slate-100 shadow-sm cursor-pointer hover:border-movida-teal transition-colors active:scale-[0.98]" onclick="irAEstado('${estado}')">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="font-bold text-slate-700 text-sm">${estado}</span>
+                            <span class="text-movida-navy font-bold text-sm bg-movida-bg px-2 py-0.5 rounded-md">${porEstado[estado]}</span>
+                        </div>
+                        <div class="w-full bg-slate-100 rounded-full h-1.5"><div class="bg-movida-teal h-1.5 rounded-full" style="width: ${width}%"></div></div>
+                    </div>`;
+            });
+        }
+
+        function dibujarGraficos(genData, labData, edadData) {
+            Chart.register(ChartDataLabels); Chart.defaults.font.family = "'Outfit', sans-serif";
+            const commonOptions = { plugins: { legend: { display: false }, tooltip: { enabled: false }, datalabels: { color: '#00205b', anchor: 'end', align: 'left', font: { weight: 'bold', size: 12 }, padding: {right: 6} } }, scales: { x: { display: false }, y: { grid: { display: false }, border: { display: false } } }, layout: { padding: { right: 25 } } };
+
+            if(chartInstances.edad) chartInstances.edad.destroy();
+            chartInstances.edad = new Chart(document.getElementById('chartEdad').getContext('2d'), { type: 'bar', data: { labels: ['< 30', '31-40', '41-50', '50+'], datasets: [{ data: [edadData['< 30'], edadData['31 - 40'], edadData['41 - 50'], edadData['50+']], backgroundColor: '#70ad47', borderRadius: 4 }] }, options: { ...commonOptions, indexAxis: 'y', maintainAspectRatio: false } });
+
+            if(chartInstances.lab) chartInstances.lab.destroy();
+            chartInstances.lab = new Chart(document.getElementById('chartLaboral').getContext('2d'), { type: 'bar', data: { labels: ['Dependiente', 'Independiente', 'Buscando'], datasets: [{ data: [labData['Dependiente'], labData['Independiente'], labData['Buscando']], backgroundColor: ['#00205b', '#007b85', '#ffb600'], borderRadius: 6 }] }, options: { ...commonOptions, indexAxis: 'y', maintainAspectRatio: false } });
+
+            if(chartInstances.gen) chartInstances.gen.destroy();
+            chartInstances.gen = new Chart(document.getElementById('chartGenero').getContext('2d'), { type: 'doughnut', data: { labels: ['Masculino', 'Femenino'], datasets: [{ data: [genData['Masculino'], genData['Femenino']], backgroundColor: ['#00205b', '#70ad47'], borderWidth: 2, borderColor: '#ffffff' }] }, options: { maintainAspectRatio: false, cutout: '70%', plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20 } }, tooltip: { enabled: false }, datalabels: { color: '#ffffff', font: { weight: 'bold', size: 14 }, formatter: (value, ctx) => { let total = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0); return total === 0 ? "" : Math.round((value / total) * 100) + "%"; } } } } });
+        }
+
+        // Navegación
+        function switchTab(tabId) {
+            if(navigator.vibrate) navigator.vibrate(50);
+            ['map-view', 'dashboard-view'].forEach(id => {
+                const el = document.getElementById(id); const btn = document.getElementById(`btn-${id}`);
+                if(id === tabId) { el.className = "view-active absolute inset-0 z-10"; btn.classList.add('active', 'text-movida-teal'); btn.classList.remove('text-slate-400'); }
+                else { el.className = "view-hidden absolute inset-0 z-20"; btn.classList.remove('active', 'text-movida-teal'); btn.classList.add('text-slate-400'); }
+            });
+            if(tabId === 'map-view') setTimeout(() => map.invalidateSize(), 300);
+        }
+
+        function irAEstado(nombreEstado) {
+            switchTab('map-view');
+            const coords = geodata.estados[nombreEstado];
+            if(coords) map.flyTo([coords.lat, coords.lng], 8, { duration: 1.5 });
+        }
+
+        // Inicio
+        window.onload = () => { initMap(); fetchYProcesarDatos(); };
+    </script>
+</body>
+</html>
