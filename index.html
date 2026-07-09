@@ -7,7 +7,7 @@
     
     <title>La Movida SST Plus - Mapa de Integrantes</title>
     
-    <!-- Etiquetas SEO y Open Graph para WhatsApp/Redes -->
+    <!-- Etiquetas SEO y Open Graph -->
     <meta property="og:title" content="Mapa de Integrantes - La Movida SST Plus">
     <meta property="og:description" content="Visualiza en tiempo real la distribución de prevencionistas a nivel nacional por Estado y Municipio.">
     <meta property="og:image" content="https://assets.poap.xyz/ff0a7e68-7080-4798-af10-4a481f762e71.jpeg">
@@ -45,63 +45,58 @@
         }
     </script>
     <style>
-        /* FIX DEFINITIVO PARA MÓVILES (Bloqueo de Viewport) */
-        html, body { 
-            height: 100%; height: 100dvh; width: 100%; position: fixed; 
-            top: 0; left: 0; overflow: hidden; overscroll-behavior-y: none;
-            font-family: 'Outfit', sans-serif; background-color: #f8fafc; 
+        /* Candado Móvil Mejorado y Seguro (Sin position: fixed para evitar bug de barra) */
+        html, body {
+            height: 100dvh;
+            width: 100vw;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            overscroll-behavior-y: none; /* Evita el rebote fantasma en iOS sin romper la interfaz */
+            font-family: 'Outfit', sans-serif;
+            background-color: #f8fafc;
         }
         
         #map-container { height: 100%; width: 100%; position: absolute; top: 0; left: 0; z-index: 10; }
-        .leaflet-control-zoom { display: none; } /* Ocultar botones de zoom para mayor limpieza visual */
+        .leaflet-control-zoom { display: none; }
         
         .glass-card {
             background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(226, 232, 240, 0.8); box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05); border-radius: 1.5rem;
         }
 
-        /* Estilos del Cluster */
         .marker-cluster-small, .marker-cluster-medium, .marker-cluster-large { background-color: rgba(0, 123, 133, 0.3) !important; }
         .marker-cluster-small div, .marker-cluster-medium div, .marker-cluster-large div {
             background-color: rgba(0, 32, 91, 0.9) !important; color: white !important; font-family: 'Outfit', sans-serif; font-weight: bold;
         }
 
-        /* Estilos del Popup del Mapa */
         .leaflet-popup-content-wrapper { border-radius: 16px; border-top: 4px solid #007b85; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
         .leaflet-popup-content { margin: 16px; font-family: 'Outfit', sans-serif; }
         
-        /* Contenedor del Dashboard Adaptativo */
         #dashboard-view { 
-            height: 100%; width: 100%; position: absolute; top: 0; left: 0; 
-            z-index: 20; background-color: #f8fafc; overflow-y: auto; 
-            padding-bottom: calc(100px + env(safe-area-inset-bottom)); 
-            padding-top: 85px; 
+            height: 100dvh; width: 100vw; position: absolute; top: 0; left: 0; 
+            z-index: 20; background-color: #f8fafc; overflow-y: auto; padding-bottom: 120px; padding-top: 85px; 
             -webkit-overflow-scrolling: touch;
         }
 
-        /* Transiciones de Vistas */
         .view-hidden { transform: translateX(100%); opacity: 0; pointer-events: none; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .view-active { transform: translateX(0); opacity: 1; pointer-events: auto; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         
-        /* Barra de navegación inferior con margen seguro para iOS/Android */
-        #bottom-nav { z-index: 900; padding-bottom: calc(0.5rem + env(safe-area-inset-bottom)); }
+        /* Estilos de navegación y píldoras */
         .nav-item.active { color: #007b85; font-weight: 700; }
         .nav-item.active .icon-container { background-color: #e8fcf0; transform: translateY(-4px); }
 
-        /* Píldoras de filtro */
         .filter-pill { white-space: nowrap; transition: all 0.2s; }
         .filter-pill.active { background-color: #00205b; color: white; border-color: #00205b; }
         .hide-scroll::-webkit-scrollbar { display: none; }
         .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
         
-        /* Bottom Sheet (Panel de Filtros Avanzados) */
-        #advanced-filters-sheet { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        #advanced-filters-sheet { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); padding-bottom: env(safe-area-inset-bottom); }
     </style>
 </head>
 <body class="text-slate-600 antialiased selection:bg-movida-teal selection:text-white">
 
-    <!-- HEADER FLOTANTE -->
-    <header class="fixed top-0 left-0 right-0 z-[60] bg-white/90 backdrop-blur-md border-b border-slate-200 px-4 py-3 flex items-center justify-between shadow-sm">
+    <header class="fixed top-0 left-0 right-0 z-[60] bg-white/90 backdrop-blur-md border-b border-slate-200 px-4 py-3 flex items-center justify-between shadow-sm pt-[max(env(safe-area-inset-top),12px)]">
         <div class="flex items-center gap-3">
             <img src="https://assets.poap.xyz/ff0a7e68-7080-4798-af10-4a481f762e71.jpeg" alt="Logo" class="w-10 h-10 rounded-full border-2 border-movida-teal object-cover">
             <div>
@@ -112,37 +107,30 @@
         <div id="loading-indicator" class="hidden text-movida-teal"><i class="fa-solid fa-circle-notch fa-spin text-xl"></i></div>
     </header>
 
-    <!-- SISTEMA DE ALERTAS (Toast) -->
-    <div id="toast-notification" class="fixed top-20 left-1/2 transform -translate-x-1/2 z-[1000] bg-movida-navy/95 backdrop-blur-sm text-white px-5 py-2.5 rounded-full shadow-lg opacity-0 pointer-events-none transition-opacity duration-300 text-xs font-bold flex items-center gap-2 whitespace-nowrap">
+    <div id="toast-notification" class="fixed top-[calc(env(safe-area-inset-top)+80px)] left-1/2 transform -translate-x-1/2 z-[1000] bg-movida-navy/95 backdrop-blur-sm text-white px-5 py-2.5 rounded-full shadow-lg opacity-0 pointer-events-none transition-opacity duration-300 text-xs font-bold flex items-center gap-2 whitespace-nowrap">
         <i id="toast-icon" class="fa-solid fa-info-circle"></i> <span id="toast-text">Notificación</span>
     </div>
 
-    <!-- VISTA 1: EL MAPA -->
     <main id="map-view" class="view-active absolute inset-0 z-10">
-        
-        <!-- Píldoras de Filtro Rápido -->
-        <div class="absolute top-[70px] left-0 w-full z-[400] px-3 py-2 overflow-x-auto hide-scroll flex gap-2">
+        <div class="absolute top-[max(env(safe-area-inset-top)+70px,70px)] left-0 w-full z-[400] px-3 py-2 overflow-x-auto hide-scroll flex gap-2">
             <button onclick="setFiltroPildora('todos', this)" class="filter-pill active bg-white text-movida-navy border border-slate-200 px-4 py-1.5 rounded-full text-xs font-bold shadow-sm">Todos</button>
             <button onclick="setFiltroPildora('mujeres', this)" class="filter-pill bg-white text-slate-500 border border-slate-200 px-4 py-1.5 rounded-full text-xs font-bold shadow-sm">Solo Mujeres</button>
             <button onclick="setFiltroPildora('buscando', this)" class="filter-pill bg-white text-slate-500 border border-slate-200 px-4 py-1.5 rounded-full text-xs font-bold shadow-sm">Buscando Empleo</button>
-            <!-- Botón Filtros Avanzados -->
             <button onclick="abrirFiltrosAvanzados()" class="filter-pill bg-movida-teal text-white border border-movida-teal px-4 py-1.5 rounded-full text-xs font-bold shadow-sm flex items-center gap-1">
                 <i class="fa-solid fa-sliders"></i> Avanzados
             </button>
         </div>
         
-        <!-- Botones Flotantes (GPS y Mapa de Calor) -->
-        <div class="absolute top-[130px] right-3 z-[400] flex flex-col gap-3">
-            <button id="btn-locate" onclick="localizarUsuario()" class="w-11 h-11 bg-white rounded-full shadow-glass text-movida-navy border border-slate-100 flex items-center justify-center text-lg active:scale-95 transition-transform" aria-label="Mi Ubicación">
+        <div class="absolute top-[max(env(safe-area-inset-top)+130px,130px)] right-3 z-[400] flex flex-col gap-3">
+            <button id="btn-locate" onclick="localizarUsuario()" class="w-11 h-11 bg-white rounded-full shadow-glass text-movida-navy border border-slate-100 flex items-center justify-center text-lg active:scale-95 transition-transform">
                 <i class="fa-solid fa-crosshairs"></i>
             </button>
-            <button id="btn-heatmap" onclick="toggleHeatmap()" class="w-11 h-11 bg-white rounded-full shadow-glass text-movida-teal border border-slate-100 flex items-center justify-center text-lg active:scale-95 transition-transform" aria-label="Mapa de Calor">
+            <button id="btn-heatmap" onclick="toggleHeatmap()" class="w-11 h-11 bg-white rounded-full shadow-glass text-movida-teal border border-slate-100 flex items-center justify-center text-lg active:scale-95 transition-transform">
                 <i class="fa-solid fa-fire"></i>
             </button>
         </div>
 
-        <!-- Indicador Flotante Inferior (Contador en Mapa) -->
-        <div class="absolute bottom-[90px] left-1/2 transform -translate-x-1/2 z-[400] bg-white/95 backdrop-blur-md px-4 py-2.5 rounded-2xl shadow-glass border border-slate-200 flex items-center gap-3 transition-all">
+        <div class="absolute bottom-[max(calc(env(safe-area-inset-bottom)+100px),100px)] left-1/2 transform -translate-x-1/2 z-[400] bg-white/95 backdrop-blur-md px-4 py-2.5 rounded-2xl shadow-glass border border-slate-200 flex items-center gap-3 transition-all">
             <div class="bg-movida-teal/10 w-9 h-9 rounded-full flex items-center justify-center shrink-0">
                 <i class="fa-solid fa-users text-movida-teal text-sm"></i>
             </div>
@@ -152,15 +140,12 @@
             </div>
         </div>
 
-        <!-- Contenedor Real del Mapa Leaflet -->
         <div id="map-container"></div>
     </main>
 
-    <!-- BACKDROP (Fondo oscuro para menú inferior) -->
     <div id="filter-backdrop" onclick="cerrarFiltrosAvanzados()" class="fixed inset-0 z-[450] bg-movida-navy/40 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300"></div>
     
-    <!-- BOTTOM SHEET (Panel Deslizable Filtros Avanzados Alineado) -->
-    <div id="advanced-filters-sheet" class="fixed inset-x-0 z-[500] bg-white rounded-t-3xl shadow-[0_-10px_40px_rgba(0,0,0,0.1)] transform translate-y-full px-6 py-6 flex flex-col pb-[calc(1.5rem+env(safe-area-inset-bottom))]" style="bottom: 70px;">
+    <div id="advanced-filters-sheet" class="fixed inset-x-0 bottom-[max(env(safe-area-inset-bottom)+70px,70px)] z-[500] bg-white rounded-t-3xl shadow-[0_-10px_40px_rgba(0,0,0,0.1)] transform translate-y-full px-6 py-6 flex flex-col">
         <div class="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-5"></div>
         <h3 class="text-movida-navy font-black text-lg mb-4"><i class="fa-solid fa-filter text-movida-teal mr-2"></i> Filtros Analíticos</h3>
         
@@ -191,13 +176,10 @@
         </div>
     </div>
 
-    <!-- VISTA 2: EL DASHBOARD ANALÍTICO -->
     <main id="dashboard-view" class="view-hidden absolute inset-0 z-20">
         <div class="p-4 space-y-5 max-w-lg mx-auto">
-            
             <div id="error-message" class="hidden bg-red-50 border border-red-200 text-red-700 p-4 rounded-xl text-sm font-medium"></div>
 
-            <!-- Tarjetas de Resumen Principal -->
             <div class="grid grid-cols-3 gap-2 mt-2">
                 <div class="glass-card p-3 flex flex-col items-center justify-center text-center">
                     <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wide">Total Red</p>
@@ -213,30 +195,34 @@
                 </div>
             </div>
 
-            <!-- Nivel Académico -->
             <div class="glass-card p-5">
                 <h3 class="text-movida-navy font-bold text-sm uppercase tracking-wide mb-4 flex items-center gap-2">
-                    <i class="fa-solid fa-graduation-cap text-movida-teal"></i> Nivel Académico Superior
+                    <i class="fa-solid fa-user-graduate text-movida-teal"></i> Distribución Académica
                 </h3>
-                <div class="flex justify-around items-center text-center">
+                <div class="space-y-4 mt-2">
+                    <!-- Doctorado -->
                     <div>
-                        <div class="w-14 h-14 rounded-full bg-movida-teal/10 flex items-center justify-center mx-auto mb-2 border border-movida-teal/20">
-                            <i class="fa-solid fa-award text-2xl text-movida-teal"></i>
-                        </div>
-                        <p class="text-lg font-black text-movida-navy" id="stat-postgrado">0%</p>
-                        <p class="text-[10px] font-bold text-slate-400 uppercase">Postgrado</p>
+                        <div class="flex justify-between text-xs mb-1 font-bold"><span class="text-movida-yellow flex items-center gap-1.5"><i class="fa-solid fa-microscope text-sm w-4 text-center"></i> Doctorado</span><span id="txt-acad-doc" class="text-slate-600">0%</span></div>
+                        <div class="w-full bg-slate-100 rounded-full h-2"><div id="bar-acad-doc" class="bg-movida-yellow h-2 rounded-full transition-all duration-1000" style="width: 0%"></div></div>
                     </div>
+                    <!-- Postgrado -->
                     <div>
-                        <div class="w-14 h-14 rounded-full bg-movida-yellow/10 flex items-center justify-center mx-auto mb-2 border border-movida-yellow/30">
-                            <i class="fa-solid fa-microscope text-2xl text-movida-yellow"></i>
-                        </div>
-                        <p class="text-lg font-black text-movida-navy" id="stat-doctorado">0%</p>
-                        <p class="text-[10px] font-bold text-slate-400 uppercase">Doctorado</p>
+                        <div class="flex justify-between text-xs mb-1 font-bold"><span class="text-movida-teal flex items-center gap-1.5"><i class="fa-solid fa-award text-sm w-4 text-center"></i> Postgrado / Especialidad</span><span id="txt-acad-post" class="text-slate-600">0%</span></div>
+                        <div class="w-full bg-slate-100 rounded-full h-2"><div id="bar-acad-post" class="bg-movida-teal h-2 rounded-full transition-all duration-1000" style="width: 0%"></div></div>
+                    </div>
+                    <!-- Profesional -->
+                    <div>
+                        <div class="flex justify-between text-xs mb-1 font-bold"><span class="text-movida-navy flex items-center gap-1.5"><i class="fa-solid fa-briefcase text-sm w-4 text-center"></i> Profesional Universitario</span><span id="txt-acad-prof" class="text-slate-600">0%</span></div>
+                        <div class="w-full bg-slate-100 rounded-full h-2"><div id="bar-acad-prof" class="bg-movida-navy h-2 rounded-full transition-all duration-1000" style="width: 0%"></div></div>
+                    </div>
+                    <!-- TSU -->
+                    <div>
+                        <div class="flex justify-between text-xs mb-1 font-bold"><span class="text-movida-green flex items-center gap-1.5"><i class="fa-solid fa-book-open text-sm w-4 text-center"></i> Técnico Superior (T.S.U.)</span><span id="txt-acad-tsu" class="text-slate-600">0%</span></div>
+                        <div class="w-full bg-slate-100 rounded-full h-2"><div id="bar-acad-tsu" class="bg-movida-green h-2 rounded-full transition-all duration-1000" style="width: 0%"></div></div>
                     </div>
                 </div>
             </div>
 
-            <!-- Gráficos Género y Edad -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div class="glass-card p-5">
                     <h3 class="text-movida-navy font-bold text-sm uppercase tracking-wide mb-4 flex items-center gap-2">
@@ -252,7 +238,6 @@
                 </div>
             </div>
 
-            <!-- Estatus Laboral -->
             <div class="glass-card p-5">
                 <h3 class="text-movida-navy font-bold text-sm uppercase tracking-wide mb-4 flex items-center gap-2">
                     <i class="fa-solid fa-briefcase text-movida-teal"></i> Estatus Laboral
@@ -260,7 +245,6 @@
                 <div class="relative h-32 w-full"><canvas id="chartLaboral"></canvas></div>
             </div>
 
-            <!-- Top 5 Profesiones -->
             <div class="glass-card p-5">
                 <h3 class="text-movida-navy font-bold text-sm uppercase tracking-wide mb-4 flex items-center gap-2">
                     <i class="fa-solid fa-user-doctor text-movida-teal"></i> Top 5 Profesiones
@@ -268,7 +252,6 @@
                 <div id="professions-list" class="space-y-3"><p class="text-center text-slate-400 text-sm">Analizando perfiles...</p></div>
             </div>
 
-            <!-- Lista de Estados -->
             <div class="glass-card p-5">
                 <h3 class="text-movida-navy font-bold text-sm uppercase tracking-wide mb-4 flex items-center gap-2">
                     <i class="fa-solid fa-map-location-dot text-movida-teal"></i> Desglose Geográfico
@@ -276,7 +259,6 @@
                 <div id="states-list" class="space-y-3"><p class="text-center text-slate-400 text-sm py-4">Sincronizando...</p></div>
             </div>
 
-            <!-- FOOTER CORPORATIVO OFICIAL -->
             <footer class="mt-8 mb-6 pb-4">
                 <div class="glass-card p-6 text-center">
                     <h4 class="text-movida-navy font-extrabold text-lg">La Movida de SST Plus</h4>
@@ -291,12 +273,12 @@
                     <div class="mt-6 pt-5 border-t border-slate-100">
                         <p class="text-[0.75rem] font-bold text-slate-400 uppercase tracking-widest mb-4">Síguenos en nuestras redes</p>
                         <div class="flex justify-center items-center gap-4">
-                            <a href="https://www.instagram.com/movidasst/" target="_blank" aria-label="Instagram" class="flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-tr from-[#f9ce34] via-[#ee2a7b] to-[#6228d7] text-white shadow-[0_4px_12px_rgba(238,42,123,0.35)] transition-all duration-300 active:scale-95"><i class="fa-brands fa-instagram text-xl"></i></a>
-                            <a href="https://web.facebook.com/movidadsst" target="_blank" aria-label="Facebook" class="flex items-center justify-center w-12 h-12 rounded-full bg-[#1877F2] text-white shadow-[0_4px_12px_rgba(24,119,242,0.35)] transition-all duration-300 active:scale-95"><i class="fa-brands fa-facebook-f text-xl"></i></a>
-                            <a href="https://x.com/movidasst" target="_blank" aria-label="X (Twitter)" class="flex items-center justify-center w-12 h-12 rounded-full bg-[#000000] text-white border border-slate-800 shadow-[0_4px_12px_rgba(0,0,0,0.3)] transition-all duration-300 active:scale-95">
-                                <svg class="w-5 h-5 fill-white" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 7.746 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.285L1.254 2.25h6.88l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                            <a href="https://www.instagram.com/movidasst/" target="_blank" aria-label="Instagram" class="flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-tr from-[#f9ce34] via-[#ee2a7b] to-[#6228d7] text-white shadow-md active:scale-95"><i class="fa-brands fa-instagram text-xl"></i></a>
+                            <a href="https://web.facebook.com/movidadsst" target="_blank" aria-label="Facebook" class="flex items-center justify-center w-12 h-12 rounded-full bg-[#1877F2] text-white shadow-md active:scale-95"><i class="fa-brands fa-facebook-f text-xl"></i></a>
+                            <a href="https://x.com/movidasst" target="_blank" aria-label="X (Twitter)" class="flex items-center justify-center w-12 h-12 rounded-full bg-[#000000] text-white border border-slate-800 shadow-md active:scale-95">
+                                <svg class="w-5 h-5 fill-white" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M18.244 2.25h3.308l-7.227 7.746 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.285L1.254 2.25h6.88l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
                             </a>
-                            <a href="https://www.linkedin.com/company/movidasst/" target="_blank" aria-label="LinkedIn" class="flex items-center justify-center w-12 h-12 rounded-full bg-[#0A66C2] text-white shadow-[0_4px_12px_rgba(10,102,194,0.35)] transition-all duration-300 active:scale-95"><i class="fa-brands fa-linkedin-in text-xl"></i></a>
+                            <a href="https://www.linkedin.com/company/movidasst/" target="_blank" aria-label="LinkedIn" class="flex items-center justify-center w-12 h-12 rounded-full bg-[#0A66C2] text-white shadow-md active:scale-95"><i class="fa-brands fa-linkedin-in text-xl"></i></a>
                         </div>
                     </div>
                     <div class="mt-6 pt-4 border-t border-slate-100">
@@ -307,8 +289,8 @@
         </div>
     </main>
 
-    <!-- NAVEGACIÓN INFERIOR ASEGURADA -->
-    <nav id="bottom-nav" class="fixed bottom-0 w-full bg-white/90 backdrop-blur-lg border-t border-slate-200 pt-2 px-6 flex justify-around items-center shadow-[0_-4px_20px_rgba(0,0,0,0.05)] z-[900]">
+    <!-- z-[9999] y pb-[calc(env()+16px)] fuerzan la barra por encima de cualquier cosa y evitan que se hunda -->
+    <nav id="bottom-nav" class="fixed bottom-0 left-0 right-0 w-full bg-white/95 backdrop-blur-lg border-t border-slate-200 pt-3 pb-[calc(env(safe-area-inset-bottom)+16px)] px-2 flex justify-around items-center shadow-[0_-10px_30px_rgba(0,0,0,0.08)] z-[9999]">
         <button onclick="switchTab('map-view')" id="btn-map-view" class="nav-item active flex flex-col items-center p-2 w-20 transition-colors">
             <div class="icon-container w-10 h-10 flex items-center justify-center rounded-full transition-all duration-300"><i class="fa-solid fa-map text-xl"></i></div>
             <span class="text-[10px] uppercase tracking-wider mt-1 font-medium">Mapa</span>
@@ -319,10 +301,10 @@
         </button>
     </nav>
 
-    <!-- Librerías JS Externas (Mapas y Gráficos) -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
     <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
     <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
+    
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
 
@@ -334,7 +316,7 @@
         let globalData = []; 
         
         let filtrosActive = {
-            pildora: 'todos', // todos, mujeres, buscando
+            pildora: 'todos',
             academico: 'todos',
             profesionBusqueda: '',
             modoHeatmap: false
@@ -369,7 +351,6 @@
         };
 
         function initMap() {
-            // LÍMITES ESTRICTOS A VENEZUELA
             const venezuelaBounds = L.latLngBounds(L.latLng(0.5, -73.5), L.latLng(12.5, -59.5));
 
             map = L.map('map-container', {
@@ -380,21 +361,19 @@
                 attribution: '&copy; OpenStreetMap', subdomains: 'abcd', maxZoom: 19
             }).addTo(map);
 
-            // CLUSTERING + SPIDERFY
             markersCluster = L.markerClusterGroup({
                 showCoverageOnHover: false,
                 maxClusterRadius: 40,
-                spiderfyOnMaxZoom: true,   // Desplegar telaraña
+                spiderfyOnMaxZoom: true,
                 zoomToBoundsOnClick: true
             });
             map.addLayer(markersCluster);
 
-            // GPS NATIVO
             map.on('locationfound', function(e) {
-                mostrarNotificacion('Ubicación obtenida', 'fa-check');
+                mostrarNotificacion('Ubicación obtenida exitosamente', 'fa-check');
                 L.circleMarker(e.latlng, { radius: 8, fillColor: '#ffb600', color: '#fff', weight: 2, opacity: 1, fillOpacity: 0.8 }).addTo(map).bindPopup("Estás aquí").openPopup();
             });
-            map.on('locationerror', function(e) { mostrarNotificacion('Sin acceso a GPS', 'fa-triangle-exclamation'); });
+            map.on('locationerror', function(e) { mostrarNotificacion('No se pudo acceder al GPS', 'fa-triangle-exclamation'); });
         }
 
         function mostrarNotificacion(texto, iconoClass) {
@@ -407,7 +386,7 @@
 
         function localizarUsuario() {
             if(navigator.vibrate) navigator.vibrate(50);
-            mostrarNotificacion('Buscando ubicación...', 'fa-location-crosshairs fa-spin');
+            mostrarNotificacion('Buscando tu ubicación...', 'fa-location-crosshairs fa-spin');
             map.locate({setView: true, maxZoom: 12});
         }
 
@@ -421,20 +400,16 @@
                 const json = await res.json();
                 
                 if(json.result === "success" && json.data) {
-                    // PRE-PROCESAMIENTO Y LIMPIEZA
                     json.data.forEach(item => {
-                        // 1. Limpiar Laboral (Estricto a Formulario)
                         let lab = (item.laboral || "").toString().trim();
-                        item._laboral_clean = (lab === "Dependiente" || lab === "Independiente" || lab === "Desempleado") ? lab : "No Especifica";
+                        item._laboral_clean = (lab === "Dependiente" || lab === "Independiente" || lab === "Desempleado") ? lab : "Buscando";
                         
-                        // 2. Definir Nivel Académico
                         let nivelAcad = "Profesional";
                         if (item.doctorado && item.doctorado.trim() !== "") nivelAcad = "Doctorado";
                         else if (item.postgrado && item.postgrado.trim() !== "") nivelAcad = "Postgrado";
                         else if (item.grado && item.grado.toLowerCase().includes('tsu')) nivelAcad = "T.S.U.";
                         item._nivel_acad = nivelAcad;
 
-                        // 3. Normalizar Profesión
                         let prof = "Prevencionista SST";
                         if(item.carrera && item.carrera.trim() !== "") {
                             prof = item.carrera.toString().trim().toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""); 
@@ -449,12 +424,12 @@
                     });
 
                     globalData = json.data;
-                    aplicarFiltrosGlobales(); 
+                    aplicarFiltrosGlobales();
                     procesarDatosParaDashboard(globalData);
                 }
             } catch (error) {
                 console.error(error);
-                mostrarNotificacion('Error cargando BD', 'fa-triangle-exclamation');
+                mostrarNotificacion('Error cargando base de datos', 'fa-triangle-exclamation');
             } finally {
                 document.getElementById('loading-indicator').classList.add('hidden');
             }
@@ -495,7 +470,7 @@
             filtrosActive.profesionBusqueda = '';
             aplicarFiltrosGlobales();
             cerrarFiltrosAvanzados();
-            mostrarNotificacion('Filtros limpiados', 'fa-eraser');
+            mostrarNotificacion('Filtros avanzados limpiados', 'fa-eraser');
         }
 
         function toggleHeatmap() {
@@ -503,10 +478,10 @@
             const btn = document.getElementById('btn-heatmap');
             if(filtrosActive.modoHeatmap) {
                 btn.classList.add('bg-movida-navy', 'text-white'); btn.classList.remove('bg-white', 'text-movida-teal');
-                mostrarNotificacion('Mapa Térmico On', 'fa-fire');
+                mostrarNotificacion('Mapa de Calor activado', 'fa-fire');
             } else {
                 btn.classList.remove('bg-movida-navy', 'text-white'); btn.classList.add('bg-white', 'text-movida-teal');
-                mostrarNotificacion('Marcadores On', 'fa-location-dot');
+                mostrarNotificacion('Marcadores activados', 'fa-location-dot');
             }
             aplicarFiltrosGlobales();
         }
@@ -524,10 +499,11 @@
             globalData.forEach(item => {
                 if(!item.estado) return;
 
-                // Aplicar Filtros
                 if (filtrosActive.pildora === 'mujeres' && item.genero !== 'Femenino') return;
                 if (filtrosActive.pildora === 'buscando' && item._laboral_clean !== 'Desempleado') return;
+                
                 if (filtrosActive.academico !== 'todos' && item._nivel_acad !== filtrosActive.academico) return;
+                
                 if (filtrosActive.profesionBusqueda !== "" && !item._profesion_clean.includes(filtrosActive.profesionBusqueda)) return;
 
                 countVisibles++;
@@ -536,7 +512,6 @@
                 let mun = (item.municipio || "").trim();
                 let baseCoords = geodata.municipios[`${est}_${mun}`] || geodata.estados[est] || { lat: 8.0, lng: -66.0 };
                 
-                // Variación matemática minúscula (Spiderfy)
                 let lat = baseCoords.lat + (Math.random() * 0.02 - 0.01);
                 let lng = baseCoords.lng + (Math.random() * 0.02 - 0.01);
 
@@ -578,24 +553,35 @@
         }
 
         function procesarDatosParaDashboard(data) {
-            let porEstado = {}; let porMunicipio = new Set();
+            let porEstado = {}; 
+            let porMunicipio = new Set();
+            let datosGeograficos = {}; 
             let genData = { 'Masculino': 0, 'Femenino': 0 };
-            let labData = { 'Dependiente': 0, 'Independiente': 0, 'Desempleado': 0 };
+            let labData = { 'Dependiente': 0, 'Independiente': 0, 'Buscando': 0 };
             let edadData = { '< 30': 0, '31 - 40': 0, '41 - 50': 0, '50+': 0 };
             let carreras = {};
-            let statsAcademico = { totalValido: 0, postgrado: 0, doctorado: 0 };
+            let statsAcademico = { totalValido: 0, postgrado: 0, doctorado: 0, profesional: 0, tsu: 0 };
             
             data.forEach(item => {
                 if(item.estado) {
                     let e = item.estado.trim();
+                    let m = (item.municipio || "Capital").trim();
+                    
                     if(!porEstado[e]) porEstado[e] = 0;
                     porEstado[e]++;
-                    if(item.municipio) porMunicipio.add(e + "_" + item.municipio.trim());
+                    if(item.municipio) porMunicipio.add(e + "_" + m);
+                    
+                    if(!datosGeograficos[e]) datosGeograficos[e] = { total: 0, municipios: {} };
+                    datosGeograficos[e].total++;
+                    if(!datosGeograficos[e].municipios[m]) datosGeograficos[e].municipios[m] = 0;
+                    datosGeograficos[e].municipios[m]++;
                 }
                 
                 if(item.genero === "Masculino" || item.genero === "Femenino") genData[item.genero]++;
                 
-                if(labData[item._laboral_clean] !== undefined) labData[item._laboral_clean]++;
+                if(item._laboral_clean === "Dependiente") labData['Dependiente']++;
+                else if(item._laboral_clean === "Independiente") labData['Independiente']++;
+                else if(item._laboral_clean === "Desempleado") labData['Buscando']++;
 
                 if(item.edad) {
                     let e = parseInt(item.edad);
@@ -607,9 +593,13 @@
                     }
                 }
 
-                if(item._nivel_acad) statsAcademico.totalValido++;
-                if(item._nivel_acad === "Postgrado") statsAcademico.postgrado++;
-                if(item._nivel_acad === "Doctorado") statsAcademico.doctorado++;
+                if(item._nivel_acad) {
+                    statsAcademico.totalValido++;
+                    if(item._nivel_acad === "Doctorado") statsAcademico.doctorado++;
+                    else if(item._nivel_acad === "Postgrado") statsAcademico.postgrado++;
+                    else if(item._nivel_acad === "Profesional") statsAcademico.profesional++;
+                    else if(item._nivel_acad === "T.S.U.") statsAcademico.tsu++;
+                }
 
                 let prof = item._profesion_clean;
                 if(!carreras[prof]) carreras[prof] = 0;
@@ -621,12 +611,26 @@
             document.getElementById('dash-municipios').innerText = porMunicipio.size;
 
             if(statsAcademico.totalValido > 0) {
-                document.getElementById('stat-postgrado').innerText = Math.round((statsAcademico.postgrado / statsAcademico.totalValido) * 100) + "%";
-                document.getElementById('stat-doctorado').innerText = Math.round((statsAcademico.doctorado / statsAcademico.totalValido) * 100) + "%";
+                const pDoc = Math.round((statsAcademico.doctorado / statsAcademico.totalValido) * 100);
+                const pPost = Math.round((statsAcademico.postgrado / statsAcademico.totalValido) * 100);
+                const pProf = Math.round((statsAcademico.profesional / statsAcademico.totalValido) * 100);
+                const pTsu = Math.round((statsAcademico.tsu / statsAcademico.totalValido) * 100);
+
+                document.getElementById('txt-acad-doc').innerText = pDoc + "%";
+                document.getElementById('bar-acad-doc').style.width = pDoc + "%";
+                
+                document.getElementById('txt-acad-post').innerText = pPost + "%";
+                document.getElementById('bar-acad-post').style.width = pPost + "%";
+                
+                document.getElementById('txt-acad-prof').innerText = pProf + "%";
+                document.getElementById('bar-acad-prof').style.width = pProf + "%";
+                
+                document.getElementById('txt-acad-tsu').innerText = pTsu + "%";
+                document.getElementById('bar-acad-tsu').style.width = pTsu + "%";
             }
 
             dibujarTopCarreras(carreras);
-            dibujarListaEstados(porEstado);
+            dibujarListaEstados(datosGeograficos);
             dibujarGraficos(genData, labData, edadData);
         }
 
@@ -648,37 +652,73 @@
             });
         }
 
-        function dibujarListaEstados(porEstado) {
-            const sortedStates = Object.keys(porEstado).sort((a,b) => porEstado[b] - porEstado[a]);
+        function dibujarListaEstados(datosGeograficos) {
+            const sortedStates = Object.keys(datosGeograficos).sort((a,b) => datosGeograficos[b].total - datosGeograficos[a].total);
             const listDiv = document.getElementById('states-list'); listDiv.innerHTML = '';
-            let maxCount = porEstado[sortedStates[0]];
+            if(sortedStates.length === 0) return;
+            let maxCount = datosGeograficos[sortedStates[0]].total;
 
             sortedStates.forEach(estado => {
-                let width = (porEstado[estado] / maxCount) * 100;
+                let dataEst = datosGeograficos[estado];
+                let width = (dataEst.total / maxCount) * 100;
+                
+                let sortedMuns = Object.keys(dataEst.municipios).sort((a,b) => dataEst.municipios[b] - dataEst.municipios[a]);
+                let munsHTML = '<div class="mt-2 pt-2 border-t border-slate-100/60">';
+                sortedMuns.forEach(mun => {
+                    munsHTML += `<div class="flex justify-between items-center mt-1.5 pl-2 border-l-[3px] border-movida-teal/30"><span class="text-xs text-slate-500 font-medium truncate pr-2 capitalize">${mun.toLowerCase()}</span><span class="text-[10px] font-bold text-slate-500 bg-slate-50 px-1.5 py-0.5 rounded border border-slate-200">${dataEst.municipios[mun]}</span></div>`;
+                });
+                munsHTML += '</div>';
+
                 listDiv.innerHTML += `
                     <div class="bg-white p-3 rounded-xl border border-slate-100 shadow-sm cursor-pointer hover:border-movida-teal transition-colors active:scale-[0.98]" onclick="irAEstado('${estado}')">
                         <div class="flex justify-between items-center mb-1">
                             <span class="font-bold text-slate-700 text-sm">${estado}</span>
-                            <span class="text-movida-navy font-bold text-sm bg-movida-bg px-2 py-0.5 rounded-md">${porEstado[estado]}</span>
+                            <span class="text-movida-navy font-bold text-sm bg-movida-bg px-2 py-0.5 rounded-md">${dataEst.total}</span>
                         </div>
                         <div class="w-full bg-slate-100 rounded-full h-1.5"><div class="bg-movida-teal h-1.5 rounded-full" style="width: ${width}%"></div></div>
+                        ${munsHTML}
                     </div>`;
             });
         }
 
         function dibujarGraficos(genData, labData, edadData) {
             Chart.register(ChartDataLabels); Chart.defaults.font.family = "'Outfit', sans-serif";
-            const commonOptions = { plugins: { legend: { display: false }, tooltip: { enabled: false }, datalabels: { color: '#00205b', anchor: 'end', align: 'left', font: { weight: 'bold', size: 12 }, padding: {right: 6} } }, scales: { x: { display: false }, y: { grid: { display: false }, border: { display: false } } }, layout: { padding: { right: 25 } } };
+            
+            // Opciones de barras con números visibles AFUERA de la barra (align right)
+            const commonOptions = { 
+                plugins: { 
+                    legend: { display: false }, tooltip: { enabled: false }, 
+                    datalabels: { color: '#00205b', anchor: 'end', align: 'right', font: { weight: 'bold', size: 12 }, padding: {left: 4} } 
+                }, 
+                scales: { x: { display: false }, y: { grid: { display: false }, border: { display: false } } }, 
+                layout: { padding: { right: 35 } } 
+            };
 
             if(chartInstances.edad) chartInstances.edad.destroy();
             chartInstances.edad = new Chart(document.getElementById('chartEdad').getContext('2d'), { type: 'bar', data: { labels: ['< 30', '31-40', '41-50', '50+'], datasets: [{ data: [edadData['< 30'], edadData['31 - 40'], edadData['41 - 50'], edadData['50+']], backgroundColor: '#70ad47', borderRadius: 4 }] }, options: { ...commonOptions, indexAxis: 'y', maintainAspectRatio: false } });
 
             if(chartInstances.lab) chartInstances.lab.destroy();
-            // Transformamos "Desempleado" visualmente a "Buscando"
-            chartInstances.lab = new Chart(document.getElementById('chartLaboral').getContext('2d'), { type: 'bar', data: { labels: ['Dependiente', 'Independiente', 'Buscando'], datasets: [{ data: [labData['Dependiente'], labData['Independiente'], labData['Desempleado']], backgroundColor: ['#00205b', '#007b85', '#ffb600'], borderRadius: 6 }] }, options: { ...commonOptions, indexAxis: 'y', maintainAspectRatio: false } });
+            chartInstances.lab = new Chart(document.getElementById('chartLaboral').getContext('2d'), { type: 'bar', data: { labels: ['Dependiente', 'Independiente', 'Buscando'], datasets: [{ data: [labData['Dependiente'], labData['Independiente'], labData['Buscando']], backgroundColor: ['#00205b', '#007b85', '#ffb600'], borderRadius: 6 }] }, options: { ...commonOptions, indexAxis: 'y', maintainAspectRatio: false } });
 
+            // Gráfico de dona con borde oscuro en las letras para visibilidad
             if(chartInstances.gen) chartInstances.gen.destroy();
-            chartInstances.gen = new Chart(document.getElementById('chartGenero').getContext('2d'), { type: 'doughnut', data: { labels: ['Masculino', 'Femenino'], datasets: [{ data: [genData['Masculino'], genData['Femenino']], backgroundColor: ['#00205b', '#70ad47'], borderWidth: 2, borderColor: '#ffffff' }] }, options: { maintainAspectRatio: false, cutout: '50%', plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20 } }, tooltip: { enabled: false }, datalabels: { color: '#ffffff', font: { weight: 'black', size: 14 }, textStrokeColor: 'rgba(0, 32, 91, 0.8)', textStrokeWidth: 3, formatter: (value, ctx) => { let total = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0); return total === 0 ? "" : Math.round((value / total) * 100) + "%"; } } } } });
+            chartInstances.gen = new Chart(document.getElementById('chartGenero').getContext('2d'), { 
+                type: 'doughnut', 
+                data: { labels: ['Masculino', 'Femenino'], datasets: [{ data: [genData['Masculino'], genData['Femenino']], backgroundColor: ['#00205b', '#70ad47'], borderWidth: 2, borderColor: '#ffffff' }] }, 
+                options: { 
+                    maintainAspectRatio: false, cutout: '50%', 
+                    plugins: { 
+                        legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20 } }, 
+                        tooltip: { enabled: false }, 
+                        datalabels: { 
+                            color: '#ffffff', 
+                            textStrokeColor: 'rgba(0, 32, 91, 0.8)', textStrokeWidth: 3, 
+                            font: { weight: 'bold', size: 14 }, 
+                            formatter: (value, ctx) => { let total = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0); return total === 0 ? "" : Math.round((value / total) * 100) + "%"; } 
+                        } 
+                    } 
+                } 
+            });
         }
 
         function switchTab(tabId) {
