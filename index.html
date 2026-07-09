@@ -96,15 +96,26 @@
 </head>
 <body class="text-slate-600 antialiased selection:bg-movida-teal selection:text-white">
 
-    <header class="fixed top-0 left-0 right-0 z-[60] bg-white/90 backdrop-blur-md border-b border-slate-200 px-4 py-3 flex items-center justify-between shadow-sm pt-[max(env(safe-area-inset-top),12px)]">
-        <div class="flex items-center gap-3">
-            <img src="https://assets.poap.xyz/ff0a7e68-7080-4798-af10-4a481f762e71.jpeg" alt="Logo" class="w-10 h-10 rounded-full border-2 border-movida-teal object-cover">
-            <div>
-                <h1 class="text-movida-navy font-extrabold text-lg leading-tight">La Movida SST Plus</h1>
-                <p class="text-movida-teal text-[10px] font-bold uppercase tracking-wider">Integrantes por estado y municipio</p>
+    <header class="fixed top-0 left-0 right-0 z-[60] bg-white/90 backdrop-blur-md border-b border-slate-200 px-3 py-2.5 flex items-center justify-between shadow-sm pt-[max(env(safe-area-inset-top),10px)]">
+        <div class="flex items-center gap-2 overflow-hidden pr-2">
+            <img src="https://assets.poap.xyz/ff0a7e68-7080-4798-af10-4a481f762e71.jpeg" alt="Logo" class="w-9 h-9 rounded-full border-2 border-movida-teal object-cover shrink-0">
+            <div class="truncate">
+                <h1 class="text-movida-navy font-extrabold text-[14px] leading-tight truncate">La Movida SST Plus</h1>
+                <p class="text-movida-teal text-[9px] font-bold uppercase tracking-wider truncate">Mapa Nacional</p>
             </div>
         </div>
-        <div id="loading-indicator" class="hidden text-movida-teal"><i class="fa-solid fa-circle-notch fa-spin text-xl"></i></div>
+        <div class="flex items-center gap-1.5 shrink-0">
+            <div id="loading-indicator" class="hidden text-movida-teal"><i class="fa-solid fa-circle-notch fa-spin text-lg"></i></div>
+            
+            <!-- NUEVO BOTÓN CASITA (VOLVER AL INICIO) -->
+            <a href="https://www.movidasst.com" class="w-8 h-8 bg-slate-50 text-movida-navy flex items-center justify-center rounded-full shadow-sm border border-slate-200 active:scale-95 transition-transform" aria-label="Volver a Inicio">
+                <i class="fa-solid fa-house text-sm"></i>
+            </a>
+            
+            <a href="https://registro.movidasst.com/" target="_blank" class="bg-gradient-to-r from-movida-yellow to-yellow-400 text-movida-navy text-[10px] font-black uppercase px-3 py-1.5 rounded-full shadow-md active:scale-95 transition-transform flex items-center gap-1.5 animate-pulse border border-yellow-300">
+                <i class="fa-solid fa-user-plus"></i> Únete
+            </a>
+        </div>
     </header>
 
     <div id="toast-notification" class="fixed top-[calc(env(safe-area-inset-top)+80px)] left-1/2 transform -translate-x-1/2 z-[1000] bg-movida-navy/95 backdrop-blur-sm text-white px-5 py-2.5 rounded-full shadow-lg opacity-0 pointer-events-none transition-opacity duration-300 text-xs font-bold flex items-center gap-2 whitespace-nowrap">
@@ -179,6 +190,23 @@
     <main id="dashboard-view" class="view-hidden absolute inset-0 z-20">
         <div class="p-4 space-y-5 max-w-lg mx-auto">
             <div id="error-message" class="hidden bg-red-50 border border-red-200 text-red-700 p-4 rounded-xl text-sm font-medium"></div>
+
+            <!-- Banner Estratégico de Registro (Llamativo) -->
+            <a href="https://registro.movidasst.com/" target="_blank" class="block w-full bg-gradient-to-br from-movida-navy via-[#00307b] to-movida-teal text-white rounded-2xl p-5 shadow-glass active:scale-95 transition-transform relative overflow-hidden mt-1 border border-movida-teal/30">
+                <!-- Efecto de brillo de fondo -->
+                <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl transform translate-x-10 -translate-y-10"></div>
+                
+                <div class="flex items-center justify-between relative z-10">
+                    <div>
+                        <span class="bg-movida-yellow text-movida-navy text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md mb-2 inline-block">Súmate a la red</span>
+                        <h3 class="font-black text-lg leading-tight">¡Únete a La Movida SST Plus!</h3>
+                        <p class="text-xs text-slate-200 mt-1.5 font-medium">Regístrate y aparece en nuestro mapa nacional.</p>
+                    </div>
+                    <div class="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center shrink-0 shadow-inner">
+                        <i class="fa-solid fa-arrow-right text-lg text-white"></i>
+                    </div>
+                </div>
+            </a>
 
             <div class="grid grid-cols-3 gap-2 mt-2">
                 <div class="glass-card p-3 flex flex-col items-center justify-center text-center">
