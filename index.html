@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#00205b">
     
     <title>La Movida SST Plus - Mapa de Integrantes</title>
@@ -45,9 +45,14 @@
         }
     </script>
     <style>
-        body { font-family: 'Outfit', sans-serif; background-color: #f8fafc; overflow: hidden; overscroll-behavior-y: none; }
+        /* FIX DEFINITIVO PARA MÓVILES (Bloqueo de Viewport) */
+        html, body { 
+            height: 100%; height: 100dvh; width: 100%; position: fixed; 
+            top: 0; left: 0; overflow: hidden; overscroll-behavior-y: none;
+            font-family: 'Outfit', sans-serif; background-color: #f8fafc; 
+        }
         
-        #map-container { height: 100vh; width: 100vw; position: absolute; top: 0; left: 0; z-index: 10; }
+        #map-container { height: 100%; width: 100%; position: absolute; top: 0; left: 0; z-index: 10; }
         .leaflet-control-zoom { display: none; } /* Ocultar botones de zoom para mayor limpieza visual */
         
         .glass-card {
@@ -65,10 +70,12 @@
         .leaflet-popup-content-wrapper { border-radius: 16px; border-top: 4px solid #007b85; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
         .leaflet-popup-content { margin: 16px; font-family: 'Outfit', sans-serif; }
         
-        /* Contenedor del Dashboard */
+        /* Contenedor del Dashboard Adaptativo */
         #dashboard-view { 
-            height: 100vh; width: 100vw; position: absolute; top: 0; left: 0; 
-            z-index: 20; background-color: #f8fafc; overflow-y: auto; padding-bottom: 110px; padding-top: 85px; 
+            height: 100%; width: 100%; position: absolute; top: 0; left: 0; 
+            z-index: 20; background-color: #f8fafc; overflow-y: auto; 
+            padding-bottom: calc(100px + env(safe-area-inset-bottom)); 
+            padding-top: 85px; 
             -webkit-overflow-scrolling: touch;
         }
 
@@ -76,8 +83,8 @@
         .view-hidden { transform: translateX(100%); opacity: 0; pointer-events: none; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .view-active { transform: translateX(0); opacity: 1; pointer-events: auto; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         
-        /* Barra de navegación inferior */
-        #bottom-nav { z-index: 50; padding-bottom: env(safe-area-inset-bottom); }
+        /* Barra de navegación inferior con margen seguro para iOS/Android */
+        #bottom-nav { z-index: 900; padding-bottom: calc(0.5rem + env(safe-area-inset-bottom)); }
         .nav-item.active { color: #007b85; font-weight: 700; }
         .nav-item.active .icon-container { background-color: #e8fcf0; transform: translateY(-4px); }
 
@@ -152,8 +159,8 @@
     <!-- BACKDROP (Fondo oscuro para menú inferior) -->
     <div id="filter-backdrop" onclick="cerrarFiltrosAvanzados()" class="fixed inset-0 z-[450] bg-movida-navy/40 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300"></div>
     
-    <!-- BOTTOM SHEET (Panel Deslizable Filtros Avanzados) -->
-    <div id="advanced-filters-sheet" class="fixed inset-x-0 bottom-[60px] z-[500] bg-white rounded-t-3xl shadow-[0_-10px_40px_rgba(0,0,0,0.1)] transform translate-y-full px-6 py-6 flex flex-col">
+    <!-- BOTTOM SHEET (Panel Deslizable Filtros Avanzados Alineado) -->
+    <div id="advanced-filters-sheet" class="fixed inset-x-0 z-[500] bg-white rounded-t-3xl shadow-[0_-10px_40px_rgba(0,0,0,0.1)] transform translate-y-full px-6 py-6 flex flex-col pb-[calc(1.5rem+env(safe-area-inset-bottom))]" style="bottom: 70px;">
         <div class="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-5"></div>
         <h3 class="text-movida-navy font-black text-lg mb-4"><i class="fa-solid fa-filter text-movida-teal mr-2"></i> Filtros Analíticos</h3>
         
@@ -300,8 +307,8 @@
         </div>
     </main>
 
-    <!-- NAVEGACIÓN INFERIOR -->
-    <nav id="bottom-nav" class="fixed bottom-0 w-full bg-white/90 backdrop-blur-lg border-t border-slate-200 pt-2 pb-2 px-6 flex justify-around items-center shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
+    <!-- NAVEGACIÓN INFERIOR ASEGURADA -->
+    <nav id="bottom-nav" class="fixed bottom-0 w-full bg-white/90 backdrop-blur-lg border-t border-slate-200 pt-2 px-6 flex justify-around items-center shadow-[0_-4px_20px_rgba(0,0,0,0.05)] z-[900]">
         <button onclick="switchTab('map-view')" id="btn-map-view" class="nav-item active flex flex-col items-center p-2 w-20 transition-colors">
             <div class="icon-container w-10 h-10 flex items-center justify-center rounded-full transition-all duration-300"><i class="fa-solid fa-map text-xl"></i></div>
             <span class="text-[10px] uppercase tracking-wider mt-1 font-medium">Mapa</span>
@@ -671,7 +678,7 @@
             chartInstances.lab = new Chart(document.getElementById('chartLaboral').getContext('2d'), { type: 'bar', data: { labels: ['Dependiente', 'Independiente', 'Buscando'], datasets: [{ data: [labData['Dependiente'], labData['Independiente'], labData['Desempleado']], backgroundColor: ['#00205b', '#007b85', '#ffb600'], borderRadius: 6 }] }, options: { ...commonOptions, indexAxis: 'y', maintainAspectRatio: false } });
 
             if(chartInstances.gen) chartInstances.gen.destroy();
-            chartInstances.gen = new Chart(document.getElementById('chartGenero').getContext('2d'), { type: 'doughnut', data: { labels: ['Masculino', 'Femenino'], datasets: [{ data: [genData['Masculino'], genData['Femenino']], backgroundColor: ['#00205b', '#70ad47'], borderWidth: 2, borderColor: '#ffffff' }] }, options: { maintainAspectRatio: false, cutout: '70%', plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20 } }, tooltip: { enabled: false }, datalabels: { color: '#ffffff', font: { weight: 'bold', size: 14 }, formatter: (value, ctx) => { let total = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0); return total === 0 ? "" : Math.round((value / total) * 100) + "%"; } } } } });
+            chartInstances.gen = new Chart(document.getElementById('chartGenero').getContext('2d'), { type: 'doughnut', data: { labels: ['Masculino', 'Femenino'], datasets: [{ data: [genData['Masculino'], genData['Femenino']], backgroundColor: ['#00205b', '#70ad47'], borderWidth: 2, borderColor: '#ffffff' }] }, options: { maintainAspectRatio: false, cutout: '50%', plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20 } }, tooltip: { enabled: false }, datalabels: { color: '#ffffff', font: { weight: 'black', size: 14 }, textStrokeColor: 'rgba(0, 32, 91, 0.8)', textStrokeWidth: 3, formatter: (value, ctx) => { let total = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0); return total === 0 ? "" : Math.round((value / total) * 100) + "%"; } } } } });
         }
 
         function switchTab(tabId) {
