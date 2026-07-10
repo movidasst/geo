@@ -101,38 +101,42 @@
             <img src="https://assets.poap.xyz/ff0a7e68-7080-4798-af10-4a481f762e71.jpeg" alt="Logo" class="w-9 h-9 rounded-full border-2 border-movida-teal object-cover shrink-0">
             <div class="truncate">
                 <h1 class="text-movida-navy font-extrabold text-[14px] leading-tight truncate">La Movida SST Plus</h1>
-                <p class="text-movida-teal text-[9px] font-bold uppercase tracking-wider truncate">Mapa Nacional</p>
+                <p class="text-movida-teal text-[9px] font-bold uppercase tracking-wider truncate">Integrantes a nivel nacional</p>
             </div>
         </div>
         <div class="flex items-center gap-1.5 shrink-0">
-            <div id="loading-indicator" class="hidden text-movida-teal"><i class="fa-solid fa-circle-notch fa-spin text-lg"></i></div>
-            
-            <!-- NUEVO BOTÓN CASITA (VOLVER AL INICIO) -->
-            <a href="https://www.movidasst.com" class="w-8 h-8 bg-slate-50 text-movida-navy flex items-center justify-center rounded-full shadow-sm border border-slate-200 active:scale-95 transition-transform" aria-label="Volver a Inicio">
-                <i class="fa-solid fa-house text-sm"></i>
+            <a href="https://www.movidasst.com" target="_blank" class="w-8 h-8 rounded-full bg-slate-50 border border-slate-200 flex items-center justify-center text-movida-navy shadow-sm active:scale-95 transition-transform">
+                <i class="fa-solid fa-house text-xs"></i>
             </a>
-            
-            <a href="https://registro.movidasst.com/" target="_blank" class="bg-gradient-to-r from-movida-yellow to-yellow-400 text-movida-navy text-[10px] font-black uppercase px-3 py-1.5 rounded-full shadow-md active:scale-95 transition-transform flex items-center gap-1.5 animate-pulse border border-yellow-300">
-                <i class="fa-solid fa-user-plus"></i> Únete
+            <a href="https://registro.movidasst.com/" target="_blank" class="bg-movida-yellow hover:bg-yellow-400 text-movida-navy font-black text-[10px] uppercase tracking-wider px-3 py-2 rounded-full shadow-md active:scale-95 transition-transform flex items-center gap-1 relative">
+                <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full animate-ping"></span>
+                <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
+                ÚNETE
             </a>
+            <div id="loading-indicator" class="hidden text-movida-teal ml-1"><i class="fa-solid fa-circle-notch fa-spin"></i></div>
         </div>
     </header>
 
-    <div id="toast-notification" class="fixed top-[calc(env(safe-area-inset-top)+80px)] left-1/2 transform -translate-x-1/2 z-[1000] bg-movida-navy/95 backdrop-blur-sm text-white px-5 py-2.5 rounded-full shadow-lg opacity-0 pointer-events-none transition-opacity duration-300 text-xs font-bold flex items-center gap-2 whitespace-nowrap">
+    <!-- Sistema de Alertas Toast (No intrusivo) -->
+    <div id="toast-notification" class="fixed top-20 left-1/2 transform -translate-x-1/2 z-[1000] bg-movida-navy/95 backdrop-blur-sm text-white px-5 py-2.5 rounded-full shadow-lg opacity-0 pointer-events-none transition-opacity duration-300 text-xs font-bold flex items-center gap-2 whitespace-nowrap">
         <i id="toast-icon" class="fa-solid fa-info-circle"></i> <span id="toast-text">Notificación</span>
     </div>
 
+    <!-- VISTA DEL MAPA (¡Faltaba este contenedor vital!) -->
     <main id="map-view" class="view-active absolute inset-0 z-10">
-        <div class="absolute top-[max(env(safe-area-inset-top)+70px,70px)] left-0 w-full z-[400] px-3 py-2 overflow-x-auto hide-scroll flex gap-2">
-            <button onclick="setFiltroPildora('todos', this)" class="filter-pill active bg-white text-movida-navy border border-slate-200 px-4 py-1.5 rounded-full text-xs font-bold shadow-sm">Todos</button>
+        <!-- Píldoras de Filtro Rápido -->
+        <div class="absolute top-[80px] left-0 w-full z-[400] px-3 py-2 overflow-x-auto hide-scroll flex gap-2">
+            <button onclick="setFiltroPildora('todos', this)" class="filter-pill active bg-movida-navy text-white border border-movida-navy px-4 py-1.5 rounded-full text-xs font-bold shadow-sm">Todos</button>
             <button onclick="setFiltroPildora('mujeres', this)" class="filter-pill bg-white text-slate-500 border border-slate-200 px-4 py-1.5 rounded-full text-xs font-bold shadow-sm">Solo Mujeres</button>
             <button onclick="setFiltroPildora('buscando', this)" class="filter-pill bg-white text-slate-500 border border-slate-200 px-4 py-1.5 rounded-full text-xs font-bold shadow-sm">Buscando Empleo</button>
-            <button onclick="abrirFiltrosAvanzados()" class="filter-pill bg-movida-teal text-white border border-movida-teal px-4 py-1.5 rounded-full text-xs font-bold shadow-sm flex items-center gap-1">
+            <!-- Botón Filtros Avanzados -->
+            <button onclick="abrirFiltrosAvanzados()" class="filter-pill bg-movida-teal text-white border border-movida-teal px-4 py-1.5 rounded-full text-xs font-bold shadow-sm flex items-center gap-1 shrink-0">
                 <i class="fa-solid fa-sliders"></i> Avanzados
             </button>
         </div>
         
-        <div class="absolute top-[max(env(safe-area-inset-top)+130px,130px)] right-3 z-[400] flex flex-col gap-3">
+        <!-- Botones Flotantes (GPS y Mapa de Calor) -->
+        <div class="absolute top-[130px] right-3 z-[400] flex flex-col gap-3">
             <button id="btn-locate" onclick="localizarUsuario()" class="w-11 h-11 bg-white rounded-full shadow-glass text-movida-navy border border-slate-100 flex items-center justify-center text-lg active:scale-95 transition-transform">
                 <i class="fa-solid fa-crosshairs"></i>
             </button>
@@ -141,7 +145,8 @@
             </button>
         </div>
 
-        <div class="absolute bottom-[max(calc(env(safe-area-inset-bottom)+100px),100px)] left-1/2 transform -translate-x-1/2 z-[400] bg-white/95 backdrop-blur-md px-4 py-2.5 rounded-2xl shadow-glass border border-slate-200 flex items-center gap-3 transition-all">
+        <!-- Indicador Flotante Inferior -->
+        <div class="absolute bottom-[100px] left-1/2 transform -translate-x-1/2 z-[400] bg-white/95 backdrop-blur-md px-4 py-2.5 rounded-2xl shadow-glass border border-slate-200 flex items-center gap-3 transition-all">
             <div class="bg-movida-teal/10 w-9 h-9 rounded-full flex items-center justify-center shrink-0">
                 <i class="fa-solid fa-users text-movida-teal text-sm"></i>
             </div>
@@ -151,16 +156,51 @@
             </div>
         </div>
 
+        <!-- Contenedor Real del Mapa Leaflet -->
         <div id="map-container"></div>
     </main>
 
-    <div id="filter-backdrop" onclick="cerrarFiltrosAvanzados()" class="fixed inset-0 z-[450] bg-movida-navy/40 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300"></div>
+    <div id="filter-backdrop" onclick="cerrarFiltrosAvanzados()" class="fixed inset-0 z-[10000] bg-movida-navy/40 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300"></div>
     
-    <div id="advanced-filters-sheet" class="fixed inset-x-0 bottom-[max(env(safe-area-inset-bottom)+70px,70px)] z-[500] bg-white rounded-t-3xl shadow-[0_-10px_40px_rgba(0,0,0,0.1)] transform translate-y-full px-6 py-6 flex flex-col">
-        <div class="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-5"></div>
-        <h3 class="text-movida-navy font-black text-lg mb-4"><i class="fa-solid fa-filter text-movida-teal mr-2"></i> Filtros Analíticos</h3>
+    <div id="advanced-filters-sheet" class="fixed inset-x-0 bottom-0 z-[10001] bg-white rounded-t-3xl shadow-[0_-10px_40px_rgba(0,0,0,0.1)] transform translate-y-full px-6 py-6 flex flex-col max-h-[85vh] overflow-y-auto pb-[calc(env(safe-area-inset-bottom)+24px)]">
+        <div class="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-5 shrink-0"></div>
+        <div class="flex justify-between items-center mb-4 shrink-0">
+            <h3 class="text-movida-navy font-black text-lg"><i class="fa-solid fa-filter text-movida-teal mr-2"></i> Filtros Avanzados</h3>
+            <button onclick="cerrarFiltrosAvanzados()" class="w-8 h-8 bg-slate-100 text-slate-500 rounded-full flex items-center justify-center active:scale-95"><i class="fa-solid fa-times"></i></button>
+        </div>
         
-        <div class="space-y-4">
+        <div class="space-y-4 overflow-y-auto hide-scroll pb-2">
+            <div>
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">Estado</label>
+                <select id="select-estado" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-medium text-movida-navy focus:outline-none focus:border-movida-teal">
+                    <option value="todos">Todo el país</option>
+                    <option value="Amazonas">Amazonas</option>
+                    <option value="Anzoátegui">Anzoátegui</option>
+                    <option value="Apure">Apure</option>
+                    <option value="Aragua">Aragua</option>
+                    <option value="Barinas">Barinas</option>
+                    <option value="Bolívar">Bolívar</option>
+                    <option value="Carabobo">Carabobo</option>
+                    <option value="Cojedes">Cojedes</option>
+                    <option value="Delta Amacuro">Delta Amacuro</option>
+                    <option value="Distrito Capital">Distrito Capital</option>
+                    <option value="Falcón">Falcón</option>
+                    <option value="Guárico">Guárico</option>
+                    <option value="Lara">Lara</option>
+                    <option value="La Guaira">La Guaira</option>
+                    <option value="Mérida">Mérida</option>
+                    <option value="Miranda">Miranda</option>
+                    <option value="Monagas">Monagas</option>
+                    <option value="Nueva Esparta">Nueva Esparta</option>
+                    <option value="Portuguesa">Portuguesa</option>
+                    <option value="Sucre">Sucre</option>
+                    <option value="Táchira">Táchira</option>
+                    <option value="Trujillo">Trujillo</option>
+                    <option value="Yaracuy">Yaracuy</option>
+                    <option value="Zulia">Zulia</option>
+                </select>
+            </div>
+
             <div>
                 <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">Nivel Académico</label>
                 <select id="select-academico" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-medium text-movida-navy focus:outline-none focus:border-movida-teal">
@@ -169,6 +209,25 @@
                     <option value="Postgrado">Postgraduados / Especialistas</option>
                     <option value="Profesional">Profesionales Universitarios</option>
                     <option value="T.S.U.">Técnicos Superiores (T.S.U.)</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">Estatus Laboral</label>
+                <select id="select-laboral" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-medium text-movida-navy focus:outline-none focus:border-movida-teal">
+                    <option value="todos">Cualquier Estatus</option>
+                    <option value="Dependiente">Dependiente</option>
+                    <option value="Independiente">Independiente</option>
+                    <option value="Buscando">Buscando Oportunidades</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">Género</label>
+                <select id="select-genero" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-medium text-movida-navy focus:outline-none focus:border-movida-teal">
+                    <option value="todos">Cualquier Género</option>
+                    <option value="Femenino">Femenino</option>
+                    <option value="Masculino">Masculino</option>
                 </select>
             </div>
             
@@ -180,7 +239,7 @@
                 </div>
             </div>
 
-            <div class="flex gap-3 pt-4">
+            <div class="flex gap-3 pt-4 shrink-0 mt-2">
                 <button onclick="limpiarFiltrosAvanzados()" class="flex-1 bg-slate-100 text-slate-600 font-bold py-3 rounded-xl active:scale-95 transition-transform">Limpiar</button>
                 <button onclick="aplicarFiltrosGlobales(); cerrarFiltrosAvanzados()" class="flex-[2] bg-movida-teal text-white font-bold py-3 rounded-xl shadow-md active:scale-95 transition-transform">Aplicar Filtros</button>
             </div>
@@ -493,9 +552,17 @@
 
         function limpiarFiltrosAvanzados() {
             document.getElementById('select-academico').value = 'todos';
+            document.getElementById('select-estado').value = 'todos';
+            document.getElementById('select-laboral').value = 'todos';
+            document.getElementById('select-genero').value = 'todos';
             document.getElementById('input-profesion').value = '';
+            
             filtrosActive.academico = 'todos';
+            filtrosActive.estado = 'todos';
+            filtrosActive.laboral = 'todos';
+            filtrosActive.genero = 'todos';
             filtrosActive.profesionBusqueda = '';
+            
             aplicarFiltrosGlobales();
             cerrarFiltrosAvanzados();
             mostrarNotificacion('Filtros avanzados limpiados', 'fa-eraser');
@@ -516,6 +583,9 @@
 
         function aplicarFiltrosGlobales() {
             filtrosActive.academico = document.getElementById('select-academico').value;
+            filtrosActive.estado = document.getElementById('select-estado').value;
+            filtrosActive.laboral = document.getElementById('select-laboral').value;
+            filtrosActive.genero = document.getElementById('select-genero').value;
             filtrosActive.profesionBusqueda = document.getElementById('input-profesion').value.trim().toUpperCase();
 
             markersCluster.clearLayers();
@@ -530,8 +600,11 @@
                 if (filtrosActive.pildora === 'mujeres' && item.genero !== 'Femenino') return;
                 if (filtrosActive.pildora === 'buscando' && item._laboral_clean !== 'Desempleado') return;
                 
+                // Nuevos filtros avanzados combinados
                 if (filtrosActive.academico !== 'todos' && item._nivel_acad !== filtrosActive.academico) return;
-                
+                if (filtrosActive.estado !== 'todos' && item.estado.trim() !== filtrosActive.estado && !item.estado.trim().includes(filtrosActive.estado)) return;
+                if (filtrosActive.laboral !== 'todos' && item._laboral_clean !== filtrosActive.laboral) return;
+                if (filtrosActive.genero !== 'todos' && item.genero !== filtrosActive.genero) return;
                 if (filtrosActive.profesionBusqueda !== "" && !item._profesion_clean.includes(filtrosActive.profesionBusqueda)) return;
 
                 countVisibles++;
