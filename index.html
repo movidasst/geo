@@ -100,8 +100,8 @@
         <div class="flex items-center gap-2 overflow-hidden pr-2">
             <img src="https://assets.poap.xyz/ff0a7e68-7080-4798-af10-4a481f762e71.jpeg" alt="Logo" class="w-9 h-9 rounded-full border-2 border-movida-teal object-cover shrink-0">
             <div class="truncate">
-                <h1 class="text-movida-navy font-extrabold text-[14px] leading-tight truncate">La Movida SST Plus</h1>
-                <p class="text-movida-teal text-[9px] font-bold uppercase tracking-wider truncate">Integrantes a nivel nacional</p>
+                <h1 class="text-movida-navy font-extrabold text-[13px] leading-tight truncate">La Movida SST Plus <span class="font-semibold text-slate-500">| Profesionales SST</span></h1>
+                <p class="text-movida-teal text-[9px] font-bold uppercase tracking-wider truncate">Distribución a nivel nacional</p>
             </div>
         </div>
         <div class="flex items-center gap-1.5 shrink-0">
@@ -760,17 +760,21 @@
             let maxCount = datosGeograficos[sortedStates[0]].total;
 
             sortedStates.forEach(estado => {
-                let dataEst = datosGeograficos[estado];
-                let width = (dataEst.total / maxCount) * 100;
-                
-                let sortedMuns = Object.keys(dataEst.municipios).sort((a,b) => dataEst.municipios[b] - dataEst.municipios[a]);
-                let munsHTML = '<div class="mt-2 pt-2 border-t border-slate-100/60">';
-                sortedMuns.forEach(mun => {
-                    munsHTML += `<div class="flex justify-between items-center mt-1.5 pl-2 border-l-[3px] border-movida-teal/30"><span class="text-xs text-slate-500 font-medium truncate pr-2 capitalize">${mun.toLowerCase()}</span><span class="text-[10px] font-bold text-slate-500 bg-slate-50 px-1.5 py-0.5 rounded border border-slate-200">${dataEst.municipios[mun]}</span></div>`;
-                });
-                munsHTML += '</div>';
+            let dataEst = datosGeograficos[estado];
+            let width = (dataEst.total / maxCount) * 100;
+            
+            let sortedMuns = Object.keys(dataEst.municipios).sort((a,b) => dataEst.municipios[b] - dataEst.municipios[a]);
+            
+            // Inicio de la sección de municipios con el nuevo título
+            let munsHTML = '<div class="mt-3 pt-3 border-t border-slate-100/60">';
+            munsHTML += '<p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-2.5 flex items-center gap-1.5"><i class="fa-solid fa-location-crosshairs text-movida-teal/70"></i> Municipios Registrados</p>';
+            
+            sortedMuns.forEach(mun => {
+                munsHTML += `<div class="flex justify-between items-center mt-1.5 pl-2.5 border-l-[3px] border-movida-teal/30 hover:border-movida-teal transition-colors"><span class="text-[11px] text-slate-600 font-medium truncate pr-2 capitalize">${mun.toLowerCase()}</span><span class="text-[10px] font-bold text-slate-500 bg-slate-50 px-1.5 py-0.5 rounded border border-slate-200 shadow-sm">${dataEst.municipios[mun]}</span></div>`;
+            });
+            munsHTML += '</div>';
 
-                listDiv.innerHTML += `
+            listDiv.innerHTML += `
                     <div class="bg-white p-3 rounded-xl border border-slate-100 shadow-sm cursor-pointer hover:border-movida-teal transition-colors active:scale-[0.98]" onclick="irAEstado('${estado}')">
                         <div class="flex justify-between items-center mb-1">
                             <span class="font-bold text-slate-700 text-sm">${estado}</span>
