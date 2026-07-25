@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <comment-tag id="1"><meta name="theme-color" content="#00205b"></comment-tag id="1" text="<meta name=&quot;theme-color&quot; content=&quot;#00205b&quot;>
-    <meta name=&quot;apple-mobile-web-app-capable&quot; content=&quot;yes&quot;>
-    <meta name=&quot;mobile-web-app-capable&quot; content=&quot;yes&quot;>
-    <meta name=&quot;apple-mobile-web-app-status-bar-style&quot; content=&quot;black-translucent&quot;>" type="suggestion">
+    <meta name="theme-color" content="#00205b">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
     <title>La Movida SST Plus - Mapa de Integrantes</title>
     
@@ -21,7 +21,7 @@
     <meta name="twitter:card" content="summary_large_image">
 
     <!-- Fuentes y Tailwind -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     
     <!-- Leaflet CSS y MarkerCluster -->
@@ -29,6 +29,11 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
     
+    <!-- Librerías de Credencial: html2canvas & Cropper.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -36,8 +41,11 @@
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: { sans: ['Outfit', 'sans-serif'] },
-                    colors: { movida: { navy: '#00205b', teal: '#007b85', green: '#70ad47', yellow: '#ffb600', bg: '#f8fafc' } },
+                    fontFamily: { 
+                        sans: ['Outfit', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'] 
+                    },
+                    colors: { movida: { navy: '#00205b', teal: '#007b85', green: '#70ad47', yellow: '#ffb600', bg: '#f8fafc', blue: '#00205b' } },
                     boxShadow: { 'glass': '0 4px 20px -2px rgba(0, 0, 0, 0.05)' }
                 }
             }
@@ -56,8 +64,6 @@
         .marker-cluster-small, .marker-cluster-medium, .marker-cluster-large { background-color: rgba(0, 123, 133, 0.3) !important; }
         .marker-cluster-small div, .marker-cluster-medium div, .marker-cluster-large div { background-color: rgba(0, 32, 91, 0.9) !important; color: white !important; font-family: 'Outfit', sans-serif; font-weight: bold; }
         
-        #dashboard-view, #info-view { height: 100dvh; width: 100vw; position: absolute; top: 0; left: 0; z-index: 20; background-color: #f8fafc; overflow-y: auto; padding-bottom: 120px; padding-top: 85px; -webkit-overflow-scrolling: touch; }
-
         .view-hidden { transform: translateX(100%); opacity: 0; pointer-events: none; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .view-active { transform: translateX(0); opacity: 1; pointer-events: auto; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         
@@ -68,37 +74,37 @@
         .filter-pill.active { background-color: #00205b; color: white; border-color: #00205b; }
         .hide-scroll::-webkit-scrollbar { display: none; }
         .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Estilos de la Credencial */
+        .spinner { border-radius: 50%; animation: spin 1s linear infinite; border: 3px solid rgba(255, 255, 255, 0.3); border-top-color: #ffffff; width: 24px; height: 24px; }
+        .spinner-dark { border-color: rgba(20, 184, 166, 0.2); border-top-color: #0d9488; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .spinner-center { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); }
+
+        .credential-scroll-container { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 1rem; display: flex; justify-content: center; }
+        @media (max-width: 640px) { .credential-scroll-container { justify-content: flex-start; padding-left: 0.5rem; padding-right: 0.5rem; } }
+        body > div:last-child img { display: inline-block !important; } /* Parche html2canvas */
     </style>
 </head>
 <body class="text-slate-600 antialiased selection:bg-movida-teal selection:text-white">
 
     <!-- PANTALLA DE CARGA (SPLASH SCREEN) NATIVA LUMINOSA -->
     <div id="splash-screen" class="fixed inset-0 bg-slate-50 flex flex-col items-center justify-center overflow-hidden">
-        
-        <!-- Trama de puntos (Grid tech) de fondo -->
         <div class="absolute inset-0 z-0" style="background-image: radial-gradient(#cbd5e1 1.5px, transparent 1.5px); background-size: 24px 24px; opacity: 0.7;"></div>
-        
-        <!-- Destellos de luz corporativos (Glows) -->
         <div class="absolute top-1/4 left-1/4 w-72 h-72 bg-movida-teal/15 rounded-full blur-[60px] z-0 animate-pulse"></div>
         <div class="absolute bottom-1/4 right-1/4 w-72 h-72 bg-movida-yellow/15 rounded-full blur-[60px] z-0 animate-pulse" style="animation-delay: 1s;"></div>
 
         <div class="relative z-10 w-28 h-28 flex items-center justify-center mb-5">
-            <!-- Anillos de carga modernos -->
             <div class="absolute inset-0 border-4 border-white shadow-[0_0_15px_rgba(0,0,0,0.05)] rounded-full"></div>
             <div class="absolute inset-0 border-4 border-movida-teal rounded-full border-t-transparent animate-spin"></div>
             <div class="absolute inset-2 border-4 border-movida-yellow/40 rounded-full border-b-transparent animate-[spin_1.5s_linear_infinite_reverse]"></div>
-            
-            <!-- Logo central -->
-            <img src="https://assets.poap.xyz/ff0a7e68-7080-4798-af10-4a481f762e71.jpeg" class="w-16 h-16 rounded-full object-cover shadow-sm z-10 border-2 border-white">
+            <img src="https://assets.poap.xyz/ff0a7e68-7080-4798-af10-4a481f762e71.jpeg" class="w-16 h-16 rounded-full object-cover shadow-sm z-10 border-2 border-white" alt="Logo Splash">
         </div>
-        
-        <comment-tag id="2"><h2 class="relative z-10 text-movida-navy font-black text-2xl tracking-tight shadow-white drop-shadow-md">La Movida SST Plus</h2></comment-tag id="2" text="<h2 class=&quot;relative z-10 text-movida-navy font-black text-2xl tracking-tight shadow-white drop-shadow-md&quot;>La Movida SST Plus</h2>
-        
-        <div class=&quot;relative z-10 mt-1.5 flex items-center justify-center gap-1.5 bg-movida-navy/5 border border-movida-navy/10 px-3 py-1 rounded-full&quot;>
-            <i class=&quot;fa-solid fa-mobile-screen-button text-movida-teal text-[10px]&quot;></i>
-            <span class=&quot;text-movida-navy font-bold text-[9px] uppercase tracking-widest&quot;>Web App Móvil</span>
-        </div>" type="suggestion">
-        
+        <h2 class="relative z-10 text-movida-navy font-black text-2xl tracking-tight shadow-white drop-shadow-md">La Movida SST Plus</h2>
+        <div class="relative z-10 mt-1.5 flex items-center justify-center gap-1.5 bg-movida-navy/5 border border-movida-navy/10 px-3 py-1 rounded-full">
+            <i class="fa-solid fa-mobile-screen-button text-movida-teal text-[10px]"></i>
+            <span class="text-movida-navy font-bold text-[9px] uppercase tracking-widest">Web App Móvil</span>
+        </div>
         <div class="relative z-10 mt-3 flex flex-col items-center bg-white/60 backdrop-blur-sm px-6 py-2.5 rounded-full border border-white/80 shadow-sm">
             <p class="text-movida-teal font-bold text-[10px] uppercase tracking-[0.2em] animate-pulse flex items-center gap-2">
                 <i class="fa-solid fa-satellite-dish"></i> Sincronizando Red...
@@ -119,7 +125,6 @@
         </div>
     </header>
 
-    <!-- Alertas Toast -->
     <div id="toast-notification" class="fixed top-20 left-1/2 transform -translate-x-1/2 z-[1000] bg-movida-navy/95 backdrop-blur-sm text-white px-5 py-2.5 rounded-full shadow-lg opacity-0 pointer-events-none transition-opacity duration-300 text-xs font-bold flex items-center gap-2 whitespace-nowrap">
         <i id="toast-icon" class="fa-solid fa-info-circle"></i> <span id="toast-text">Notificación</span>
     </div>
@@ -172,20 +177,15 @@
         
         <div class="space-y-5 overflow-y-auto hide-scroll pb-2 relative">
             
-            <!-- BUSCADOR AUTOCOMPLETADO (LIVE SEARCH) -->
             <div class="relative z-50">
                 <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">Buscar Profesional por Nombre</label>
                 <div class="relative">
                     <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400"></i>
                     <input type="text" id="filtro-nombre" oninput="buscarNombreLive(this.value)" autocomplete="off" placeholder="Ej. Carlos, Maria Perez..." class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-3 text-sm font-medium text-movida-navy focus:outline-none focus:border-movida-teal transition-colors">
-                    
-                    <div id="resultados-nombre" class="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg hidden max-h-48 overflow-y-auto hide-scroll">
-                        <!-- Resultados se inyectan por JS -->
-                    </div>
+                    <div id="resultados-nombre" class="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg hidden max-h-48 overflow-y-auto hide-scroll"></div>
                 </div>
             </div>
 
-            <!-- CHIPS TÁCTILES (Mejor UX que Selects) -->
             <div>
                 <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">Nivel Académico</label>
                 <div class="flex flex-wrap gap-2" id="chip-group-academico">
@@ -216,7 +216,7 @@
                 </div>
             </div>
 
-            <!-- SELECTORES CASCADA (Estado y Municipio) -->
+            <!-- SELECTORES CASCADA -->
             <div class="grid grid-cols-2 gap-3">
                 <div>
                     <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wide mb-1.5 ml-1">Estado</label>
@@ -242,12 +242,11 @@
 
     <!-- TARJETA VIP DE PROFESIONAL (BOTTOM SHEET) -->
     <div id="profile-sheet" class="fixed inset-x-0 bottom-0 z-[10002] bg-white rounded-t-3xl shadow-[0_-10px_40px_rgba(0,0,0,0.1)] transform translate-y-full transition-transform duration-400 pb-[calc(env(safe-area-inset-bottom)+24px)] flex flex-col max-h-[90vh]">
-        <!-- El contenido se inyecta por JS (abrirPerfil) -->
         <div id="profile-sheet-content"></div>
     </div>
 
     <!-- VISTA ANALYTICS -->
-    <main id="dashboard-view" class="view-hidden absolute inset-0 z-20">
+    <main id="dashboard-view" class="view-hidden absolute inset-0 z-20 overflow-y-auto pb-[120px] pt-[85px] px-2">
         <div class="p-4 space-y-5 max-w-lg mx-auto">
             
             <a href="https://registro.movidasst.com/" target="_blank" class="block w-full bg-gradient-to-br from-movida-navy via-[#00307b] to-movida-teal text-white rounded-2xl p-5 shadow-glass active:scale-95 transition-transform relative overflow-hidden mt-1 border border-movida-teal/30">
@@ -279,7 +278,7 @@
                 </div>
             </div>
 
-            <!-- CARRUSEL DE GRÁFICOS (Swipe Horizontal) -->
+            <!-- CARRUSEL DE GRÁFICOS -->
             <div id="dashboard-carousel" class="w-full overflow-x-auto hide-scroll flex gap-4 snap-x snap-mandatory py-2 cursor-grab active:cursor-grabbing">
                 <!-- Tarjeta Nivel Académico -->
                 <div class="snap-center shrink-0 w-[85vw] max-w-[320px] glass-card p-5">
@@ -303,20 +302,14 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Tarjeta Género -->
                 <div class="snap-center shrink-0 w-[85vw] max-w-[320px] glass-card p-5">
                     <h3 class="text-movida-navy font-bold text-sm uppercase tracking-wide mb-4 flex items-center gap-2"><i class="fa-solid fa-venus-mars text-movida-teal"></i> Género</h3>
                     <div class="relative h-48 w-full flex justify-center"><canvas id="chartGenero"></canvas></div>
                 </div>
-
-                <!-- Tarjeta Laboral -->
                 <div class="snap-center shrink-0 w-[85vw] max-w-[320px] glass-card p-5">
                     <h3 class="text-movida-navy font-bold text-sm uppercase tracking-wide mb-4 flex items-center gap-2"><i class="fa-solid fa-briefcase text-movida-teal"></i> Estatus Laboral</h3>
                     <div class="relative h-40 w-full"><canvas id="chartLaboral"></canvas></div>
                 </div>
-                
-                <!-- Tarjeta Edades -->
                 <div class="snap-center shrink-0 w-[85vw] max-w-[320px] glass-card p-5">
                     <h3 class="text-movida-navy font-bold text-sm uppercase tracking-wide mb-4 flex items-center gap-2"><i class="fa-solid fa-id-card text-movida-teal"></i> Edades</h3>
                     <div class="relative h-40 w-full"><canvas id="chartEdad"></canvas></div>
@@ -332,7 +325,6 @@
                 <div id="professions-list" class="space-y-3"><p class="text-center text-slate-400 text-sm">Analizando perfiles...</p></div>
             </div>
 
-            <!-- ACORDEONES GEOGRÁFICOS -->
             <div class="glass-card p-5">
                 <h3 class="text-movida-navy font-bold text-sm uppercase tracking-wide mb-4 flex items-center gap-2">
                     <i class="fa-solid fa-map-location-dot text-movida-teal"></i> Desglose Geográfico
@@ -341,17 +333,14 @@
                 <button id="btn-show-more-states" onclick="mostrarTodosLosEstados()" class="hidden w-full mt-4 bg-slate-50 text-movida-navy border border-slate-200 font-bold text-xs py-3 rounded-xl hover:bg-slate-100 transition-colors">Ver todos los estados</button>
             </div>
 
-            <!-- FOOTER Y REDES SOCIALES MEJORADO -->
             <footer class="mt-8 mb-6 pb-4">
                 <div class="glass-card p-6 text-center border-t-4 border-movida-navy">
                     <h4 class="text-movida-navy font-black text-xl">La Movida SST Plus</h4>
                     <p class="text-movida-teal text-xs font-bold uppercase tracking-widest mt-1 mb-5">De la reacción a la prevención</p>
-                    
                     <div class="bg-slate-50 rounded-xl p-4 mb-5 border border-slate-100 text-sm text-slate-600">
                         <p class="font-medium">Elaborado por <strong class="text-movida-navy">David Linares Brea</strong></p>
                         <a href="mailto:info@movidasst.com" class="inline-flex items-center gap-1.5 mt-2 text-movida-teal hover:underline font-medium"><i class="fa-solid fa-envelope"></i> info@movidasst.com</a>
                     </div>
-
                     <div class="grid grid-cols-2 gap-3 mb-5">
                         <a href="https://whatsapp.com/channel/0029Va0mlH5Jf05mrcCz8r3e" target="_blank" class="flex flex-col items-center justify-center gap-1 bg-[#25D366]/10 text-[#128C7E] border border-[#25D366]/30 p-3 rounded-xl active:scale-95 transition-transform">
                             <i class="fa-brands fa-whatsapp text-2xl mb-1"></i>
@@ -362,7 +351,6 @@
                             <span class="text-[10px] font-black uppercase tracking-wide">Canal Telegram</span>
                         </a>
                     </div>
-
                     <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Conecta con nosotros</p>
                     <div class="flex justify-center items-center gap-4">
                         <a href="https://wa.me/56968615650" target="_blank" aria-label="WhatsApp Contacto" class="flex items-center justify-center w-11 h-11 rounded-full bg-[#25D366] text-white shadow-md active:scale-95"><i class="fa-brands fa-whatsapp text-xl"></i></a>
@@ -375,28 +363,22 @@
         </div>
     </main>
 
-    <!-- VISTA INFORMACIÓN (NUEVA PESTAÑA) -->
-    <main id="info-view" class="view-hidden absolute inset-0 z-20">
+    <!-- VISTA INFORMACIÓN -->
+    <main id="info-view" class="view-hidden absolute inset-0 z-20 overflow-y-auto pb-[120px] pt-[85px] px-2">
         <div class="p-4 space-y-5 max-w-lg mx-auto">
             
             <div class="glass-card p-6 border-t-4 border-movida-teal relative overflow-hidden mt-2 shadow-glass">
-                <!-- Marca de agua de fondo -->
                 <div class="absolute top-[-20px] right-[-10px] text-movida-teal/5 text-9xl"><i class="fa-solid fa-quote-right"></i></div>
-                
                 <h2 class="text-xl font-black text-movida-navy mb-4 relative z-10">Sobre La Movida SST Plus</h2>
                 
                 <p class="text-sm text-slate-600 mb-4 leading-relaxed font-medium relative z-10">
                     Esta es una iniciativa de <strong class="text-movida-teal">La Movida SST</strong> creada para visibilizar, ubicar y conectar a los profesionales de Seguridad y Salud en el Trabajo de toda Venezuela.
                 </p>
-                <comment-tag id="3"><p class="text-sm text-slate-600 mb-5 leading-relaxed font-medium relative z-10">
+                <p class="text-sm text-slate-600 mb-5 leading-relaxed font-medium relative z-10">
                     Nuestro mapa nacional te permite encontrar talento estratégico por estado y municipio, filtrando por sus principales datos académicos y estatus laboral.<br><br>
                     <span class="flex items-center gap-1.5 text-movida-navy font-bold"><i class="fa-solid fa-mobile-screen-button text-movida-teal"></i> 100% Optimizado para Móviles:</span> Esta plataforma es una Web App diseñada para funcionar rápido y perfecto desde tu celular.
-                </p></comment-tag id="3" text="<p class=&quot;text-sm text-slate-600 mb-5 leading-relaxed font-medium relative z-10&quot;>
-                    Nuestro mapa nacional te permite encontrar talento estratégico por estado y municipio, filtrando por sus principales datos académicos y estatus laboral.<br><br>
-                    <span class=&quot;flex items-center gap-1.5 text-movida-navy font-bold&quot;><i class=&quot;fa-solid fa-mobile-screen-button text-movida-teal&quot;></i> 100% Optimizado para Móviles:</span> Esta plataforma es una Web App diseñada para funcionar rápido y perfecto desde tu celular.
-                </p>" type="suggestion">
+                </p>
                 
-                <!-- Caja de Contacto y WhatsApp -->
                 <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 mb-5 relative z-10 shadow-inner">
                     <h3 class="text-xs font-bold text-movida-navy uppercase tracking-wider mb-2 flex items-center gap-2">
                         <i class="fa-solid fa-handshake text-movida-teal"></i> Contacto y Oportunidades
@@ -412,41 +394,298 @@
                     </div>
                 </div>
 
-                <!-- Firma del Creador -->
                 <div class="mt-6 pt-5 border-t border-slate-100 flex items-center gap-4 relative z-10">
                     <div class="relative w-14 h-14 rounded-full p-[2px] bg-gradient-to-tr from-movida-yellow via-movida-teal to-movida-navy shadow-md shrink-0">
                         <img src="https://lh3.googleusercontent.com/d/1m4pNQxDXnAylH3HKz333Hxks1_VvnR0A" class="absolute inset-0 w-full h-full object-cover rounded-full border-2 border-white" alt="David Linares Brea">
                     </div>
                     <div>
-                        <comment-tag id="4"><p class="text-xs italic text-slate-500 mb-1 leading-tight">"Espero que esta herramienta sea de gran ayuda para nuestra comunidad preventiva."</p></comment-tag id="4" text="<p class=&quot;text-xs italic text-slate-500 mb-1 leading-tight&quot;>&quot;Espero que esta herramienta sea de gran ayuda para nuestra comunidad de profesionales de SST venezolanos.&quot;</p>" type="suggestion">
+                        <p class="text-xs italic text-slate-500 mb-1 leading-tight">"Espero que esta herramienta sea de gran ayuda para nuestra comunidad de profesionales de SST venezolanos."</p>
                         <p class="text-sm font-black text-movida-navy">David Linares Brea</p>
                         <p class="text-[10px] font-bold text-movida-teal uppercase tracking-widest">Fundador</p>
                     </div>
                 </div>
             </div>
 
-            <!-- Botón extra para unirse en la pestaña info -->
             <a href="https://registro.movidasst.com/" target="_blank" class="flex items-center justify-center gap-2 w-full bg-movida-yellow hover:bg-yellow-400 text-movida-navy font-black py-4 rounded-xl shadow-md active:scale-95 transition-transform">
                 <i class="fa-solid fa-rocket"></i> Únete a nuestro Mapa Nacional
             </a>
             
-            <div class="pb-6"></div> <!-- Espaciado extra inferior -->
+            <div class="glass-card p-5 mt-2 border-t-4 border-[#0A66C2] relative overflow-hidden shadow-sm">
+                <div class="absolute top-[-10px] right-[-10px] text-[#0A66C2]/5 text-7xl pointer-events-none"><i class="fa-brands fa-linkedin"></i></div>
+                <h3 class="text-movida-navy font-black text-[13px] uppercase tracking-wide mb-2 flex items-center gap-2 relative z-10">
+                    <i class="fa-brands fa-linkedin text-[#0A66C2]"></i> ¡Conecta tu LinkedIn!
+                </h3>
+                <p class="text-xs text-slate-600 mb-4 leading-relaxed font-medium relative z-10">
+                    Si ya estás en el mapa y necesitas agregar tu enlace de <strong class="text-[#0A66C2]">LinkedIn</strong> a tu tarjeta, completa esta breve solicitud:
+                </p>
+                <a href="https://docs.google.com/forms/d/e/1FAIpQLSfdStckiRZ4tunmCuyH1X7Pt_sXUviczmPXHIYZSrXBBbTF0A/viewform?usp=header" target="_blank" class="flex items-center justify-center gap-2 w-full bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 font-bold py-3 rounded-xl shadow-sm active:scale-95 transition-transform text-xs relative z-10">
+                    <i class="fa-brands fa-linkedin text-[#0A66C2] text-base"></i> Agregar mi LinkedIn
+                </a>
+            </div>
+
+            <div class="pb-6"></div>
         </div>
     </main>
 
-    <!-- BARRA DE NAVEGACIÓN INFERIOR (AHORA CON 3 BOTONES) -->
+    <!-- VISTA CREDENCIALES Y VALIDACIÓN -->
+    <main id="credencial-view" class="view-hidden absolute inset-0 z-20 overflow-y-auto pb-[120px] pt-[85px] px-2 bg-slate-50">
+        <div class="w-full max-w-lg md:max-w-2xl lg:max-w-4xl mx-auto flex-grow flex flex-col justify-center transition-all duration-300">
+            
+            <div class="bg-white p-5 md:p-8 lg:p-10 relative overflow-hidden rounded-3xl border border-slate-200 shadow-sm w-full">
+                
+                <section id="view-home" class="w-full transition-opacity duration-300 ease-in-out transform">
+                    <header class="text-center mb-8">
+                        <h1 class="text-2xl font-extrabold text-movida-blue tracking-tight leading-tight">Hub Movida SST Plus</h1>
+                        <p class="text-xs font-bold text-movida-teal uppercase tracking-widest mt-1">Gestión de Credenciales</p>
+                    </header>
+
+                    <div class="flex flex-col sm:flex-row justify-center items-center gap-2 mb-8 bg-slate-100 p-1.5 rounded-xl w-full sm:w-fit mx-auto shadow-inner border border-slate-200">
+                        <button id="btn-tab-portal" class="px-6 py-3 sm:py-2.5 rounded-lg text-sm font-bold transition-all shadow-sm bg-white text-movida-teal w-full sm:w-auto text-center flex items-center justify-center gap-2 border border-slate-200/50">
+                            <i class="fa-solid fa-id-badge"></i> Mi Carnet
+                        </button>
+                        <button id="btn-tab-validator" class="px-6 py-3 sm:py-2.5 rounded-lg text-sm font-bold transition-all text-slate-500 hover:text-slate-800 w-full sm:w-auto text-center flex items-center justify-center gap-2 border border-transparent">
+                            <i class="fa-solid fa-shield-halved"></i> Validador
+                        </button>
+                    </div>
+
+                    <div id="tab-portal" class="max-w-md mx-auto w-full transition-all duration-300">
+                        <div class="bg-slate-50 border border-slate-200 rounded-2xl p-6 lg:p-8 shadow-sm hover:shadow-md transition-shadow">
+                            <div class="text-center mb-6">
+                                <h2 class="text-xl font-bold text-slate-800">Acceso a Integrantes</h2>
+                                <p class="text-xs text-slate-500 mt-1">Descarga y actualiza tu credencial oficial</p>
+                            </div>
+                            
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Cédula o DNI</label>
+                                    <input type="text" id="portal-dni" placeholder="Ej: 12345678" inputmode="numeric" class="w-full bg-white border border-slate-300 rounded-xl p-3.5 font-mono text-slate-700 outline-none focus:border-movida-teal focus:ring-4 focus:ring-movida-teal/10 transition-all" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Código de Registro</label>
+                                    <input type="text" id="portal-code" placeholder="Ej: SDEIS" class="w-full bg-white border border-slate-300 rounded-xl p-3.5 font-mono text-slate-700 uppercase outline-none focus:border-movida-teal focus:ring-4 focus:ring-movida-teal/10 transition-all" oninput="this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '')" maxlength="5">
+                                    <p class="text-[10px] text-slate-400 mt-1.5"><i class="fa-solid fa-lock mr-1"></i>Código único asignado al registrarte.</p>
+                                </div>
+                            </div>
+                            
+                            <button id="btn-portal-submit" class="mt-6 w-full bg-movida-teal text-white font-bold py-3.5 px-6 rounded-xl hover:bg-teal-700 focus:ring-4 focus:ring-teal-200 transition-all duration-200 shadow-lg shadow-teal-600/20 active:scale-[0.98] flex items-center justify-center gap-2 relative disabled:opacity-70 h-[52px]">
+                                <span class="btn-text transition-opacity flex items-center gap-2"><i class="fa-solid fa-right-to-bracket"></i> Ingresar Seguro</span>
+                            </button>
+                            <p id="portal-error" class="text-rose-600 text-center text-sm mt-3 font-medium min-h-[1rem]"></p>
+                        </div>
+                    </div>
+
+                    <div id="tab-validator" class="max-w-md mx-auto w-full hidden transition-all duration-300">
+                        <div class="bg-slate-50 border border-slate-200 rounded-2xl p-6 lg:p-8 shadow-sm hover:shadow-md transition-shadow">
+                            <div class="text-center mb-6">
+                                <h2 class="text-xl font-bold text-slate-800">Verificador Oficial</h2>
+                                <p class="text-xs text-slate-500 mt-1">Confirma la autenticidad de un integrante</p>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Cédula o Token (QR)</label>
+                                <div class="relative flex gap-2">
+                                    <input type="text" id="val-input" placeholder="Ej. 12345678 o SDEIS" class="w-full bg-white border border-slate-300 rounded-xl p-3.5 font-mono font-bold text-movida-blue uppercase outline-none focus:border-movida-teal focus:ring-4 focus:ring-movida-teal/10 transition-all">
+                                    <button id="btn-val-submit" class="bg-movida-blue text-white w-14 rounded-xl flex items-center justify-center shadow-md hover:bg-blue-900 active:scale-95 transition-transform shrink-0 relative disabled:opacity-70">
+                                        <i class="fa-solid fa-magnifying-glass text-lg btn-text"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div id="val-idle" class="flex flex-col items-center justify-center p-6 mt-6 bg-white border border-slate-200 rounded-xl text-center shadow-sm">
+                                <div class="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 mb-2">
+                                    <i class="fa-solid fa-qrcode text-xl"></i>
+                                </div>
+                                <p class="text-xs text-slate-500 font-medium">Escanea un código QR oficial o ingresa los datos para verificar.</p>
+                            </div>
+
+                            <div id="val-error" class="hidden flex flex-col items-center justify-center p-6 mt-6 bg-rose-50 border border-rose-100 rounded-xl text-center shadow-sm">
+                                <div class="w-12 h-12 rounded-full bg-rose-100 flex items-center justify-center text-rose-500 mb-2">
+                                    <i class="fa-solid fa-circle-exclamation text-xl animate-bounce"></i>
+                                </div>
+                                <h3 class="text-sm font-bold text-rose-700">No Encontrado</h3>
+                                <p class="text-xs text-rose-600/80 mt-1 font-medium">La credencial no es válida o no existe en la base de datos oficial.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <section id="view-portal-result" class="hidden w-full transition-opacity duration-300 ease-in-out transform opacity-0 translate-y-4">
+                    <div class="w-full flex flex-col items-center">
+                        <div class="flex items-center justify-between w-full max-w-2xl mb-6">
+                            <button class="btn-volver text-slate-400 hover:text-slate-700 transition-colors w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-100"><i class="fa-solid fa-arrow-left text-lg"></i></button>
+                            <h2 class="text-xl md:text-2xl font-bold text-slate-800 tracking-tight">Mi Credencial Oficial</h2>
+                            <div class="w-10"></div>
+                        </div>
+                        
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-3 md:hidden animate-pulse">⟵ Desliza para verla completa ⟶</p>
+                        
+                        <div class="credential-scroll-container">
+                            <div id="credential" style="width: 600px; height: 380px; min-width: 600px; min-height: 380px; margin: 0 auto; position: relative; overflow: hidden; box-sizing: border-box; border-radius: 14px; background-color: #ffffff; border: 1px solid #e2e8f0; font-family: 'Outfit', sans-serif;">
+                                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: repeating-linear-gradient(45deg, transparent, transparent 4px, rgba(148, 163, 184, 0.05) 4px, rgba(148, 163, 184, 0.05) 5px); z-index: 1;"></div>
+                                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 95px; background: linear-gradient(135deg, #134e4a 0%, #064e3b 100%); z-index: 10;"></div>
+                                <div style="position: absolute; top: 20px; left: 30px; font-size: 26px; font-weight: 800; color: #ffffff; z-index: 20; letter-spacing: -0.5px;">La Movida de SST</div>
+                                <div style="position: absolute; top: 52px; left: 30px; font-size: 11px; font-weight: 700; color: #2dd4bf; letter-spacing: 0.5px; z-index: 20;">SEGURIDAD Y SALUD EN EL TRABAJO</div>
+                                <div style="position: absolute; top: 72px; left: 30px; font-size: 10px; font-weight: 700; color: #ccfbf1; letter-spacing: 1px; z-index: 20; display: flex; align-items: center; gap: 6px;">
+                                    <span style="color: #2dd4bf; font-size: 16px; line-height: 0;">&bull;</span> CREDENCIAL DE INTEGRANTE
+                                </div>
+                                <div style="position: absolute; top: 10px; right: 25px; width: 75px; height: 75px; background-color: #ffffff; border-radius: 50%; z-index: 30; box-shadow: 0 4px 10px rgba(0,0,0,0.25); display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                                    <img src="https://lh3.googleusercontent.com/d/17XxhpImgx9O9ZBTAi6X3OSBrW53H1rVL" style="width: 100%; height: 100%; object-fit: cover;" crossorigin="anonymous" alt="Logo Movida">
+                                </div>
+                                <div style="position: absolute; top: 140px; left: 30px; width: 120px; height: 155px; background-color: #ffffff; border-radius: 12px; border: 2px solid #e2e8f0; padding: 2px; box-sizing: border-box; z-index: 20; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+                                    <img id="cred-photo" src="https://placehold.co/120x155/f1f5f9/94a3b8?text=Perfil" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;" crossorigin="anonymous">
+                                </div>
+                                <div style="position: absolute; top: 310px; left: 30px; width: 120px; height: 26px; border: 2px solid #fde047; border-radius: 20px; background-color: #fefce8; display: flex; align-items: center; justify-content: center; z-index: 20; box-sizing: border-box;">
+                                    <span style="color: #ca8a04; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">INTEGRANTE ACTIVO</span>
+                                </div>
+                                <div id="cred-name" style="position: absolute; top: 125px; left: 185px; font-size: 28px; font-weight: 900; color: #00205b; text-transform: uppercase; line-height: 1; width: 270px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: -0.5px; z-index: 20;">NOMBRES</div>
+                                <div id="cred-lastname" style="position: absolute; top: 158px; left: 185px; font-size: 28px; font-weight: 900; color: #00205b; text-transform: uppercase; line-height: 1; width: 270px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: -0.5px; z-index: 20;">APELLIDOS</div>
+                                <div style="position: absolute; top: 198px; left: 185px; width: 3px; height: 14px; background-color: #0f766e; border-radius: 2px; z-index: 20;"></div>
+                                <div id="cred-carrera" style="position: absolute; top: 197px; left: 195px; font-size: 13px; font-weight: 800; color: #0f766e; text-transform: uppercase; letter-spacing: 0.5px; z-index: 20;">ESPECIALIDAD</div>
+                                <div style="position: absolute; top: 232px; left: 185px; font-size: 9px; font-weight: 800; color: #94a3b8; letter-spacing: 1px; z-index: 20;">DNI / CÉDULA</div>
+                                <div style="position: absolute; top: 247px; left: 185px; width: 14px; height: 10px; border: 1.5px solid #94a3b8; border-radius: 2px; z-index: 20;"></div>
+                                <div style="position: absolute; top: 249px; left: 188px; width: 4px; height: 4px; background-color: #94a3b8; border-radius: 50%; z-index: 20;"></div>
+                                <div id="cred-dni" style="position: absolute; top: 243px; left: 208px; font-size: 20px; font-weight: 800; color: #334155; z-index: 20;">12345678</div>
+                                <div style="position: absolute; top: 282px; left: 185px; color: #0d9488; font-size: 20px; line-height: 0; z-index: 20;">&bull;</div>
+                                <div id="cred-grado" style="position: absolute; top: 275px; left: 198px; font-size: 16px; font-weight: 800; color: #334155; z-index: 20;">Universitario</div>
+                                <div style="position: absolute; top: 310px; left: 185px; font-size: 9px; font-weight: 800; color: #94a3b8; letter-spacing: 1px; z-index: 20;">ESTADO</div>
+                                <div style="position: absolute; top: 331px; left: 185px; color: #94a3b8; font-size: 20px; line-height: 0; z-index: 20;">&bull;</div>
+                                <div id="cred-estado" style="position: absolute; top: 324px; left: 198px; font-size: 16px; font-weight: 800; color: #334155; z-index: 20;">Miranda</div>
+                                <div style="position: absolute; top: 148px; left: 450px; width: 120px; text-align: center; font-size: 8px; font-weight: 800; color: #94a3b8; letter-spacing: 1px; z-index: 20;">CÓDIGO DE VERIFICACIÓN</div>
+                                <div id="cred-code" style="position: absolute; top: 162px; left: 450px; width: 120px; text-align: center; font-size: 22px; font-weight: 700; color: #1e293b; font-family: 'JetBrains Mono', monospace; letter-spacing: 2px; z-index: 20;">SDEIS</div>
+                                <div style="position: absolute; top: 195px; left: 450px; width: 120px; height: 1px; background-color: #e2e8f0; z-index: 20;"></div>
+                                <div style="position: absolute; top: 212px; left: 455px; width: 110px; height: 110px; border: 1px solid #e2e8f0; border-radius: 12px; padding: 5px; box-sizing: border-box; background-color: #ffffff; z-index: 20;">
+                                    <div id="cred-qr" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;"></div>
+                                </div>
+                                <div style="position: absolute; bottom: 0; left: 0; width: 100%; height: 16px; background-color: #f8fafc; border-top: 1px solid #f1f5f9; display: flex; align-items: center; justify-content: center; z-index: 30;">
+                                    <span style="font-size: 8px; font-weight: 800; color: #94a3b8; letter-spacing: 2px; font-family: 'JetBrains Mono', monospace;">WWW.MOVIDASST.COM</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-8 p-5 md:p-6 bg-white rounded-2xl border border-slate-200 w-full shadow-sm max-w-2xl">
+                            <div class="flex items-center gap-2 mb-4">
+                                <div class="bg-teal-50 p-2 rounded-lg border border-teal-100 text-teal-600">
+                                     <i class="fa-solid fa-camera"></i>
+                                </div>
+                                <span class="text-sm font-bold text-slate-700">Actualizar foto de perfil</span>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-3">
+                                <label for="photo-upload" class="w-full bg-slate-50 border border-slate-200 text-slate-600 font-bold h-12 rounded-xl hover:bg-slate-100 transition-all cursor-pointer flex items-center justify-center gap-2 text-sm shadow-sm">
+                                    <i class="fa-regular fa-image"></i> Galería
+                                </label>
+                                <input type="file" id="photo-upload" class="hidden" accept="image/png, image/jpeg">
+                                <label for="camera-upload" class="w-full bg-teal-50 border border-teal-200 text-teal-700 font-bold h-12 rounded-xl hover:bg-teal-100 transition-all cursor-pointer flex items-center justify-center gap-2 text-sm shadow-sm">
+                                    <i class="fa-solid fa-camera"></i> Cámara
+                                </label>
+                                <input type="file" id="camera-upload" class="hidden" accept="image/*" capture="user">
+                            </div>
+                            <p id="portal-upload-status" class="text-center text-sm mt-3 font-medium h-4"></p>
+                        </div>
+
+                        <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-2xl">
+                            <button id="btn-download" class="w-full bg-blue-600 text-white font-bold h-14 rounded-xl hover:bg-blue-700 transition-all active:scale-[0.98] shadow-md shadow-blue-600/20 flex items-center justify-center gap-2 relative">
+                                <span class="btn-text flex items-center justify-center gap-2"><i class="fa-solid fa-download"></i> Descargar Carnet</span>
+                            </button>
+                            <button id="btn-whatsapp-group" class="w-full bg-[#25D366] text-white font-bold h-14 rounded-xl hover:bg-emerald-600 transition-all active:scale-[0.98] shadow-md shadow-emerald-500/20 flex items-center justify-center gap-2">
+                                 <i class="fa-brands fa-whatsapp text-lg"></i> Unirse a la Comunidad
+                            </button>
+                        </div>
+                        <p id="portal-download-status" class="text-center text-sm font-medium h-4 mt-3 text-slate-500"></p>
+                    </div>
+                </section>
+
+                <section id="view-validator-result" class="hidden w-full transition-opacity duration-300 ease-in-out transform opacity-0 translate-y-4">
+                    <div class="w-full flex flex-col items-center max-w-md mx-auto">
+                        <div class="flex items-center justify-between w-full mb-5">
+                            <button class="btn-volver text-slate-400 hover:text-slate-700 transition-colors bg-white border border-slate-200 w-10 h-10 rounded-full flex items-center justify-center shadow-sm"><i class="fa-solid fa-arrow-left"></i></button>
+                            <div class="bg-movida-green/10 text-movida-green text-[0.65rem] font-black tracking-widest px-3.5 py-1.5 rounded-full uppercase border border-movida-green/20 flex items-center gap-1.5 shadow-sm">
+                                <i class="fa-solid fa-shield-check"></i> Credencial Auténtica
+                            </div>
+                        </div>
+
+                        <div class="bg-gradient-to-b from-white to-slate-50 text-slate-800 rounded-3xl shadow-lg border border-slate-200 overflow-hidden relative w-full">
+                            <div class="h-1.5 bg-gradient-to-r from-[#FFCC00] via-[#00247D] to-[#CF142B] w-full"></div>
+                            
+                            <div class="p-6 flex flex-col items-center">
+                                <div class="relative w-28 h-36 rounded-2xl border-4 border-white shadow-md overflow-hidden mb-4 bg-slate-100 flex items-center justify-center">
+                                    <img id="val-photo" src="" class="w-full h-full object-cover hidden" crossorigin="anonymous">
+                                    <div id="val-photo-placeholder" class="text-slate-300 flex flex-col items-center">
+                                        <i class="fa-solid fa-user-tie text-4xl"></i>
+                                    </div>
+                                </div>
+
+                                <h3 id="val-nombres" class="text-xl font-black text-movida-blue text-center leading-tight">Nombres</h3>
+                                <h4 id="val-apellidos" class="text-lg font-bold text-slate-500 text-center leading-tight mt-0.5">Apellidos</h4>
+                                
+                                <div class="inline-flex items-center gap-1.5 bg-slate-100 border border-slate-200 px-4 py-1.5 rounded-full text-xs font-bold mt-4 text-movida-blue">
+                                    <i class="fa-regular fa-id-card text-movida-teal"></i> C.I. <span id="val-cedula">---</span>
+                                </div>
+                                <div class="w-full border-t border-slate-200 my-5"></div>
+                                <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm w-full space-y-3.5 text-xs text-left">
+                                    <div>
+                                        <span class="text-slate-400 block font-bold uppercase tracking-wider text-[0.62rem] mb-0.5">Grado de Instrucción</span>
+                                        <span id="val-grado" class="font-extrabold text-sm text-slate-800">-</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-slate-400 block font-bold uppercase tracking-wider text-[0.62rem] mb-0.5">Especialidad / Área</span>
+                                        <span id="val-carrera" class="font-extrabold text-sm text-slate-800">-</span>
+                                    </div>
+                                </div>
+                                <div class="w-full mt-5">
+                                    <span class="text-slate-400 block font-bold uppercase tracking-wider text-[0.62rem] mb-1.5 text-left"><i class="fa-solid fa-map-location-dot mr-1"></i> Estado de Residencia: <span id="val-ubicacion" class="text-slate-700"></span></span>
+                                    <div id="valStateMap" class="w-full h-36 rounded-2xl border border-slate-200 shadow-inner z-10"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3 mt-4 w-full">
+                            <button id="btn-val-share" class="bg-movida-green hover:bg-[#5f9c38] text-white font-bold h-12 rounded-xl shadow-md flex items-center justify-center gap-2 text-sm transition-transform active:scale-95">
+                                <i class="fa-brands fa-whatsapp text-lg"></i> Compartir
+                            </button>
+                            <a id="btn-val-chat" href="#" target="_blank" class="bg-movida-blue hover:bg-blue-900 text-white font-bold h-12 rounded-xl shadow-md flex items-center justify-center gap-2 text-sm transition-transform active:scale-95">
+                                <i class="fa-regular fa-comment-dots text-lg"></i> Contactar
+                            </a>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <!-- MODAL PARA RECORTAR FOTOS -->
+    <div id="cropper-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-[100000] transition-opacity duration-300 opacity-0 invisible" style="display: none;">
+        <div class="bg-white rounded-3xl shadow-2xl p-6 w-full max-w-sm transition-transform duration-300 transform scale-95 border border-slate-200">
+            <h3 class="text-lg font-black mb-4 text-center text-slate-800">Ajustar Fotografía</h3>
+            <div id="cropper-container" class="mb-6 bg-slate-100 rounded-2xl overflow-hidden border border-slate-200 relative aspect-square flex items-center justify-center">
+                <img id="image-to-crop" src="" style="max-width: 100%;">
+            </div>
+            <div class="flex justify-between gap-3">
+                <button id="btn-crop-cancel" class="w-full bg-slate-100 text-slate-600 font-bold py-3 px-4 rounded-xl hover:bg-slate-200 transition-all h-12">Cancelar</button>
+                <button id="btn-crop-save" class="w-full bg-movida-teal text-white font-bold py-3 px-4 rounded-xl hover:bg-teal-700 transition-all flex items-center justify-center gap-2 shadow-md relative disabled:opacity-70 h-12">
+                    <span class="btn-text">Guardar</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- NAVEGACIÓN INFERIOR DE 4 BOTONES -->
     <nav id="bottom-nav" class="fixed bottom-0 left-0 right-0 w-full bg-white/95 backdrop-blur-lg border-t border-slate-200 pt-3 pb-[calc(env(safe-area-inset-bottom)+16px)] px-2 flex justify-around items-center shadow-[0_-10px_30px_rgba(0,0,0,0.08)] z-[9999]">
-        <button onclick="switchTab('map-view')" id="btn-map-view" class="nav-item active flex flex-col items-center p-2 w-[30%] transition-colors">
+        <button onclick="switchTab('map-view')" id="btn-map-view" class="nav-item active flex flex-col items-center p-2 w-[25%] transition-colors">
             <div class="icon-container w-10 h-10 flex items-center justify-center rounded-full transition-all duration-300"><i class="fa-solid fa-map text-xl"></i></div>
             <span class="text-[10px] uppercase tracking-wider mt-1 font-medium">Mapa</span>
         </button>
-        <button onclick="switchTab('dashboard-view')" id="btn-dashboard-view" class="nav-item text-slate-400 flex flex-col items-center p-2 w-[30%] transition-colors">
+        <button onclick="switchTab('dashboard-view')" id="btn-dashboard-view" class="nav-item text-slate-400 flex flex-col items-center p-2 w-[25%] transition-colors">
             <div class="icon-container w-10 h-10 flex items-center justify-center rounded-full transition-all duration-300"><i class="fa-solid fa-chart-pie text-xl"></i></div>
             <span class="text-[10px] uppercase tracking-wider mt-1 font-medium">Métricas</span>
         </button>
-        <button onclick="switchTab('info-view')" id="btn-info-view" class="nav-item text-slate-400 flex flex-col items-center p-2 w-[30%] transition-colors">
+        <button onclick="switchTab('info-view')" id="btn-info-view" class="nav-item text-slate-400 flex flex-col items-center p-2 w-[25%] transition-colors">
             <div class="icon-container w-10 h-10 flex items-center justify-center rounded-full transition-all duration-300"><i class="fa-solid fa-circle-info text-xl"></i></div>
             <span class="text-[10px] uppercase tracking-wider mt-1 font-medium">Info</span>
+        </button>
+        <button onclick="switchTab('credencial-view')" id="btn-credencial-view" class="nav-item text-slate-400 flex flex-col items-center p-2 w-[25%] transition-colors">
+            <div class="icon-container w-10 h-10 flex items-center justify-center rounded-full transition-all duration-300"><i class="fa-solid fa-id-badge text-xl"></i></div>
+            <span class="text-[10px] uppercase tracking-wider mt-1 font-medium">Carnet</span>
         </button>
     </nav>
 
@@ -460,8 +699,7 @@
         let map; let markersCluster; let heatmapLayer = null;
         let chartInstances = { lab: null, gen: null, edad: null };
         let globalData = []; 
-        let datosGeograficosGlobal = {}; // Para los acordeones
-        
+        let datosGeograficosGlobal = {};
         let stateFiltros = { academico: 'todos', estado: 'todos', laboral: 'todos', genero: 'todos', nombreBusqueda: '', modoHeatmap: false };
 
         const geodata = {
@@ -502,12 +740,7 @@
             map = L.map('map-container', { zoomControl: false, maxBounds: venezuelaBounds, maxBoundsViscosity: 0.9, minZoom: 5 }).setView([7.523, -66.178], 6);
             L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { attribution: '&copy; OpenStreetMap', subdomains: 'abcd', maxZoom: 19 }).addTo(map);
 
-            markersCluster = L.markerClusterGroup({ 
-                showCoverageOnHover: false, 
-                maxClusterRadius: 40, 
-                spiderfyOnMaxZoom: true, 
-                zoomToBoundsOnClick: true 
-            });
+            markersCluster = L.markerClusterGroup({ showCoverageOnHover: false, maxClusterRadius: 40, spiderfyOnMaxZoom: true, zoomToBoundsOnClick: true });
             map.addLayer(markersCluster);
 
             map.on('locationfound', function(e) {
@@ -518,6 +751,7 @@
 
         function mostrarNotificacion(texto, iconoClass) {
             const toast = document.getElementById('toast-notification');
+            if(!toast) return;
             document.getElementById('toast-icon').className = `fa-solid ${iconoClass}`;
             document.getElementById('toast-text').innerText = texto;
             toast.classList.remove('opacity-0');
@@ -561,14 +795,8 @@
                         let profFinal = item._profesion_clean || (item.carrera ? item.carrera.toString().trim() : "Prevencionista SST");
                         let cr = (item.carrera || "").toString().toUpperCase();
                         let crLimpia = cr.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); 
-                        
-                        if (crLimpia.includes("ING") && crLimpia.includes("INDUSTRIAL")) {
-                            profFinal = "Ingeniería Industrial";
-                        }
-                        
-                        // Convertir a Tipo Título y respetar las siglas importantes
+                        if (crLimpia.includes("ING") && crLimpia.includes("INDUSTRIAL")) profFinal = "Ingeniería Industrial";
                         item._profesion_clean = toTitleCase(profFinal).replace(/\btsu\b/ig, 'TSU').replace(/\bsst\b/ig, 'SST');
-                        
                         item._resumen_ia = item._resumen_ia || "Profesional SST preparado para proyectos, auditorías y asesorías.";
                     });
 
@@ -615,23 +843,19 @@
             if(tipo === 'todos') { selectChip('genero', 'todos'); selectChip('laboral', 'todos'); }
             else if(tipo === 'mujeres') { selectChip('genero', 'Femenino'); selectChip('laboral', 'todos'); }
             else if(tipo === 'buscando') { selectChip('laboral', 'Buscando'); selectChip('genero', 'todos'); }
-            
             aplicarFiltrosGlobales();
         }
 
         function buscarNombreLive(texto) {
             const container = document.getElementById('resultados-nombre');
             const term = texto.trim().toLowerCase();
-            
             if (term.length < 2) { container.classList.add('hidden'); return; }
-            
             const filtrados = globalData.filter(item => (item._nombre_completo || "").toLowerCase().includes(term)).slice(0, 5);
             
             if (filtrados.length === 0) {
                 container.innerHTML = '<div class="p-4 text-xs text-slate-500 font-medium text-center">No se encontraron profesionales...</div>';
                 container.classList.remove('hidden'); return;
             }
-            
             let html = '';
             filtrados.forEach(item => {
                 const itemStr = encodeURIComponent(JSON.stringify(item));
@@ -645,8 +869,7 @@
                     </div>
                 </div>`;
             });
-            container.innerHTML = html;
-            container.classList.remove('hidden');
+            container.innerHTML = html; container.classList.remove('hidden');
         }
 
         function seleccionarProfesionalBuscado(itemStr) {
@@ -654,19 +877,13 @@
             const item = JSON.parse(decodeURIComponent(itemStr));
             document.getElementById('filtro-nombre').value = item._nombre_completo;
             document.getElementById('resultados-nombre').classList.add('hidden');
-            
             stateFiltros.nombreBusqueda = item._nombre_completo.toLowerCase();
-            aplicarFiltrosGlobales();
-            cerrarTodosLosPaneles();
-            setTimeout(() => { abrirPerfil(itemStr); }, 400); 
+            aplicarFiltrosGlobales(); cerrarTodosLosPaneles(); setTimeout(() => { abrirPerfil(itemStr); }, 400); 
         }
 
         function abrirFiltrosAvanzados() {
             document.getElementById('ui-backdrop').classList.remove('hidden');
-            setTimeout(() => {
-                document.getElementById('ui-backdrop').classList.remove('opacity-0');
-                document.getElementById('advanced-filters-sheet').classList.remove('translate-y-full');
-            }, 10);
+            setTimeout(() => { document.getElementById('ui-backdrop').classList.remove('opacity-0'); document.getElementById('advanced-filters-sheet').classList.remove('translate-y-full'); }, 10);
         }
 
         function cerrarTodosLosPaneles() {
@@ -677,54 +894,33 @@
         }
 
         function limpiarFiltrosAvanzados() {
-            document.getElementById('filtro-estado').value = 'todos';
-            document.getElementById('filtro-municipio').innerHTML = '<option value="todos">Todos</option>';
-            document.getElementById('filtro-municipio').disabled = true;
-            document.getElementById('filtro-municipio').classList.add('text-slate-400', 'cursor-not-allowed');
-            document.getElementById('filtro-municipio').classList.remove('text-movida-navy');
-            document.getElementById('filtro-nombre').value = '';
-            document.getElementById('resultados-nombre').classList.add('hidden');
+            if(document.getElementById('filtro-estado')) document.getElementById('filtro-estado').value = 'todos';
+            const muniSelect = document.getElementById('filtro-municipio');
+            if(muniSelect) {
+                muniSelect.innerHTML = '<option value="todos">Todos</option>'; muniSelect.disabled = true;
+                muniSelect.classList.add('text-slate-400', 'cursor-not-allowed'); muniSelect.classList.remove('text-movida-navy');
+            }
+            if(document.getElementById('filtro-nombre')) document.getElementById('filtro-nombre').value = '';
+            if(document.getElementById('resultados-nombre')) document.getElementById('resultados-nombre').classList.add('hidden');
             stateFiltros.nombreBusqueda = '';
             selectChip('academico', 'todos'); selectChip('laboral', 'todos'); selectChip('genero', 'todos');
             aplicarFiltrosGlobales(); cerrarTodosLosPaneles(); mostrarNotificacion('Filtros limpiados', 'fa-eraser');
         }
 
-        // NUEVA FUNCIÓN: ACTUALIZA LOS MUNICIPIOS SEGÚN EL ESTADO
         function actualizarMunicipios() {
-            const estadoSelect = document.getElementById('filtro-estado').value;
+            const estadoSelect = document.getElementById('filtro-estado');
             const muniSelect = document.getElementById('filtro-municipio');
+            if (!estadoSelect || !muniSelect) return;
             
-            // Reiniciamos el select de municipio
             muniSelect.innerHTML = '<option value="todos">Todos</option>';
             stateFiltros.municipio = 'todos';
-
-            if (estadoSelect === 'todos') {
-                muniSelect.disabled = true;
-                muniSelect.classList.add('text-slate-400', 'cursor-not-allowed');
-                muniSelect.classList.remove('text-movida-navy');
+            if (estadoSelect.value === 'todos') {
+                muniSelect.disabled = true; muniSelect.classList.add('text-slate-400', 'cursor-not-allowed'); muniSelect.classList.remove('text-movida-navy');
             } else {
-                // Buscamos los municipios únicos para el estado seleccionado
                 let municipiosDelEstado = new Set();
-                globalData.forEach(item => {
-                    if (item.estado && item.estado.trim() === estadoSelect && item.municipio) {
-                        municipiosDelEstado.add(item.municipio.trim().toLowerCase());
-                    }
-                });
-
-                // Ordenamos alfabéticamente
-                let municipiosOrdenados = Array.from(municipiosDelEstado).sort();
-
-                // Añadimos las opciones al select
-                municipiosOrdenados.forEach(mun => {
-                    let opt = document.createElement('option');
-                    opt.value = toTitleCase(mun);
-                    opt.innerHTML = toTitleCase(mun);
-                    muniSelect.appendChild(opt);
-                });
-
-                muniSelect.disabled = false;
-                muniSelect.classList.remove('text-slate-400', 'cursor-not-allowed');
-                muniSelect.classList.add('text-movida-navy');
+                globalData.forEach(item => { if (item.estado && item.estado.trim() === estadoSelect.value && item.municipio) municipiosDelEstado.add(item.municipio.trim().toLowerCase()); });
+                Array.from(municipiosDelEstado).sort().forEach(mun => { let opt = document.createElement('option'); opt.value = toTitleCase(mun); opt.innerHTML = toTitleCase(mun); muniSelect.appendChild(opt); });
+                muniSelect.disabled = false; muniSelect.classList.remove('text-slate-400', 'cursor-not-allowed'); muniSelect.classList.add('text-movida-navy');
             }
         }
 
@@ -732,11 +928,9 @@
             stateFiltros.modoHeatmap = !stateFiltros.modoHeatmap;
             const btn = document.getElementById('btn-heatmap');
             if(stateFiltros.modoHeatmap) {
-                btn.classList.add('bg-movida-navy', 'text-white'); btn.classList.remove('bg-white', 'text-movida-teal');
-                mostrarNotificacion('Mapa de Calor activado', 'fa-fire');
+                btn.classList.add('bg-movida-navy', 'text-white'); btn.classList.remove('bg-white', 'text-movida-teal'); mostrarNotificacion('Mapa de Calor activado', 'fa-fire');
             } else {
-                btn.classList.remove('bg-movida-navy', 'text-white'); btn.classList.add('bg-white', 'text-movida-teal');
-                mostrarNotificacion('Marcadores activados', 'fa-location-dot');
+                btn.classList.remove('bg-movida-navy', 'text-white'); btn.classList.add('bg-white', 'text-movida-teal'); mostrarNotificacion('Marcadores activados', 'fa-location-dot');
             }
             aplicarFiltrosGlobales();
         }
@@ -744,7 +938,6 @@
         function abrirPerfil(itemStr) {
             const item = JSON.parse(decodeURIComponent(itemStr));
             let imgUrl = ''; let fotoRaw = item.foto || item.Foto || item.FOTO || '';
-            
             if(fotoRaw.includes('id=')) imgUrl = `https://lh3.googleusercontent.com/d/${fotoRaw.split('id=')[1].split('&')[0]}`;
             else if(fotoRaw.includes('/d/')) imgUrl = `https://lh3.googleusercontent.com/d/${fotoRaw.split('/d/')[1].split('/')[0]}`;
             
@@ -756,9 +949,7 @@
                 <div class="px-6 pt-4 pb-2 relative">
                     <div class="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-4"></div>
                     <button onclick="cerrarTodosLosPaneles()" class="absolute top-4 right-6 w-8 h-8 bg-slate-100 text-slate-500 rounded-full flex items-center justify-center active:scale-95"><i class="fa-solid fa-times"></i></button>
-                    
                     <div class="h-1.5 w-full flex rounded-full overflow-hidden mb-4"><div class="w-1/3 bg-[#FFCC00]"></div><div class="w-1/3 bg-[#00247D]"></div><div class="w-1/3 bg-[#CF142B]"></div></div>
-                    
                     <div class="flex items-center gap-4 mb-4">
                         <div class="relative w-16 h-16 rounded-2xl p-[2px] bg-gradient-to-tr from-[#FFCC00] via-[#00247D] to-[#CF142B] shadow-md shrink-0">
                             <div class="w-full h-full bg-slate-100 rounded-[14px] flex items-center justify-center overflow-hidden border border-white">
@@ -772,43 +963,31 @@
                             <p class="text-[10px] font-black text-movida-teal uppercase tracking-wide mt-0.5">${item._nivel_acad}</p>
                         </div>
                     </div>
-
                     <div class="bg-gradient-to-r from-movida-navy/5 to-movida-teal/10 p-3 rounded-xl mb-4 border border-movida-teal/20 shadow-inner">
                         <p class="text-[10px] font-extrabold text-movida-teal uppercase tracking-wider m-0 mb-1 flex items-center gap-1.5"><i class="fa-solid fa-wand-magic-sparkles"></i> Perfil IA Match</p>
                         <p class="text-xs text-slate-700 font-medium m-0 leading-snug italic">"${item._resumen_ia}"</p>
                     </div>
-                    
                     <div class="space-y-2 mb-5">
                         <p class="text-xs text-slate-600 font-medium flex items-center"><i class="fa-solid fa-location-dot text-slate-400 w-5 text-center mr-2 text-sm"></i> ${item.estado}, ${item.municipio}</p>
                         <p class="text-xs text-slate-600 font-medium flex items-center"><i class="fa-solid fa-briefcase text-slate-400 w-5 text-center mr-2 text-sm"></i> ${item._laboral_clean === 'Buscando' ? 'Buscando Oportunidades' : item._laboral_clean}</p>
                     </div>
-
-                    <!-- BOTONERA INTELIGENTE (CORREO + WHATSAPP SI ESTÁ DESEMPLEADO + LINKEDIN) -->
                     <div class="w-full flex gap-2">
                         ${(() => {
                             let phone = item.wasap || item.Wasap || item.WASAP || item.whatsapp || item.WhatsApp || item.telefono || item.Telefono || item.celular || item.Celular || '';
                             let linkLd = item.Linkedin || item.linkedin || item.LINKEDIN || item.LinkedIn || '';
                             let btns = '';
-                            
-                            if (email) {
-                                btns += `<a href="mailto:${email}" class="flex-1 flex items-center justify-center gap-1.5 bg-movida-navy hover:bg-movida-teal text-white font-bold py-3 rounded-xl shadow-md transition-colors active:scale-95 text-[11px] sm:text-xs"><i class="fa-solid fa-envelope text-base"></i> Correo</a>`;
-                            }
-                            
+                            if (email) btns += `<a href="mailto:${email}" class="flex-1 flex items-center justify-center gap-1.5 bg-movida-navy hover:bg-movida-teal text-white font-bold py-3 rounded-xl shadow-md transition-colors active:scale-95 text-[11px] sm:text-xs"><i class="fa-solid fa-envelope text-base"></i> Correo</a>`;
                             if (item._laboral_clean === 'Buscando' && phone) {
                                 let num = phone.toString().replace(/\D/g, ''); 
-                                if (num.startsWith('0')) num = '58' + num.substring(1);
-                                else if (!num.startsWith('58') && num.length === 10) num = '58' + num;
-                                
+                                if (num.startsWith('0')) num = '58' + num.substring(1); else if (!num.startsWith('58') && num.length === 10) num = '58' + num;
                                 btns += `<a href="https://wa.me/${num}" target="_blank" class="flex-1 flex items-center justify-center gap-1.5 bg-[#25D366] text-white font-bold py-3 rounded-xl shadow-md transition-colors active:scale-95 text-[11px] sm:text-xs"><i class="fa-brands fa-whatsapp text-base"></i> WhatsApp</a>`;
                             }
-
                             if (linkLd && linkLd.trim() !== '') {
                                 let href = linkLd.trim().startsWith('http') ? linkLd.trim() : 'https://' + linkLd.trim();
                                 btns += `<a href="${href}" target="_blank" class="flex-1 flex items-center justify-center gap-1.5 bg-[#0A66C2] text-white font-bold py-3 rounded-xl shadow-md transition-colors active:scale-95 text-[11px] sm:text-xs"><i class="fa-brands fa-linkedin-in text-base"></i> LinkedIn</a>`;
                             } else {
                                 btns += `<div class="flex-1 flex items-center justify-center gap-1.5 bg-slate-50 text-slate-400 font-bold py-3 rounded-xl border border-slate-200 text-[11px] sm:text-xs shadow-sm cursor-not-allowed"><i class="fa-brands fa-linkedin-in text-base text-slate-300"></i> LinkedIn</div>`;
                             }
-                            
                             return btns;
                         })()}
                     </div>
@@ -816,30 +995,23 @@
             
             document.getElementById('profile-sheet-content').innerHTML = html;
             document.getElementById('ui-backdrop').classList.remove('hidden');
-            setTimeout(() => {
-                document.getElementById('ui-backdrop').classList.remove('opacity-0');
-                document.getElementById('profile-sheet').classList.remove('translate-y-full');
-            }, 10);
+            setTimeout(() => { document.getElementById('ui-backdrop').classList.remove('opacity-0'); document.getElementById('profile-sheet').classList.remove('translate-y-full'); }, 10);
             
             let baseCoords = geodata.municipios[`${item.estado}_${item.municipio}`] || geodata.estados[item.estado];
             if(baseCoords) map.setView([baseCoords.lat - 0.5, baseCoords.lng], 8, {animate: true, duration: 0.8}); 
         }
 
         function aplicarFiltrosGlobales() {
-            // Escudos de seguridad (Safe Checks) agregados aquí
             const estadoSelect = document.getElementById('filtro-estado');
             const municipioSelect = document.getElementById('filtro-municipio');
-            
             stateFiltros.estado = estadoSelect ? estadoSelect.value : 'todos';
             stateFiltros.municipio = municipioSelect ? municipioSelect.value : 'todos';
             
             markersCluster.clearLayers(); if(heatmapLayer) map.removeLayer(heatmapLayer);
-            
             let countVisibles = 0; let heatPoints = [];
 
             globalData.forEach(item => {
                 if(!item.estado) return;
-                
                 if (stateFiltros.academico !== 'todos' && item._nivel_acad !== stateFiltros.academico) return;
                 if (stateFiltros.estado !== 'todos' && item.estado.trim() !== stateFiltros.estado) return;
                 if (stateFiltros.municipio !== 'todos' && (item.municipio || "").trim().toLowerCase() !== stateFiltros.municipio.toLowerCase()) return;
@@ -848,17 +1020,14 @@
                 if (stateFiltros.nombreBusqueda !== "" && !(item._nombre_completo || "").toLowerCase().includes(stateFiltros.nombreBusqueda)) return;
 
                 countVisibles++;
-                
                 let est = item.estado.trim(); let mun = (item.municipio || "").trim();
                 let baseCoords = geodata.municipios[`${est}_${mun}`] || geodata.estados[est] || { lat: 8.0, lng: -66.0 };
                 let lat = baseCoords.lat + (Math.random() * 0.02 - 0.01); let lng = baseCoords.lng + (Math.random() * 0.02 - 0.01);
 
-                if (stateFiltros.modoHeatmap) {
-                    heatPoints.push([lat, lng, 1]);
-                } else {
+                if (stateFiltros.modoHeatmap) heatPoints.push([lat, lng, 1]);
+                else {
                     let pinColor = item.genero === 'Femenino' ? '#70ad47' : '#007b85';
                     const marker = L.circleMarker([lat, lng], { radius: 10, fillColor: pinColor, color: "#ffffff", weight: 3, fillOpacity: 0.95, shadowBlur: 10 });
-                    
                     const itemStr = encodeURIComponent(JSON.stringify(item));
                     marker.on('click', () => abrirPerfil(itemStr));
                     markersCluster.addLayer(marker);
@@ -880,30 +1049,18 @@
                     let e = item.estado.trim(); let m = (item.municipio || "Capital").trim();
                     if(!porEstado[e]) porEstado[e] = 0; porEstado[e]++;
                     if(item.municipio) porMunicipio.add(e + "_" + m);
-                    
                     if(!datosGeograficosGlobal[e]) datosGeograficosGlobal[e] = { total: 0, municipios: {} };
                     datosGeograficosGlobal[e].total++;
                     if(!datosGeograficosGlobal[e].municipios[m]) datosGeograficosGlobal[e].municipios[m] = 0;
                     datosGeograficosGlobal[e].municipios[m]++;
                 }
                 if(item.genero === "Masculino" || item.genero === "Femenino") genData[item.genero]++;
-                if(item._laboral_clean === "Dependiente") labData['Dependiente']++;
-                else if(item._laboral_clean === "Independiente") labData['Independiente']++;
-                else if(item._laboral_clean === "Buscando" || item._laboral_clean === "Desempleado") labData['Buscando']++;
-
-                if(item.edad && !isNaN(parseInt(item.edad))) {
-                    let e = parseInt(item.edad);
-                    if(e <= 30) edadData['< 30']++; else if(e <= 40) edadData['31 - 40']++; else if(e <= 50) edadData['41 - 50']++; else edadData['50+']++;
-                }
-
+                if(item._laboral_clean === "Dependiente") labData['Dependiente']++; else if(item._laboral_clean === "Independiente") labData['Independiente']++; else if(item._laboral_clean === "Buscando" || item._laboral_clean === "Desempleado") labData['Buscando']++;
+                if(item.edad && !isNaN(parseInt(item.edad))) { let e = parseInt(item.edad); if(e <= 30) edadData['< 30']++; else if(e <= 40) edadData['31 - 40']++; else if(e <= 50) edadData['41 - 50']++; else edadData['50+']++; }
                 if(item._nivel_acad) {
                     statsAcademico.totalValido++;
-                    if(item._nivel_acad === "Doctorado") statsAcademico.doctorado++;
-                    else if(item._nivel_acad === "Postgrado") statsAcademico.postgrado++;
-                    else if(item._nivel_acad === "Profesional") statsAcademico.profesional++;
-                    else if(item._nivel_acad === "T.S.U.") statsAcademico.tsu++;
+                    if(item._nivel_acad === "Doctorado") statsAcademico.doctorado++; else if(item._nivel_acad === "Postgrado") statsAcademico.postgrado++; else if(item._nivel_acad === "Profesional") statsAcademico.profesional++; else if(item._nivel_acad === "T.S.U.") statsAcademico.tsu++;
                 }
-
                 let prof = item._profesion_clean; if(!carreras[prof]) carreras[prof] = 0; carreras[prof]++;
             });
 
@@ -912,13 +1069,11 @@
             if(statsAcademico.totalValido > 0) {
                 const pDoc = Math.round((statsAcademico.doctorado / statsAcademico.totalValido) * 100); const pPost = Math.round((statsAcademico.postgrado / statsAcademico.totalValido) * 100);
                 const pProf = Math.round((statsAcademico.profesional / statsAcademico.totalValido) * 100); const pTsu = Math.round((statsAcademico.tsu / statsAcademico.totalValido) * 100);
-
                 document.getElementById('txt-acad-doc').innerText = pDoc + "%"; document.getElementById('bar-acad-doc').style.width = pDoc + "%";
                 document.getElementById('txt-acad-post').innerText = pPost + "%"; document.getElementById('bar-acad-post').style.width = pPost + "%";
                 document.getElementById('txt-acad-prof').innerText = pProf + "%"; document.getElementById('bar-acad-prof').style.width = pProf + "%";
                 document.getElementById('txt-acad-tsu').innerText = pTsu + "%"; document.getElementById('bar-acad-tsu').style.width = pTsu + "%";
             }
-
             dibujarTopCarreras(carreras); dibujarListaEstados(datosGeograficosGlobal, 5); dibujarGraficos(genData, labData, edadData);
         }
 
@@ -926,7 +1081,6 @@
             const listDiv = document.getElementById('professions-list'); listDiv.innerHTML = '';
             const sorted = Object.keys(carrerasObj).sort((a,b) => carrerasObj[b] - carrerasObj[a]).slice(0, 5);
             if(sorted.length === 0) return listDiv.innerHTML = '<p class="text-sm text-slate-400 text-center">No hay datos suficientes.</p>';
-
             sorted.forEach((carrera, index) => {
                 let color = index === 0 ? 'text-movida-yellow' : (index === 1 ? 'text-slate-400' : (index === 2 ? 'text-amber-700' : 'text-movida-teal/50'));
                 listDiv.innerHTML += `
@@ -944,19 +1098,15 @@
             const listDiv = document.getElementById('states-list'); listDiv.innerHTML = '';
             const sortedStates = Object.keys(datosGeog).sort((a,b) => datosGeog[b].total - datosGeog[a].total);
             if(sortedStates.length === 0) return;
-            
             let statesToShow = limit ? sortedStates.slice(0, limit) : sortedStates;
             let maxCount = datosGeog[sortedStates[0]].total;
 
             statesToShow.forEach((estado, idx) => {
                 let dataEst = datosGeog[estado]; let width = (dataEst.total / maxCount) * 100;
                 let sortedMuns = Object.keys(dataEst.municipios).sort((a,b) => dataEst.municipios[b] - dataEst.municipios[a]);
-                
                 let munsHTML = `<div id="mun-acc-${idx}" class="hidden mt-3 pt-3 border-t border-slate-100/60 transition-all">`;
                 munsHTML += '<p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-2.5 flex items-center gap-1.5"><i class="fa-solid fa-location-crosshairs text-movida-teal/70"></i> Municipios</p>';
-                sortedMuns.forEach(mun => {
-                    munsHTML += `<div class="flex justify-between items-center mt-1.5 pl-2.5 border-l-[3px] border-movida-teal/30 hover:border-movida-teal transition-colors"><span class="text-[11px] text-slate-600 font-medium truncate pr-2 capitalize">${mun.toLowerCase()}</span><span class="text-[10px] font-bold text-slate-500 bg-slate-50 px-1.5 py-0.5 rounded border border-slate-200 shadow-sm">${dataEst.municipios[mun]}</span></div>`;
-                });
+                sortedMuns.forEach(mun => { munsHTML += `<div class="flex justify-between items-center mt-1.5 pl-2.5 border-l-[3px] border-movida-teal/30 hover:border-movida-teal transition-colors"><span class="text-[11px] text-slate-600 font-medium truncate pr-2 capitalize">${mun.toLowerCase()}</span><span class="text-[10px] font-bold text-slate-500 bg-slate-50 px-1.5 py-0.5 rounded border border-slate-200 shadow-sm">${dataEst.municipios[mun]}</span></div>`; });
                 munsHTML += '</div>';
 
                 listDiv.innerHTML += `
@@ -969,11 +1119,8 @@
                         ${munsHTML}
                     </div>`;
             });
-            
             const btnShowMore = document.getElementById('btn-show-more-states');
-            if (limit && sortedStates.length > limit) {
-                btnShowMore.classList.remove('hidden'); btnShowMore.innerText = `Ver los ${sortedStates.length - limit} estados restantes`;
-            } else { btnShowMore.classList.add('hidden'); }
+            if (limit && sortedStates.length > limit) { btnShowMore.classList.remove('hidden'); btnShowMore.innerText = `Ver los ${sortedStates.length - limit} estados restantes`; } else { btnShowMore.classList.add('hidden'); }
         }
 
         function mostrarTodosLosEstados() { dibujarListaEstados(datosGeograficosGlobal, null); }
@@ -992,48 +1139,292 @@
             chartInstances.gen = new Chart(document.getElementById('chartGenero').getContext('2d'), { type: 'doughnut', data: { labels: ['Masculino', 'Femenino'], datasets: [{ data: [genData['Masculino'], genData['Femenino']], backgroundColor: ['#00205b', '#70ad47'], borderWidth: 2, borderColor: '#ffffff' }] }, options: { maintainAspectRatio: false, cutout: '50%', plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20 } }, tooltip: { enabled: false }, datalabels: { color: '#ffffff', textStrokeColor: 'rgba(0, 32, 91, 0.8)', textStrokeWidth: 3, font: { weight: 'bold', size: 14 }, formatter: (value, ctx) => { let total = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0); return total === 0 ? "" : Math.round((value / total) * 100) + "%"; } } } } });
         }
 
-        function switchTab(tabId) {
-            if(navigator.vibrate) navigator.vibrate(50);
-            ['map-view', 'dashboard-view', 'info-view'].forEach(id => {
-                const el = document.getElementById(id); const btn = document.getElementById(`btn-${id}`);
-                let zIndex = id === 'map-view' ? 'z-10' : 'z-20';
-                if(id === tabId) { el.className = `view-active absolute inset-0 ${zIndex}`; btn.classList.add('active', 'text-movida-teal'); btn.classList.remove('text-slate-400'); }
-                else { el.className = `view-hidden absolute inset-0 ${zIndex}`; btn.classList.remove('active', 'text-movida-teal'); btn.classList.add('text-slate-400'); }
-            });
-            if(tabId === 'map-view') setTimeout(() => map.invalidateSize(), 300);
-        }
-
-        // MOTOR DE ARRASTRE PARA PC (Mouse Drag-to-Scroll)
         function initCarouselDrag() {
             const slider = document.getElementById('dashboard-carousel');
-            let isDown = false;
-            let startX;
-            let scrollLeft;
-
-            slider.addEventListener('mousedown', (e) => {
-                isDown = true;
-                slider.classList.remove('snap-x', 'snap-mandatory'); // Quita el anclaje para un arrastre fluido
-                startX = e.pageX - slider.offsetLeft;
-                scrollLeft = slider.scrollLeft;
-            });
-            slider.addEventListener('mouseleave', () => {
-                isDown = false;
-                slider.classList.add('snap-x', 'snap-mandatory'); // Devuelve el anclaje al soltar
-            });
-            slider.addEventListener('mouseup', () => {
-                isDown = false;
-                slider.classList.add('snap-x', 'snap-mandatory'); // Devuelve el anclaje al soltar
-            });
-            slider.addEventListener('mousemove', (e) => {
-                if (!isDown) return;
-                e.preventDefault();
-                const x = e.pageX - slider.offsetLeft;
-                const walk = (x - startX) * 1.5; // Velocidad de desplazamiento
-                slider.scrollLeft = scrollLeft - walk;
-            });
+            if(!slider) return;
+            let isDown = false; let startX; let scrollLeft;
+            slider.addEventListener('mousedown', (e) => { isDown = true; slider.classList.remove('snap-x', 'snap-mandatory'); startX = e.pageX - slider.offsetLeft; scrollLeft = slider.scrollLeft; });
+            slider.addEventListener('mouseleave', () => { isDown = false; slider.classList.add('snap-x', 'snap-mandatory'); });
+            slider.addEventListener('mouseup', () => { isDown = false; slider.classList.add('snap-x', 'snap-mandatory'); });
+            slider.addEventListener('mousemove', (e) => { if (!isDown) return; e.preventDefault(); const x = e.pageX - slider.offsetLeft; const walk = (x - startX) * 1.5; slider.scrollLeft = scrollLeft - walk; });
         }
 
-        window.onload = () => { initMap(); fetchYProcesarDatos(); initCarouselDrag(); };
+        function initCredenciales() {
+            const tabs = {
+                btnPortal: document.getElementById('btn-tab-portal'), btnValidador: document.getElementById('btn-tab-validator'),
+                contentPortal: document.getElementById('tab-portal'), contentValidador: document.getElementById('tab-validator')
+            };
+
+            // ESCUDO DE SEGURIDAD ABSOLUTO
+            if (!tabs.btnPortal) {
+                console.warn("Módulo de Credenciales inactivo por falta de elementos HTML.");
+                return;
+            }
+
+            const API_PORTAL = "https://script.google.com/macros/s/AKfycbwe20xoBrpyG-gLcLPiGwXCo-TCF3iwni1pHJE498ltQaiepX7ge_Xa2nqxNfk18SD6/exec";
+            const API_VALIDADOR = "https://script.google.com/macros/s/AKfycbylOlo77GvBbU6iXV8dvQXm8GPBIGdVODQCGAZQO9MG-OheL4QKpiZFXBdwWd0iaGGb/exec";
+            const DOMINIO_OFICIAL = "https://mapa.movidasst.com/";
+
+            let currentMemberDNI = null; let currentMemberCode = null; let currentValidatorData = null;
+            let hubCropper = null; let valMapInstance = null; let valMarkerInstance = null;
+
+            const views = { home: document.getElementById('view-home'), portalResult: document.getElementById('view-portal-result'), valResult: document.getElementById('view-validator-result') };
+            const portal = { dni: document.getElementById('portal-dni'), code: document.getElementById('portal-code'), btnSubmit: document.getElementById('btn-portal-submit'), error: document.getElementById('portal-error'), photo: document.getElementById('cred-photo'), name: document.getElementById('cred-name'), lastname: document.getElementById('cred-lastname'), dniDisplay: document.getElementById('cred-dni'), grado: document.getElementById('cred-grado'), carrera: document.getElementById('cred-carrera'), estado: document.getElementById('cred-estado'), codeDisplay: document.getElementById('cred-code'), qr: document.getElementById('cred-qr'), uploadPhoto: document.getElementById('photo-upload'), uploadCamera: document.getElementById('camera-upload'), uploadStatus: document.getElementById('portal-upload-status'), btnDownload: document.getElementById('btn-download'), downloadStatus: document.getElementById('portal-download-status'), btnWaGroup: document.getElementById('btn-whatsapp-group') };
+            const validator = { input: document.getElementById('val-input'), btnSubmit: document.getElementById('btn-val-submit'), idleState: document.getElementById('val-idle'), errorState: document.getElementById('val-error'), photo: document.getElementById('val-photo'), photoPlaceholder: document.getElementById('val-photo-placeholder'), nombres: document.getElementById('val-nombres'), apellidos: document.getElementById('val-apellidos'), cedula: document.getElementById('val-cedula'), grado: document.getElementById('val-grado'), carrera: document.getElementById('val-carrera'), ubicacion: document.getElementById('val-ubicacion'), btnShare: document.getElementById('btn-val-share'), btnChat: document.getElementById('btn-val-chat') };
+            const modal = { container: document.getElementById('cropper-modal'), img: document.getElementById('image-to-crop'), btnCancel: document.getElementById('btn-crop-cancel'), btnSave: document.getElementById('btn-crop-save') };
+
+            const manageBtnState = (btn, isLoading) => {
+                const textEl = btn.querySelector('.btn-text'); btn.disabled = isLoading;
+                if (isLoading) {
+                    if (textEl) textEl.classList.add('opacity-0');
+                    if (!btn.querySelector('.spinner')) { const s = document.createElement('div'); s.className = `spinner spinner-center ${btn.classList.contains('bg-white') ? 'spinner-dark' : ''}`; btn.appendChild(s); }
+                } else {
+                    if (textEl) textEl.classList.remove('opacity-0');
+                    const s = btn.querySelector('.spinner'); if (s) s.remove();
+                }
+            };
+
+            const changeView = (viewToShow) => {
+                Object.values(views).forEach(v => { v.classList.add('hidden'); v.classList.remove('opacity-100', 'translate-y-0'); v.classList.add('opacity-0', 'translate-y-4'); });
+                setTimeout(() => {
+                    viewToShow.classList.remove('hidden'); viewToShow.offsetHeight; 
+                    viewToShow.classList.remove('opacity-0', 'translate-y-4'); viewToShow.classList.add('opacity-100', 'translate-y-0');
+                    if(viewToShow === views.valResult && valMapInstance) setTimeout(() => valMapInstance.invalidateSize(), 200);
+                }, 10);
+            };
+
+            const switchHubTab = (tab) => {
+                const activeCls = "px-6 py-3 sm:py-2.5 rounded-lg text-sm font-bold transition-all shadow-sm bg-white text-movida-teal w-full sm:w-auto text-center flex items-center justify-center gap-2 border border-slate-200/50";
+                const inactiveCls = "px-6 py-3 sm:py-2.5 rounded-lg text-sm font-bold transition-all text-slate-500 hover:text-slate-800 w-full sm:w-auto text-center flex items-center justify-center gap-2 border border-transparent";
+                if(tab === 'portal') { tabs.btnPortal.className = activeCls; tabs.btnValidador.className = inactiveCls; tabs.contentValidador.classList.add('hidden'); tabs.contentPortal.classList.remove('hidden'); } 
+                else { tabs.btnValidador.className = activeCls; tabs.btnPortal.className = inactiveCls; tabs.contentPortal.classList.add('hidden'); tabs.contentValidador.classList.remove('hidden'); }
+            };
+
+            const transformDriveUrl = (url) => {
+                if (!url) return ''; if (!url.includes('drive.google.com') && !url.includes('docs.google.com')) return url;
+                const match = url.match(/\/file\/d\/([^\/]+)/) || url.match(/[?&]id=([^&]+)/);
+                return match ? `https://drive.google.com/thumbnail?id=${match[1]}&sz=w600` : url;
+            };
+
+            const getCorsDriveUrl = (url) => {
+                if (!url) return null; const match = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+                return match ? `https://lh3.googleusercontent.com/d/${match[1]}` : url;
+            };
+
+            const loginPortal = async () => {
+                const dni = portal.dni.value.trim(); const code = portal.code.value.trim(); portal.error.textContent = '';
+                if (!dni || !code) { portal.error.textContent = 'Ingrese Cédula y Código.'; return; }
+                manageBtnState(portal.btnSubmit, true);
+                try {
+                    const res = await fetch(`${API_PORTAL}?cedula=${encodeURIComponent(dni)}&codigo=${encodeURIComponent(code)}`);
+                    const data = await res.json();
+                    if (data.result === 'found') { currentMemberDNI = data.cedula; currentMemberCode = data.codigo; renderCredential(data); changeView(views.portalResult); } 
+                    else if (data.result === 'wrong_code') { portal.error.textContent = 'El Código de Registro no coincide.'; } 
+                    else { portal.error.textContent = 'Datos no encontrados en el sistema.'; }
+                } catch (e) { portal.error.textContent = 'Error de conexión. Intente nuevamente.'; } 
+                finally { manageBtnState(portal.btnSubmit, false); }
+            };
+
+            const renderCredential = (data) => {
+                const fullName = data.nombre || data.nombres || "N/A"; let nPart = fullName, lPart = data.apellidos || "";
+                if(fullName !== "N/A" && !data.apellidos && fullName.indexOf(' ') > -1) { const parts = fullName.split(' '); nPart = parts.length > 2 ? parts.slice(0, 2).join(' ') : parts[0]; lPart = parts.length > 2 ? parts.slice(2).join(' ') : parts[1]; }
+                portal.name.textContent = nPart; portal.lastname.textContent = lPart; portal.dniDisplay.textContent = data.cedula;
+                portal.grado.textContent = data.grado || data.gradoAcademico || "SST"; portal.carrera.textContent = data.carrera || data.especialidad || "Profesional";
+                portal.estado.textContent = data.estado || data.ubicacion || "Venezuela"; portal.codeDisplay.textContent = data.codigo || "----";
+                const qrUrl = data.codigo ? `https://mapa.movidasst.com/?token=${data.codigo}` : "https://mapa.movidasst.com/";
+                portal.qr.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrUrl)}&color=0f766e&bgcolor=ffffff&margin=0" alt="QR" style="width:100%;height:100%;object-fit:contain;" crossorigin="anonymous">`;
+                const placeholder = 'https://placehold.co/120x155/f1f5f9/94a3b8?text=Perfil'; const cacheBuster = `?t=${new Date().getTime()}`;
+                if (data.fotoUrl && data.fotoUrl.includes('http')) {
+                    portal.photo.src = getCorsDriveUrl(data.fotoUrl) + cacheBuster;
+                    portal.photo.onerror = () => { portal.photo.src = transformDriveUrl(data.fotoUrl) + cacheBuster || placeholder; };
+                } else { portal.photo.src = placeholder; }
+            };
+
+            const openCropper = (e) => {
+                const file = e.target.files[0]; if(!file) return;
+                if (file.size > 5 * 1024 * 1024) { portal.uploadStatus.textContent = 'Archivo muy grande (>5MB).'; return; }
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    modal.img.src = ev.target.result; modal.container.style.display = 'flex';
+                    requestAnimationFrame(() => { modal.container.classList.remove('invisible', 'opacity-0'); modal.container.querySelector('div').classList.remove('scale-95'); });
+                    if(typeof Cropper !== 'undefined') {
+                        if(hubCropper) hubCropper.destroy();
+                        hubCropper = new Cropper(modal.img, { aspectRatio: 3/4, viewMode: 1, background: false, autoCropArea: 0.9 });
+                    }
+                };
+                reader.readAsDataURL(file);
+            };
+
+            const uploadCropped = () => {
+                if(!hubCropper) return; manageBtnState(modal.btnSave, true); portal.uploadStatus.textContent = 'Subiendo imagen...';
+                hubCropper.getCroppedCanvas({ width: 300, height: 400 }).toBlob((blob) => {
+                    const reader = new FileReader(); reader.readAsDataURL(blob);
+                    reader.onloadend = () => {
+                        const base64Data = reader.result.split(',')[1]; const formData = new URLSearchParams();
+                        formData.append('action', 'updateFoto'); formData.append('cedula', currentMemberDNI); formData.append('fotoMimeType', blob.type); formData.append('fotoName', `foto_${currentMemberDNI}.jpg`); formData.append('fotoData', base64Data);
+                        fetch(API_PORTAL, { method: 'POST', body: formData }).then(r => r.json()).then(d => {
+                            if(d.result === 'success' || d.status === 'success') {
+                                portal.uploadStatus.innerHTML = '<span class="text-movida-green">¡Foto actualizada!</span> Recargando...'; closeCropper(); setTimeout(() => loginPortal(), 2000); 
+                            } else throw new Error();
+                        }).catch(() => {
+                            portal.uploadStatus.innerHTML = '<span class="text-teal-600">Procesando en el servidor...</span>'; closeCropper(); setTimeout(() => loginPortal(), 4000); 
+                        }).finally(() => manageBtnState(modal.btnSave, false));
+                    };
+                }, 'image/jpeg', 0.9);
+            };
+
+            const closeCropper = () => {
+                modal.container.classList.add('opacity-0'); modal.container.querySelector('div').classList.add('scale-95');
+                setTimeout(() => { modal.container.style.display = 'none'; modal.container.classList.add('invisible'); if(hubCropper) hubCropper.destroy(); hubCropper = null; portal.uploadPhoto.value = ''; portal.uploadCamera.value = ''; }, 300);
+            };
+
+            const downloadCred = () => {
+                manageBtnState(portal.btnDownload, true); portal.downloadStatus.textContent = 'Generando imagen alta calidad...';
+                setTimeout(() => {
+                    const el = document.getElementById('credential');
+                    if(typeof html2canvas !== 'undefined') {
+                        html2canvas(el, { scale: 3, useCORS: true, allowTaint: false, backgroundColor: '#ffffff', width: 600, height: 380, scrollX: 0, scrollY: 0, windowWidth: 800, windowHeight: 600, onclone: (doc) => { const clone = doc.getElementById('credential'); clone.style.transform = 'none'; clone.style.margin = '0'; clone.style.boxShadow = 'none'; }
+                        }).then(canvas => {
+                            const link = document.createElement('a'); link.download = `Credencial_${currentMemberDNI}.png`; link.href = canvas.toDataURL("image/png", 1.0); link.click(); portal.downloadStatus.textContent = "¡Descarga completada!";
+                        }).catch(e => { portal.downloadStatus.textContent = "Error al generar imagen."; }).finally(() => manageBtnState(portal.btnDownload, false));
+                    }
+                }, 500);
+            };
+
+            const searchValidator = (query, type) => {
+                if(!query) return; validator.idleState.classList.add('hidden'); validator.errorState.classList.add('hidden'); manageBtnState(validator.btnSubmit, true);
+                const url = type === 'token' ? `${API_VALIDADOR}?token=${query}` : `${API_VALIDADOR}?cedula=${query}`;
+                fetch(url).then(r => r.json()).then(data => {
+                    if(data && data.result === 'found') { currentValidatorData = data; renderValidator(data); changeView(views.valResult); } 
+                    else { validator.errorState.classList.remove('hidden'); }
+                }).catch(() => validator.errorState.classList.remove('hidden')).finally(() => manageBtnState(validator.btnSubmit, false));
+            };
+
+            const renderValidator = (d) => {
+                validator.nombres.textContent = d.nombres || "N/A";
+                validator.apellidos.textContent = d.apellidos || "";
+                
+                // Escudo de seguridad: Solo actualiza la cédula si el elemento existe visualmente
+                if (validator.cedula) validator.cedula.textContent = d.cedula.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+                
+                // Mostrar perfil académico limpio (Sin edad ni datos sensibles)
+                validator.grado.textContent = d.grado || '-';
+                validator.carrera.textContent = d.carrera || '-';
+                validator.ubicacion.textContent = `${d.municipio || ''}, Edo. ${d.estado || ''}`;
+
+                // Procesar Fotografía con Inteligencia y Bypass Anti-CORS
+                let fotoData = d.fotoUrl || d.foto || d.Foto || d.FOTO || '';
+                
+                if(fotoData && fotoData.includes('http')) {
+                    // Intento 1: Carga rápida de Google (Bypass)
+                    validator.photo.src = getCorsDriveUrl(fotoData);
+                    validator.photo.onload = () => { validator.photo.classList.remove('hidden'); validator.photoPlaceholder.classList.add('hidden'); };
+                    
+                    // Intento 2: Si falla por privacidad, usamos el Thumbnail seguro
+                    validator.photo.onerror = () => { 
+                        validator.photo.src = transformDriveUrl(fotoData);
+                        validator.photo.onerror = () => { validator.photo.classList.add('hidden'); validator.photoPlaceholder.classList.remove('hidden'); };
+                    };
+                } else {
+                    validator.photo.classList.add('hidden'); validator.photoPlaceholder.classList.remove('hidden');
+                }
+
+                // WhatsApp dinámico
+                const w = (d.wasap || '').toString().replace(/\D/g, '');
+                validator.btnChat.href = w ? `https://wa.me/${w}` : '#';
+
+                // Inicializar o Actualizar Mapa del Validador
+                const coords = geodata.estados[d.estado] || { lat: 10.5, lng: -66.9 };
+                const latLng = [coords.lat, coords.lng];
+                
+                if(!valMapInstance) {
+                    valMapInstance = L.map('valStateMap', { zoomControl: false, attributionControl: false }).setView(latLng, 7);
+                    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { maxZoom: 19 }).addTo(valMapInstance);
+                    valMarkerInstance = L.circleMarker(latLng, { color: '#007b85', fillColor: '#007b85', fillOpacity: 0.4, radius: 12 }).addTo(valMapInstance);
+                } else {
+                    valMapInstance.setView(latLng, 7);
+                    valMarkerInstance.setLatLng(latLng);
+                }
+            };
+
+            // Eventos de la Interfaz
+            tabs.btnPortal.addEventListener('click', () => switchHubTab('portal'));
+            tabs.btnValidador.addEventListener('click', () => switchHubTab('validator'));
+
+            document.querySelectorAll('.btn-volver').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    changeView(views.home);
+                    portal.dni.value = ''; portal.code.value = ''; portal.error.textContent = ''; portal.uploadStatus.textContent = '';
+                    validator.input.value = ''; validator.idleState.classList.remove('hidden'); validator.errorState.classList.add('hidden');
+                });
+            });
+
+            validator.btnSubmit.addEventListener('click', () => {
+                const q = validator.input.value.trim().toUpperCase();
+                searchValidator(q, /^[A-Z]+$/.test(q) ? 'token' : 'cedula');
+            });
+            
+            validator.input.addEventListener('keypress', (e) => { if(e.key === 'Enter') validator.btnSubmit.click(); });
+            validator.input.addEventListener('input', function() { this.value = this.value.toUpperCase().replace(/[^0-9A-Z]/g, ''); });
+
+            validator.btnShare.addEventListener('click', () => {
+                if(!currentValidatorData) return;
+                const text = `*Credencial Auténtica - Movida SST Plus* 🛡️\n👤 ${currentValidatorData.nombres} ${currentValidatorData.apellidos}\n📍 ${currentValidatorData.estado}\n💼 ${currentValidatorData.carrera}\n🔗 Valida aquí: ${DOMINIO_OFICIAL}?token=${currentValidatorData.codigo}`;
+                window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+            });
+
+            // Auto-escaneo QR inicial
+            const urlParams = new URLSearchParams(window.location.search);
+            const qrToken = urlParams.get('token');
+            if (qrToken) {
+                switchTab('credencial-view');
+                switchHubTab('validator'); 
+                validator.input.value = qrToken.toUpperCase();
+                searchValidator(qrToken.toUpperCase(), 'token');
+            }
+        } // <- ESTA LLAVE FALTABA: Cierra la función initCredenciales
+
+        // CONTROLADOR MAESTRO DE VISTAS (Protegido contra errores null)
+        function switchTab(tabId) {
+            if(navigator.vibrate) navigator.vibrate(50);
+            
+            ['map-view', 'dashboard-view', 'info-view', 'credencial-view'].forEach(id => {
+                const el = document.getElementById(id); 
+                const btn = document.getElementById(`btn-${id}`);
+                
+                // Escudo protector activo
+                if (!el || !btn) return; 
+                
+                let zIndex = id === 'map-view' ? 'z-10' : 'z-20';
+                
+                if(id === tabId) { 
+                    el.className = `view-active absolute inset-0 ${zIndex} overflow-y-auto pb-[120px] pt-[85px] px-2`; 
+                    btn.classList.add('active', 'text-movida-teal'); 
+                    btn.classList.remove('text-slate-400'); 
+                } else { 
+                    el.className = `view-hidden absolute inset-0 ${zIndex} overflow-y-auto pb-[120px] pt-[85px] px-2`; 
+                    btn.classList.remove('active', 'text-movida-teal'); 
+                    btn.classList.add('text-slate-400'); 
+                }
+                
+                // El mapa tiene su display especial z-10
+                if(id === 'map-view') {
+                    el.className = (id === tabId) ? 'view-active absolute inset-0 z-10' : 'view-hidden absolute inset-0 z-10';
+                }
+            });
+            
+            // Refresco de mapas
+            if(tabId === 'map-view') {
+                setTimeout(() => { if(map) map.invalidateSize() }, 300);
+            }
+        }
+
+        window.onload = () => { 
+            initMap(); 
+            fetchYProcesarDatos(); 
+            initCarouselDrag(); 
+            initCredenciales(); 
+        };
     </script>
 </body>
 </html>
