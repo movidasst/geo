@@ -249,7 +249,7 @@
     <main id="dashboard-view" class="view-hidden absolute inset-0 z-20 overflow-y-auto pb-[120px] pt-[85px] px-2">
         <div class="p-4 space-y-5 max-w-lg mx-auto">
             
-            <a href="https://registro.movidasst.com/" target="_blank" class="block w-full bg-gradient-to-br from-movida-navy via-[#00307b] to-movida-teal text-white rounded-2xl p-5 shadow-glass active:scale-95 transition-transform relative overflow-hidden mt-1 border border-movida-teal/30">
+            <a href="https://registro.movidasst.com/" target="_self" class="block w-full bg-gradient-to-br from-movida-navy via-[#00307b] to-movida-teal text-white rounded-2xl p-5 shadow-glass active:scale-95 transition-transform relative overflow-hidden mt-1 border border-movida-teal/30">
                 <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl transform translate-x-10 -translate-y-10"></div>
                 <div class="flex items-center justify-between relative z-10">
                     <div>
@@ -367,6 +367,40 @@
     <main id="info-view" class="view-hidden absolute inset-0 z-20 overflow-y-auto pb-[120px] pt-[85px] px-2">
         <div class="p-4 space-y-5 max-w-lg mx-auto">
             
+            <!-- 1. TARJETA LINKEDIN -->
+            <div class="glass-card p-5 mt-2 border-t-4 border-[#0A66C2] relative overflow-hidden shadow-sm">
+                <div class="absolute top-[-10px] right-[-10px] text-[#0A66C2]/5 text-7xl pointer-events-none"><i class="fa-brands fa-linkedin"></i></div>
+                <h3 class="text-movida-navy font-black text-[13px] uppercase tracking-wide mb-2 flex items-center gap-2 relative z-10">
+                    <i class="fa-brands fa-linkedin text-[#0A66C2]"></i> ¡Conecta tu LinkedIn!
+                </h3>
+                <p class="text-xs text-slate-600 mb-4 leading-relaxed font-medium relative z-10">
+                    Si ya estás en el mapa y necesitas agregar tu enlace de <strong class="text-[#0A66C2]">LinkedIn</strong> a tu tarjeta, completa esta breve solicitud:
+                </p>
+                <a href="https://docs.google.com/forms/d/e/1FAIpQLSfdStckiRZ4tunmCuyH1X7Pt_sXUviczmPXHIYZSrXBBbTF0A/viewform?usp=header" target="_blank" class="flex items-center justify-center gap-2 w-full bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 font-bold py-3 rounded-xl shadow-sm active:scale-95 transition-transform text-xs relative z-10">
+                    <i class="fa-brands fa-linkedin text-[#0A66C2] text-base"></i> Agregar mi LinkedIn
+                </a>
+            </div>
+
+            <!-- 2. BOTÓN ÚNETE (SIN target="_blank") -->
+            <a href="https://registro.movidasst.com/" class="flex items-center justify-center gap-2 w-full bg-movida-yellow hover:bg-yellow-400 text-movida-navy font-black py-4 rounded-xl shadow-md active:scale-95 transition-transform">
+                <i class="fa-solid fa-rocket"></i> Únete a nuestro Mapa Nacional
+            </a>
+            
+            <!-- 3. TARJETA ACADEMIA (NUEVA) -->
+            <div class="glass-card p-5 mt-2 border-t-4 border-[#00205b] relative overflow-hidden shadow-sm">
+                <div class="absolute top-[-10px] right-[-10px] text-[#00205b]/5 text-7xl pointer-events-none"><i class="fa-solid fa-graduation-cap"></i></div>
+                <h3 class="text-movida-navy font-black text-[13px] uppercase tracking-wide mb-2 flex items-center gap-2 relative z-10">
+                    <i class="fa-solid fa-graduation-cap text-[#00205b]"></i> Academia Movida SST
+                </h3>
+                <p class="text-xs text-slate-600 mb-4 leading-relaxed font-medium relative z-10">
+                    Descubre nuestros programas de formación, cursos y diplomados diseñados para potenciar tus habilidades en Seguridad y Salud en el Trabajo.
+                </p>
+                <a href="https://movidasst.com" target="_blank" class="flex items-center justify-center gap-2 w-full bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 font-bold py-3 rounded-xl shadow-sm active:scale-95 transition-transform text-xs relative z-10">
+                    <i class="fa-solid fa-globe text-movida-teal text-base"></i> Ir a la Academia
+                </a>
+            </div>
+
+            <!-- 4. SOBRE LA MOVIDA -->
             <div class="glass-card p-6 border-t-4 border-movida-teal relative overflow-hidden mt-2 shadow-glass">
                 <div class="absolute top-[-20px] right-[-10px] text-movida-teal/5 text-9xl"><i class="fa-solid fa-quote-right"></i></div>
                 <h2 class="text-xl font-black text-movida-navy mb-4 relative z-10">Sobre La Movida SST Plus</h2>
@@ -399,28 +433,11 @@
                         <img src="https://lh3.googleusercontent.com/d/1m4pNQxDXnAylH3HKz333Hxks1_VvnR0A" class="absolute inset-0 w-full h-full object-cover rounded-full border-2 border-white" alt="David Linares Brea">
                     </div>
                     <div>
-                        <p class="text-xs italic text-slate-500 mb-1 leading-tight">"Espero que esta herramienta sea de gran ayuda para nuestra comunidad de profesionales de SST venezolanos."</p>
+                        <p class="text-xs italic text-slate-500 mb-1 leading-tight">"Espero que esta herramienta sea de gran ayuda para nuestra comunidad de profesionales de sst venezolanos"</p>
                         <p class="text-sm font-black text-movida-navy">David Linares Brea</p>
                         <p class="text-[10px] font-bold text-movida-teal uppercase tracking-widest">Fundador</p>
                     </div>
                 </div>
-            </div>
-
-            <a href="https://registro.movidasst.com/" target="_blank" class="flex items-center justify-center gap-2 w-full bg-movida-yellow hover:bg-yellow-400 text-movida-navy font-black py-4 rounded-xl shadow-md active:scale-95 transition-transform">
-                <i class="fa-solid fa-rocket"></i> Únete a nuestro Mapa Nacional
-            </a>
-            
-            <div class="glass-card p-5 mt-2 border-t-4 border-[#0A66C2] relative overflow-hidden shadow-sm">
-                <div class="absolute top-[-10px] right-[-10px] text-[#0A66C2]/5 text-7xl pointer-events-none"><i class="fa-brands fa-linkedin"></i></div>
-                <h3 class="text-movida-navy font-black text-[13px] uppercase tracking-wide mb-2 flex items-center gap-2 relative z-10">
-                    <i class="fa-brands fa-linkedin text-[#0A66C2]"></i> ¡Conecta tu LinkedIn!
-                </h3>
-                <p class="text-xs text-slate-600 mb-4 leading-relaxed font-medium relative z-10">
-                    Si ya estás en el mapa y necesitas agregar tu enlace de <strong class="text-[#0A66C2]">LinkedIn</strong> a tu tarjeta, completa esta breve solicitud:
-                </p>
-                <a href="https://docs.google.com/forms/d/e/1FAIpQLSfdStckiRZ4tunmCuyH1X7Pt_sXUviczmPXHIYZSrXBBbTF0A/viewform?usp=header" target="_blank" class="flex items-center justify-center gap-2 w-full bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 font-bold py-3 rounded-xl shadow-sm active:scale-95 transition-transform text-xs relative z-10">
-                    <i class="fa-brands fa-linkedin text-[#0A66C2] text-base"></i> Agregar mi LinkedIn
-                </a>
             </div>
 
             <div class="pb-6"></div>
@@ -441,7 +458,7 @@
 
                     <div class="flex flex-col sm:flex-row justify-center items-center gap-2 mb-8 bg-slate-100 p-1.5 rounded-xl w-full sm:w-fit mx-auto shadow-inner border border-slate-200">
                         <button id="btn-tab-portal" class="px-6 py-3 sm:py-2.5 rounded-lg text-sm font-bold transition-all shadow-sm bg-white text-movida-teal w-full sm:w-auto text-center flex items-center justify-center gap-2 border border-slate-200/50">
-                            <i class="fa-solid fa-id-badge"></i> Mi Credencial
+                            <i class="fa-solid fa-id-badge"></i> Mi Carnet
                         </button>
                         <button id="btn-tab-validator" class="px-6 py-3 sm:py-2.5 rounded-lg text-sm font-bold transition-all text-slate-500 hover:text-slate-800 w-full sm:w-auto text-center flex items-center justify-center gap-2 border border-transparent">
                             <i class="fa-solid fa-shield-halved"></i> Validador
@@ -585,7 +602,7 @@
 
                         <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-2xl">
                             <button id="btn-download" class="w-full bg-blue-600 text-white font-bold h-14 rounded-xl hover:bg-blue-700 transition-all active:scale-[0.98] shadow-md shadow-blue-600/20 flex items-center justify-center gap-2 relative">
-                                <span class="btn-text flex items-center justify-center gap-2"><i class="fa-solid fa-download"></i> Descargar Credencial</span>
+                                <span class="btn-text flex items-center justify-center gap-2"><i class="fa-solid fa-download"></i> Descargar Carnet</span>
                             </button>
                             <button id="btn-whatsapp-group" class="w-full bg-[#25D366] text-white font-bold h-14 rounded-xl hover:bg-emerald-600 transition-all active:scale-[0.98] shadow-md shadow-emerald-500/20 flex items-center justify-center gap-2">
                                  <i class="fa-brands fa-whatsapp text-lg"></i> Unirse a la Comunidad
@@ -685,7 +702,7 @@
         </button>
         <button onclick="switchTab('credencial-view')" id="btn-credencial-view" class="nav-item text-slate-400 flex flex-col items-center p-2 w-[25%] transition-colors">
             <div class="icon-container w-10 h-10 flex items-center justify-center rounded-full transition-all duration-300"><i class="fa-solid fa-id-badge text-xl"></i></div>
-            <span class="text-[10px] uppercase tracking-wider mt-1 font-medium">Credencial</span>
+            <span class="text-[10px] uppercase tracking-wider mt-1 font-medium">Carnet</span>
         </button>
     </nav>
 
