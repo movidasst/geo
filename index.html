@@ -1373,6 +1373,17 @@
                 window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
             });
 
+            // EVENTOS VITALES DEL PORTAL (Conecta los botones con sus funciones)
+            portal.btnSubmit.addEventListener('click', loginPortal);
+            portal.uploadPhoto.addEventListener('change', openCropper);
+            portal.uploadCamera.addEventListener('change', openCropper);
+            modal.btnSave.addEventListener('click', uploadCropped);
+            modal.btnCancel.addEventListener('click', closeCropper);
+            portal.btnDownload.addEventListener('click', downloadCred);
+            portal.btnWaGroup.addEventListener('click', () => window.open("https://whatsapp.com/channel/0029Va0mlH5Jf05mrcCz8r3e", '_blank'));
+            portal.dni.addEventListener('keypress', (e) => { if(e.key === 'Enter') loginPortal(); });
+            portal.code.addEventListener('keypress', (e) => { if(e.key === 'Enter') loginPortal(); });
+
             // Auto-escaneo QR inicial
             const urlParams = new URLSearchParams(window.location.search);
             const qrToken = urlParams.get('token');
