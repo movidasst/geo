@@ -395,7 +395,7 @@
                 <p class="text-xs text-slate-600 mb-4 leading-relaxed font-medium relative z-10">
                     Descubre nuestros programas de formación, cursos y diplomados diseñados para potenciar tus habilidades en Seguridad y Salud en el Trabajo.
                 </p>
-                <a href="https://movidasst.org" target="_blank" class="flex items-center justify-center gap-2 w-full bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 font-bold py-3 rounded-xl shadow-sm active:scale-95 transition-transform text-xs relative z-10">
+                <a href="https://movidasst.com" target="_blank" class="flex items-center justify-center gap-2 w-full bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 font-bold py-3 rounded-xl shadow-sm active:scale-95 transition-transform text-xs relative z-10">
                     <i class="fa-solid fa-globe text-movida-teal text-base"></i> Ir a la Academia
                 </a>
             </div>
@@ -536,7 +536,8 @@
                         
                         <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-3 md:hidden animate-pulse">⟵ Desliza para verla completa ⟶</p>
                         
-                        <div class="credential-scroll-container">
+                        <!-- Contenedor blindado: Evita el corte izquierdo en móviles anclando la tarjeta a la izquierda -->
+                        <div style="width: 100%; overflow-x: auto; padding-bottom: 1rem; display: block; -webkit-overflow-scrolling: touch;">
                             <div id="credential" style="width: 600px; height: 380px; min-width: 600px; min-height: 380px; margin: 0 auto; position: relative; overflow: hidden; box-sizing: border-box; border-radius: 14px; background-color: #ffffff; border: 1px solid #e2e8f0; font-family: 'Outfit', sans-serif;">
                                 <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: repeating-linear-gradient(45deg, transparent, transparent 4px, rgba(148, 163, 184, 0.05) 4px, rgba(148, 163, 184, 0.05) 5px); z-index: 1;"></div>
                                 <div style="position: absolute; top: 0; left: 0; width: 100%; height: 95px; background: linear-gradient(135deg, #134e4a 0%, #064e3b 100%); z-index: 10;"></div>
@@ -1245,6 +1246,23 @@
             const renderCredential = (data) => {
                 const fullName = data.nombre || data.nombres || "N/A"; let nPart = fullName, lPart = data.apellidos || "";
                 if(fullName !== "N/A" && !data.apellidos && fullName.indexOf(' ') > -1) { const parts = fullName.split(' '); nPart = parts.length > 2 ? parts.slice(0, 2).join(' ') : parts[0]; lPart = parts.length > 2 ? parts.slice(2).join(' ') : parts[1]; }
+                
+                // --- INICIO MICROCIRUGÍA SEGURA ---
+                // 1. Calculamos cuál es más largo
+                const maxLength = Math.max(nPart.length, lPart.length);
+                
+                // 2. Elegimos un tamaño de letra seguro (nunca tocamos los márgenes/padding)
+                const fontSizeUniforme = maxLength > 22 ? '17px' : (maxLength > 16 ? '20px' : (maxLength > 12 ? '24px' : '28px'));
+                
+                // 3. Aplicamos SOLO el tamaño de fuente
+                portal.name.style.fontSize = fontSizeUniforme;
+                portal.lastname.style.fontSize = fontSizeUniforme;
+                
+                // 4. Limpiamos y forzamos a CERO cualquier padding que haya deformado el diseño
+                portal.name.style.paddingTop = '0px';
+                portal.lastname.style.paddingTop = '0px';
+                // --- FIN MICROCIRUGÍA SEGURA ---
+
                 portal.name.textContent = nPart; portal.lastname.textContent = lPart; portal.dniDisplay.textContent = data.cedula;
                 portal.grado.textContent = data.grado || data.gradoAcademico || "SST"; portal.carrera.textContent = data.carrera || data.especialidad || "Profesional";
                 portal.estado.textContent = data.estado || data.ubicacion || "Venezuela"; portal.codeDisplay.textContent = data.codigo || "----";
