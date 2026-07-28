@@ -1198,7 +1198,7 @@
 
             const API_PORTAL = "https://script.google.com/macros/s/AKfycbwe20xoBrpyG-gLcLPiGwXCo-TCF3iwni1pHJE498ltQaiepX7ge_Xa2nqxNfk18SD6/exec";
             const API_VALIDADOR = "https://script.google.com/macros/s/AKfycbylOlo77GvBbU6iXV8dvQXm8GPBIGdVODQCGAZQO9MG-OheL4QKpiZFXBdwWd0iaGGb/exec";
-            const DOMINIO_OFICIAL = "https://mapa.movidasst.com/";
+            const DOMINIO_OFICIAL = "https://directorio.movidasst.com/";
 
             let currentMemberDNI = null; let currentMemberCode = null; let currentValidatorData = null;
             let hubCropper = null; let valMapInstance = null; let valMarkerInstance = null;
@@ -1283,7 +1283,7 @@
                 portal.name.textContent = nPart; portal.lastname.textContent = lPart; portal.dniDisplay.textContent = data.cedula;
                 portal.grado.textContent = data.grado || data.gradoAcademico || "SST"; portal.carrera.textContent = data.carrera || data.especialidad || "Profesional";
                 portal.estado.textContent = data.estado || data.ubicacion || "Venezuela"; portal.codeDisplay.textContent = data.codigo || "----";
-                const qrUrl = data.codigo ? `https://mapa.movidasst.com/?token=${data.codigo}` : "https://mapa.movidasst.com/";
+                const qrUrl = data.codigo ? `https://directorio.movidasst.com/?token=${data.codigo}` : "https://directorio.movidasst.com/";
                 portal.qr.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrUrl)}&color=0f766e&bgcolor=ffffff&margin=0" alt="QR" style="width:100%;height:100%;object-fit:contain;" crossorigin="anonymous">`;
                 const placeholder = 'https://placehold.co/120x155/f1f5f9/94a3b8?text=Perfil'; const cacheBuster = `?t=${new Date().getTime()}`;
                 if (data.fotoUrl && data.fotoUrl.includes('http')) {
