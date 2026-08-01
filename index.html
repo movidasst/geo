@@ -9,6 +9,28 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
     <title>La Movida SST Plus - Directorio Nacional de Integrantes</title>
+
+    <script>
+        // WATCHDOG: evita que la pantalla de carga bloquee la aplicación.
+        window.__movidaStartupStarted = false;
+        window.__movidaHideSplash = function () {
+            var splash = document.getElementById('splash-screen');
+            if (!splash || splash.dataset.hidden === 'true') return;
+            splash.dataset.hidden = 'true';
+            splash.style.opacity = '0';
+            splash.style.pointerEvents = 'none';
+            setTimeout(function () { splash.style.display = 'none'; }, 650);
+        };
+        (function ocultarSplashConReintento(intentos) {
+            setTimeout(function () {
+                window.__movidaHideSplash();
+                var splash = document.getElementById('splash-screen');
+                if ((!splash || splash.dataset.hidden !== 'true') && intentos > 0) {
+                    ocultarSplashConReintento(intentos - 1);
+                }
+            }, 1000);
+        })(5);
+    </script>
     
     <!-- Etiquetas Súper SEO y Open Graph para WhatsApp/Telegram -->
     <meta property="og:title" content="Directorio Nacional de Profesionales - La Movida SST Plus">
@@ -21,31 +43,34 @@
     <meta name="twitter:card" content="summary_large_image">
 
     <!-- Fuentes y Tailwind -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <script src="https://cdn.tailwindcss.com" defer></script>
     
     <!-- Leaflet CSS y MarkerCluster -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css">
     
     <!-- Librerías de Credencial: html2canvas & Cropper.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" rel="stylesheet" media="print" onload="this.media='all'">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js" defer></script>
 
     <!-- FontAwesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
 
     <script>
-        tailwind.config = {
+        window.tailwind = window.tailwind || {};
+        window.tailwind.config = {
             theme: {
                 extend: {
                     fontFamily: { 
                         sans: ['Outfit', 'sans-serif'],
                         mono: ['JetBrains Mono', 'monospace'] 
                     },
-                    colors: { movida: { navy: '#00205b', teal: '#007b85', green: '#70ad47', yellow: '#ffb600', bg: '#f8fafc', blue: '#00205b' } },
+                    colors: { movida: { navy: '#082f5b', teal: '#007c83', green: '#17864b', yellow: '#f4b400', bg: '#f5f8fa', blue: '#0a66c2' } },
                     boxShadow: { 'glass': '0 4px 20px -2px rgba(0, 0, 0, 0.05)' }
                 }
             }
@@ -53,12 +78,199 @@
     </script>
     
     <style>
-        html, body { height: 100dvh; width: 100vw; margin: 0; padding: 0; overflow: hidden; overscroll-behavior-y: none; font-family: 'Outfit', sans-serif; background-color: #f8fafc; }
-        
-        #splash-screen { transition: opacity 0.6s ease-out; z-index: 99999; }
-        
-        #map-container { height: 100%; width: 100%; position: absolute; top: 0; left: 0; z-index: 10; }
+        :root {
+            --app-height: 100dvh;
+            --nav-bottom-gap: max(8px, env(safe-area-inset-bottom));
+            --nav-height: 68px;
+            --movida-navy: #062a5e;
+            --movida-navy-deep: #031d45;
+            --movida-teal: #008b95;
+            --movida-teal-dark: #006a73;
+            --movida-teal-soft: #e7f7f7;
+            --movida-green: #5f9f3d;
+            --movida-yellow: #f4b400;
+            --movida-blue: #0a66c2;
+            --surface: #ffffff;
+            --surface-soft: #f4f8fa;
+            --text-main: #183247;
+            --text-muted: #647789;
+            --line: #d8e3e8;
+            --danger: #c83d55;
+            --shadow-soft: 0 8px 22px rgba(6,42,94,.10);
+            --shadow-button: 0 8px 18px rgba(6,42,94,.20);
+        }
+
+        *, *::before, *::after { box-sizing: border-box; }
+        html, body {
+            width: 100%;
+            height: var(--app-height);
+            min-height: var(--app-height);
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            overscroll-behavior: none;
+            font-family: 'Outfit', Arial, sans-serif;
+            background: #eef2f6;
+        }
+
+        /* Estilos críticos: funcionan incluso antes de que cargue Tailwind. */
+        #splash-screen {
+            position: fixed;
+            inset: 0;
+            z-index: 99999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background: linear-gradient(160deg, #ffffff 0%, #f4f8fb 55%, #eef8f8 100%);
+            transition: opacity .35s ease, visibility .35s ease;
+        }
+        #splash-screen::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(rgba(0,123,133,.16) 1px, transparent 1px);
+            background-size: 24px 24px;
+            opacity: .42;
+        }
+        #splash-brand {
+            position: relative;
+            z-index: 2;
+            width: 76px;
+            height: 76px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 14px;
+            border-radius: 50%;
+            background: #fff;
+            border: 3px solid rgba(0,123,133,.18);
+            box-shadow: 0 12px 30px rgba(0,32,91,.12);
+        }
+        #splash-brand::after {
+            content: '';
+            position: absolute;
+            inset: -5px;
+            border: 3px solid #007b85;
+            border-right-color: transparent;
+            border-bottom-color: rgba(255,182,0,.85);
+            border-radius: 50%;
+            animation: movida-spin 1.2s linear infinite;
+        }
+        #splash-logo {
+            display: block;
+            width: 54px !important;
+            height: 54px !important;
+            max-width: 54px !important;
+            max-height: 54px !important;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        #splash-title {
+            position: relative;
+            z-index: 2;
+            margin: 0;
+            color: #00205b;
+            font-size: 20px;
+            line-height: 1.15;
+            font-weight: 900;
+            letter-spacing: -.02em;
+        }
+        #splash-subtitle {
+            position: relative;
+            z-index: 2;
+            margin-top: 6px;
+            color: #007b85;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: .15em;
+        }
+        #splash-status {
+            position: relative;
+            z-index: 2;
+            margin-top: 16px;
+            padding: 8px 14px;
+            border: 1px solid rgba(0,123,133,.15);
+            border-radius: 999px;
+            background: rgba(255,255,255,.84);
+            color: #486173;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: .08em;
+        }
+        @keyframes movida-spin { to { transform: rotate(360deg); } }
+
+        #map-view {
+            position: fixed !important;
+            inset: 0 !important;
+            width: 100% !important;
+            height: var(--app-height) !important;
+            min-height: var(--app-height) !important;
+            padding: 0 !important;
+            overflow: hidden !important;
+            background: #dfe7ec;
+        }
+        #map-container {
+            position: absolute !important;
+            inset: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            min-height: 100% !important;
+            margin: 0 !important;
+            background: #dfe7ec;
+            z-index: 10;
+        }
+        #map-container.leaflet-container,
+        #map-container .leaflet-map-pane,
+        #map-container .leaflet-tile-pane { min-height: 100%; }
         .leaflet-control-zoom { display: none; }
+        .leaflet-control-attribution {
+            margin-bottom: calc(var(--nav-height) + var(--nav-bottom-gap) + 6px) !important;
+            font-size: 8px !important;
+            opacity: .72;
+        }
+
+        /* Navegación flotante compacta: el mapa continúa visible alrededor. */
+        #bottom-nav {
+            position: fixed !important;
+            left: 10px !important;
+            right: 10px !important;
+            bottom: var(--nav-bottom-gap) !important;
+            width: auto !important;
+            min-height: var(--nav-height);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            padding: 6px 4px !important;
+            border: 1px solid rgba(203,213,225,.9);
+            border-radius: 20px;
+            background: rgba(255,255,255,.94) !important;
+            box-shadow: 0 10px 30px rgba(15,23,42,.16);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+        }
+        #bottom-nav .nav-item {
+            width: 25%;
+            min-width: 0;
+            padding: 3px 2px !important;
+        }
+        #bottom-nav .icon-container {
+            width: 32px !important;
+            height: 32px !important;
+            margin: 0 auto;
+        }
+        #bottom-nav .nav-item span {
+            display: block;
+            margin-top: 1px !important;
+            font-size: 8px !important;
+            line-height: 1.1;
+        }
+        #map-visible-card {
+            bottom: calc(var(--nav-height) + var(--nav-bottom-gap) + 14px) !important;
+        }
         
         .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(226, 232, 240, 0.8); box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05); border-radius: 1.5rem; }
 
@@ -85,32 +297,722 @@
         .credential-scroll-container { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 1rem; display: flex; justify-content: center; }
         @media (max-width: 640px) { .credential-scroll-container { justify-content: flex-start; padding-left: 0.5rem; padding-right: 0.5rem; } }
         body > div:last-child img { display: inline-block !important; } /* Parche html2canvas */
+    
+
+        /* =========================================================
+           SISTEMA VISUAL MOBILE FIRST — independiente de Tailwind
+           ========================================================= */
+        body {
+            color: var(--text-main);
+            background:
+                radial-gradient(circle at 100% 0, rgba(0,139,149,.07), transparent 34%),
+                linear-gradient(180deg, #f7fafc 0%, #edf3f6 100%);
+            -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeLegibility;
+        }
+
+        img {
+            max-width: 100%;
+            image-rendering: auto;
+            backface-visibility: hidden;
+        }
+
+        button, a, input, select {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        button, a[role="button"], input, select {
+            touch-action: manipulation;
+        }
+
+        button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible {
+            outline: 3px solid rgba(0,139,149,.25);
+            outline-offset: 2px;
+        }
+
+        body > header {
+            min-height: 62px;
+            background: rgba(255,255,255,.96) !important;
+            border-bottom-color: rgba(0,139,149,.16) !important;
+            box-shadow: 0 4px 18px rgba(6,42,94,.08) !important;
+        }
+
+        body > header img {
+            width: 38px !important;
+            height: 38px !important;
+            border: 2px solid rgba(0,139,149,.65) !important;
+            box-shadow: 0 4px 12px rgba(6,42,94,.14);
+        }
+
+        .glass-card {
+            background: rgba(255,255,255,.98) !important;
+            border: 1px solid var(--line) !important;
+            box-shadow: var(--shadow-soft) !important;
+            border-radius: 20px !important;
+        }
+
+        /* Controles del mapa */
+        #btn-locate, #btn-heatmap {
+            width: 46px !important;
+            height: 46px !important;
+            background: rgba(255,255,255,.98) !important;
+            color: var(--movida-navy) !important;
+            border: 1px solid rgba(0,139,149,.24) !important;
+            box-shadow: 0 8px 20px rgba(6,42,94,.18) !important;
+        }
+        #btn-heatmap { color: var(--movida-teal-dark) !important; }
+        #btn-heatmap.bg-movida-navy {
+            color: #fff !important;
+            background: linear-gradient(145deg, var(--movida-navy), var(--movida-teal-dark)) !important;
+        }
+
+        .filter-pill {
+            min-height: 38px;
+            padding-left: 15px !important;
+            padding-right: 15px !important;
+            background: rgba(249,252,253,.98) !important;
+            color: #315066 !important;
+            border: 1px solid #cbdce3 !important;
+            box-shadow: 0 5px 14px rgba(6,42,94,.08) !important;
+            font-size: 12px !important;
+            font-weight: 800 !important;
+        }
+        .filter-pill.active {
+            color: #fff !important;
+            border-color: transparent !important;
+            background: linear-gradient(135deg, var(--movida-navy), #0a477b) !important;
+            box-shadow: 0 7px 16px rgba(6,42,94,.26) !important;
+        }
+        .filter-pill:last-child {
+            color: #fff !important;
+            border-color: transparent !important;
+            background: linear-gradient(135deg, var(--movida-teal-dark), var(--movida-teal)) !important;
+        }
+
+        #map-visible-card {
+            min-width: 132px;
+            background: rgba(255,255,255,.97) !important;
+            border-color: rgba(0,139,149,.22) !important;
+            box-shadow: 0 8px 22px rgba(6,42,94,.17) !important;
+        }
+
+        /* Barra inferior móvil */
+        #bottom-nav {
+            border-color: rgba(0,139,149,.22) !important;
+            background: rgba(255,255,255,.97) !important;
+            box-shadow: 0 12px 34px rgba(3,29,69,.23) !important;
+        }
+        #bottom-nav .nav-item {
+            min-height: 54px;
+            color: #718497;
+            border-radius: 14px;
+        }
+        #bottom-nav .icon-container {
+            color: inherit;
+            transition: transform .22s ease, background .22s ease, color .22s ease;
+        }
+        #bottom-nav .nav-item.active {
+            color: var(--movida-teal-dark) !important;
+            font-weight: 900 !important;
+        }
+        #bottom-nav .nav-item.active .icon-container {
+            color: #fff !important;
+            background: linear-gradient(145deg, var(--movida-teal-dark), var(--movida-teal)) !important;
+            box-shadow: 0 6px 14px rgba(0,139,149,.28);
+            transform: translateY(-3px) scale(1.04) !important;
+        }
+
+        /* Paneles inferiores */
+        #advanced-filters-sheet, #profile-sheet {
+            background: linear-gradient(180deg, #ffffff 0%, #f7fafb 100%) !important;
+            border: 1px solid rgba(0,139,149,.18);
+            border-bottom: none;
+            box-shadow: 0 -16px 44px rgba(3,29,69,.22) !important;
+        }
+        #advanced-filters-sheet label {
+            color: #486276 !important;
+        }
+        #advanced-filters-sheet input,
+        #advanced-filters-sheet select {
+            min-height: 48px;
+            color: var(--text-main) !important;
+            background: #fff !important;
+            border: 1px solid #cbdce3 !important;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,.75);
+        }
+        #advanced-filters-sheet input:focus,
+        #advanced-filters-sheet select:focus {
+            border-color: var(--movida-teal) !important;
+            box-shadow: 0 0 0 4px rgba(0,139,149,.11) !important;
+        }
+        #advanced-filters-sheet .chip-academico,
+        #advanced-filters-sheet .chip-laboral,
+        #advanced-filters-sheet .chip-genero {
+            min-height: 40px;
+            background: #f5f9fa;
+            color: #425e73;
+            border-color: #cfdee4;
+            font-weight: 800;
+        }
+        #advanced-filters-sheet .bg-movida-navy {
+            color: #fff !important;
+            background: linear-gradient(135deg, var(--movida-navy), #0b4a7d) !important;
+            border-color: transparent !important;
+        }
+        #advanced-filters-sheet button[onclick*="limpiarFiltros"] {
+            min-height: 48px;
+            color: var(--movida-teal-dark) !important;
+            background: var(--movida-teal-soft) !important;
+            border: 1px solid rgba(0,139,149,.25) !important;
+        }
+        #advanced-filters-sheet button[onclick*="aplicarFiltros"] {
+            min-height: 48px;
+            color: #fff !important;
+            background: linear-gradient(135deg, var(--movida-teal-dark), var(--movida-teal)) !important;
+            box-shadow: 0 8px 18px rgba(0,139,149,.25) !important;
+        }
+
+        /* Perfil del participante */
+        .participant-profile {
+            padding: 14px 18px 16px !important;
+        }
+        .participant-avatar {
+            width: 72px !important;
+            height: 72px !important;
+            border-radius: 20px !important;
+            box-shadow: 0 9px 22px rgba(6,42,94,.20) !important;
+        }
+        .participant-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            image-rendering: auto;
+        }
+        .profile-close-btn {
+            width: 38px !important;
+            height: 38px !important;
+            color: var(--movida-navy) !important;
+            background: #edf4f7 !important;
+            border: 1px solid #d5e2e7 !important;
+        }
+        .profile-contact-grid {
+            display: grid !important;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 9px !important;
+            width: 100%;
+        }
+        .profile-contact-btn {
+            min-width: 0;
+            min-height: 48px;
+            padding: 11px 9px !important;
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            border-radius: 13px !important;
+            color: #fff !important;
+            border: 1px solid transparent !important;
+            box-shadow: 0 7px 16px rgba(6,42,94,.16) !important;
+            font-size: 12px !important;
+            line-height: 1.05;
+            font-weight: 900 !important;
+            text-decoration: none !important;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+        .profile-contact-btn i { font-size: 17px !important; }
+        .profile-contact-email {
+            background: linear-gradient(135deg, var(--movida-navy), #0b4f86) !important;
+        }
+        .profile-contact-whatsapp {
+            background: linear-gradient(135deg, #168f50, #25c866) !important;
+        }
+        .profile-contact-linkedin {
+            background: linear-gradient(135deg, #07539e, var(--movida-blue)) !important;
+        }
+        .profile-contact-disabled {
+            color: #6f8190 !important;
+            background: #e9eff2 !important;
+            border-color: #d2dde2 !important;
+            box-shadow: none !important;
+            cursor: not-allowed;
+        }
+        .profile-contact-disabled i { color: #8fa0ad !important; }
+
+        /* Botones principales del módulo de credenciales */
+        #btn-portal-submit,
+        #btn-crop-save,
+        #btn-download,
+        #btn-whatsapp-group,
+        #btn-val-submit,
+        #btn-val-share,
+        #btn-val-chat {
+            min-height: 50px !important;
+            border: 0 !important;
+            color: #fff !important;
+            font-weight: 900 !important;
+            box-shadow: var(--shadow-button) !important;
+        }
+        #btn-portal-submit, #btn-crop-save {
+            background: linear-gradient(135deg, var(--movida-teal-dark), var(--movida-teal)) !important;
+        }
+        #btn-download, #btn-val-submit, #btn-val-chat {
+            background: linear-gradient(135deg, var(--movida-navy), #0a4b83) !important;
+        }
+        #btn-whatsapp-group, #btn-val-share {
+            background: linear-gradient(135deg, #168d50, #28c96b) !important;
+        }
+        #btn-crop-cancel, .btn-volver {
+            min-height: 44px;
+            color: var(--movida-navy) !important;
+            background: #eef4f6 !important;
+            border: 1px solid #d5e1e6 !important;
+        }
+
+        /* Tabs del carnet */
+        #btn-tab-portal, #btn-tab-validator {
+            min-height: 46px;
+        }
+        #btn-tab-portal.bg-white, #btn-tab-validator.bg-white {
+            color: #fff !important;
+            background: linear-gradient(135deg, var(--movida-navy), #0a4b83) !important;
+            border-color: transparent !important;
+            box-shadow: 0 7px 16px rgba(6,42,94,.20) !important;
+        }
+
+        /* Enlaces que antes parecían botones blancos */
+        #info-view a[href*="docs.google.com/forms"] {
+            min-height: 48px;
+            color: #fff !important;
+            background: linear-gradient(135deg, #07549f, var(--movida-blue)) !important;
+            border-color: transparent !important;
+            box-shadow: 0 7px 16px rgba(10,102,194,.22) !important;
+        }
+        #info-view a[href="https://movidasst.com"] {
+            min-height: 48px;
+            color: #fff !important;
+            background: linear-gradient(135deg, var(--movida-teal-dark), var(--movida-teal)) !important;
+            border-color: transparent !important;
+            box-shadow: 0 7px 16px rgba(0,139,149,.22) !important;
+        }
+        #btn-show-more-states {
+            min-height: 46px;
+            color: var(--movida-teal-dark) !important;
+            background: var(--movida-teal-soft) !important;
+            border-color: rgba(0,139,149,.24) !important;
+            font-weight: 900 !important;
+        }
+
+        /* Tarjetas y gráficas más nítidas */
+        #dashboard-view, #info-view, #credencial-view {
+            background:
+                radial-gradient(circle at 100% 0, rgba(0,139,149,.06), transparent 34%),
+                #f2f6f8 !important;
+        }
+        canvas { image-rendering: auto; }
+
+        /* Diseño base para teléfonos pequeños */
+        @media (max-width: 380px) {
+            #bottom-nav { left: 6px !important; right: 6px !important; }
+            #bottom-nav .nav-item span { font-size: 7.5px !important; }
+            .profile-contact-btn { font-size: 11px !important; padding-inline: 7px !important; }
+            .participant-profile { padding-inline: 14px !important; }
+        }
+
+        /* Progresión responsiva: móvil ancho / tablet / escritorio */
+        @media (min-width: 640px) {
+            :root { --nav-height: 74px; }
+            #bottom-nav {
+                left: 50% !important;
+                right: auto !important;
+                width: min(560px, calc(100% - 28px)) !important;
+                transform: translateX(-50%);
+            }
+            #bottom-nav .icon-container { width: 38px !important; height: 38px !important; }
+            #bottom-nav .nav-item span { font-size: 9px !important; }
+            .profile-contact-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+            .participant-profile { padding: 18px 24px 22px !important; }
+        }
+
+    
+        /* =========================================================
+           AUDITORÍA VISUAL Y DE CONTRASTE — MOBILE FIRST
+           Esta capa no depende de Tailwind ni del orden de los CDN.
+           ========================================================= */
+        :root {
+            --movida-navy: #082f5b;
+            --movida-navy-deep: #041f3f;
+            --movida-teal: #007c83;
+            --movida-teal-dark: #006a70;
+            --movida-teal-soft: #e5f5f5;
+            --movida-green: #17864b;
+            --movida-green-soft: #e7f5ec;
+            --movida-yellow: #f4b400;
+            --movida-yellow-soft: #fff7da;
+            --movida-blue: #0a66c2;
+            --surface: #ffffff;
+            --surface-soft: #f5f8fa;
+            --text-main: #183247;
+            --text-muted: #52697a;
+            --line: #d3e0e6;
+            --danger: #b8324b;
+        }
+
+        /* Utilidades de color de respaldo. Evitan texto blanco sin fondo. */
+        .bg-movida-navy { background-color: var(--movida-navy) !important; }
+        .bg-movida-teal { background-color: var(--movida-teal) !important; }
+        .bg-movida-green { background-color: var(--movida-green) !important; }
+        .bg-movida-yellow { background-color: var(--movida-yellow) !important; }
+        .bg-movida-blue { background-color: var(--movida-blue) !important; }
+        .bg-movida-bg { background-color: var(--surface-soft) !important; }
+        [class~="bg-movida-navy/95"] { background-color: rgba(8,47,91,.96) !important; }
+        [class~="bg-movida-navy/40"] { background-color: rgba(8,47,91,.42) !important; }
+        [class~="bg-movida-green/10"] { background-color: var(--movida-green-soft) !important; }
+        [class~="bg-movida-teal/10"] { background-color: var(--movida-teal-soft) !important; }
+
+        .text-movida-navy { color: var(--movida-navy) !important; }
+        .text-movida-teal { color: var(--movida-teal-dark) !important; }
+        .text-movida-green { color: var(--movida-green) !important; }
+        .text-movida-yellow { color: #9a6500 !important; }
+        .text-movida-blue { color: var(--movida-blue) !important; }
+        .border-movida-navy { border-color: var(--movida-navy) !important; }
+        .border-movida-teal { border-color: var(--movida-teal) !important; }
+
+        /* Tipografía y legibilidad general */
+        body { color: var(--text-main) !important; }
+        p, label, input, select, button, a { text-rendering: optimizeLegibility; }
+        input::placeholder { color: #718391 !important; opacity: 1; }
+        select:disabled { color: #667987 !important; background: #edf2f5 !important; }
+        button:disabled, a[aria-disabled="true"] { opacity: .72; }
+
+        /* Encabezado */
+        body > header h1 { color: var(--movida-navy) !important; }
+        body > header p { color: var(--movida-teal-dark) !important; }
+
+        /* Toast: siempre oscuro con texto blanco */
+        #toast-notification {
+            color: #fff !important;
+            background: rgba(8,47,91,.97) !important;
+            border: 1px solid rgba(255,255,255,.18) !important;
+        }
+
+        /* Filtros del mapa */
+        .filter-pill {
+            color: #29475c !important;
+            background: rgba(255,255,255,.98) !important;
+        }
+        .filter-pill.active {
+            color: #fff !important;
+            background: linear-gradient(135deg, var(--movida-navy), #0d4e83) !important;
+        }
+        button[onclick="abrirFiltrosAvanzados()"] {
+            color: #fff !important;
+            background: linear-gradient(135deg, var(--movida-teal-dark), var(--movida-teal)) !important;
+        }
+        #map-visible-card p:first-child { color: #536a7a !important; }
+        #map-visible-count { color: var(--movida-navy) !important; }
+
+        /* Métricas: CTA principal con fondo garantizado */
+        #dashboard-view a[href*="registro.movidasst.com"] {
+            color: #fff !important;
+            background: linear-gradient(135deg, var(--movida-navy-deep) 0%, var(--movida-navy) 52%, var(--movida-teal-dark) 100%) !important;
+            border: 1px solid rgba(0,124,131,.35) !important;
+        }
+        #dashboard-view a[href*="registro.movidasst.com"] h3,
+        #dashboard-view a[href*="registro.movidasst.com"] p,
+        #dashboard-view a[href*="registro.movidasst.com"] i { color: #fff !important; }
+        #dashboard-view a[href*="registro.movidasst.com"] span:first-of-type {
+            color: var(--movida-navy-deep) !important;
+            background: var(--movida-yellow) !important;
+        }
+        #dashboard-view .glass-card h3,
+        #dashboard-view .glass-card h4 { color: var(--movida-navy) !important; }
+        #dashboard-view .glass-card p { color: var(--text-muted); }
+        #professions-list > div,
+        #states-list > div { background: #fff !important; }
+        #btn-show-more-states {
+            color: var(--movida-navy) !important;
+            background: var(--movida-teal-soft) !important;
+        }
+
+        /* Redes sociales del pie: fondo y contraste explícitos */
+        #dashboard-view a[href*="wa.me/"],
+        #dashboard-view a[href*="whatsapp.com/channel"] { color: #fff !important; background: #17864b !important; }
+        #dashboard-view a[href*="instagram.com"] { color: #fff !important; background: linear-gradient(135deg,#7c3aed,#db2777,#f59e0b) !important; }
+        #dashboard-view a[href*="linkedin.com"] { color: #fff !important; background: #0a66c2 !important; }
+        #dashboard-view a[href="https://www.movidasst.com"] { color: #fff !important; background: var(--movida-navy) !important; }
+        #dashboard-view a[href*="t.me/"] { color: #006da3 !important; background: #e5f5fb !important; }
+
+        /* Información: cada acción tiene una superficie definida */
+        #info-view a[href*="docs.google.com/forms"] {
+            color: #fff !important;
+            background: linear-gradient(135deg,#07539e,#0a66c2) !important;
+        }
+        #info-view a[href*="estudio.movidasst.com"] {
+            color: #fff !important;
+            background: linear-gradient(135deg,var(--movida-navy-deep),var(--movida-navy)) !important;
+            border-color: rgba(0,124,131,.36) !important;
+        }
+        #info-view a[href*="estudio.movidasst.com"] span,
+        #info-view a[href*="estudio.movidasst.com"] i { color: #fff !important; }
+        #info-view a[href*="estudio.movidasst.com"] span:first-child { color: #ffd65c !important; }
+        #info-view a[href*="registro.movidasst.com"] {
+            color: var(--movida-navy-deep) !important;
+            background: var(--movida-yellow) !important;
+            border: 1px solid #d99d00 !important;
+            box-shadow: 0 8px 18px rgba(244,180,0,.28) !important;
+        }
+        #info-view a[href="https://movidasst.com"] {
+            color: #fff !important;
+            background: linear-gradient(135deg,var(--movida-teal-dark),var(--movida-teal)) !important;
+        }
+        #info-view .glass-card h2,
+        #info-view .glass-card h3 { color: var(--movida-navy) !important; }
+        #info-view .glass-card p { color: #496174 !important; }
+
+        /* Formularios y pestañas del carnet */
+        #credencial-view input {
+            color: var(--text-main) !important;
+            background: #fff !important;
+            border-color: #bdced7 !important;
+        }
+        #btn-tab-portal, #btn-tab-validator {
+            color: #455f72 !important;
+            background: transparent !important;
+        }
+        #btn-tab-portal.bg-white, #btn-tab-validator.bg-white {
+            color: #fff !important;
+            background: linear-gradient(135deg,var(--movida-navy),#0d4e83) !important;
+        }
+        #btn-portal-submit, #btn-crop-save {
+            color: #fff !important;
+            background: linear-gradient(135deg,var(--movida-teal-dark),var(--movida-teal)) !important;
+        }
+        #btn-download, #btn-val-submit, #btn-val-chat {
+            color: #fff !important;
+            background: linear-gradient(135deg,var(--movida-navy),#0d4e83) !important;
+        }
+        #btn-whatsapp-group, #btn-val-share {
+            color: #fff !important;
+            background: linear-gradient(135deg,#126f40,var(--movida-green)) !important;
+        }
+        #btn-crop-cancel, .btn-volver {
+            color: var(--movida-navy) !important;
+            background: #eaf1f4 !important;
+        }
+
+        /* Perfil del participante */
+        #profile-sheet { color: var(--text-main) !important; }
+        #profile-sheet h2 { color: var(--movida-navy) !important; }
+        #profile-sheet p { color: #496174 !important; }
+        .profile-contact-email {
+            color: #fff !important;
+            background: linear-gradient(135deg,var(--movida-navy-deep),var(--movida-navy)) !important;
+        }
+        .profile-contact-whatsapp {
+            color: #fff !important;
+            background: linear-gradient(135deg,#126f40,var(--movida-green)) !important;
+        }
+        .profile-contact-linkedin {
+            color: #fff !important;
+            background: linear-gradient(135deg,#064c91,var(--movida-blue)) !important;
+        }
+        .profile-contact-disabled {
+            color: #5b6b78 !important;
+            background: #e6eef2 !important;
+            border-color: #cbd8de !important;
+        }
+        .profile-contact-disabled i { color: #657784 !important; }
+
+        /* Navegación inferior: activo oscuro, inactivos legibles */
+        #bottom-nav .nav-item { color: #5c7181 !important; }
+        #bottom-nav .nav-item.active { color: var(--movida-teal-dark) !important; }
+        #bottom-nav .nav-item.active .icon-container {
+            color: #fff !important;
+            background: linear-gradient(145deg,var(--movida-teal-dark),var(--movida-teal)) !important;
+        }
+
+        /* Estados interactivos sin perder contraste */
+        @media (hover:hover) {
+            .profile-contact-email:hover,
+            #btn-download:hover,
+            #btn-val-chat:hover { filter: brightness(1.08); }
+            .profile-contact-whatsapp:hover,
+            #btn-whatsapp-group:hover,
+            #btn-val-share:hover { filter: brightness(1.06); }
+            .profile-contact-linkedin:hover { filter: brightness(1.08); }
+        }
+
+        /* Jerarquía mobile first */
+        @media (max-width: 639px) {
+            body > header h1 { font-size: 13px !important; line-height: 1.15 !important; }
+            body > header p { font-size: 9px !important; }
+            .glass-card { border-radius: 18px !important; }
+            #dashboard-view, #info-view, #credencial-view { padding-inline: 8px !important; }
+            #dashboard-view > div, #info-view > div { padding-inline: 8px !important; }
+            .profile-contact-grid { gap: 8px !important; }
+            .profile-contact-btn { min-height: 50px !important; font-size: 11.5px !important; }
+            #advanced-filters-sheet button { min-height: 46px; }
+        }
+
+
+
+        /* Editor de datos del integrante: mobile first y contraste independiente de Tailwind */
+        #member-data-editor {
+            width: 100%;
+            max-width: 42rem;
+            margin: 1rem auto 0;
+            padding: 1rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 1.25rem;
+            background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+            box-shadow: 0 8px 24px rgba(0, 32, 91, 0.08);
+        }
+        .member-data-heading {
+            display: flex;
+            align-items: flex-start;
+            gap: .75rem;
+            margin-bottom: 1rem;
+        }
+        .member-data-heading-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            flex: 0 0 2.5rem;
+            display: grid;
+            place-items: center;
+            border-radius: .8rem;
+            color: #ffffff;
+            background: linear-gradient(135deg, #00205b, #006f78);
+            box-shadow: 0 6px 14px rgba(0, 32, 91, .18);
+        }
+        .member-data-heading h3 {
+            margin: 0;
+            color: #00205b;
+            font-size: .95rem;
+            line-height: 1.2;
+            font-weight: 900;
+        }
+        .member-data-heading p {
+            margin: .25rem 0 0;
+            color: #475569;
+            font-size: .75rem;
+            line-height: 1.45;
+            font-weight: 600;
+        }
+        .member-data-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: .85rem;
+        }
+        .member-data-field label {
+            display: block;
+            margin: 0 0 .38rem .15rem;
+            color: #334155;
+            font-size: .68rem;
+            line-height: 1;
+            font-weight: 900;
+            letter-spacing: .055em;
+            text-transform: uppercase;
+        }
+        .member-data-field input,
+        .member-data-field select {
+            display: block;
+            width: 100%;
+            min-height: 50px;
+            box-sizing: border-box;
+            padding: .75rem .9rem;
+            border: 1.5px solid #b8c5d3;
+            border-radius: .85rem;
+            color: #0f2747 !important;
+            background: #ffffff !important;
+            font: 700 .9rem/1.2 'Outfit', sans-serif;
+            box-shadow: inset 0 1px 2px rgba(15, 39, 71, .03);
+            outline: none;
+            appearance: none;
+            -webkit-appearance: none;
+        }
+        .member-data-field input::placeholder { color: #94a3b8; opacity: 1; }
+        .member-data-field input:focus,
+        .member-data-field select:focus {
+            border-color: #007b85;
+            box-shadow: 0 0 0 4px rgba(0, 123, 133, .12);
+        }
+        .member-data-select-wrap { position: relative; }
+        .member-data-select-wrap::after {
+            content: '\f078';
+            position: absolute;
+            right: .95rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #007b85;
+            font: 900 .75rem/1 'Font Awesome 6 Free';
+            pointer-events: none;
+        }
+        #btn-save-member-data {
+            position: relative;
+            width: 100%;
+            min-height: 52px;
+            margin-top: 1rem;
+            border: 0;
+            border-radius: .9rem;
+            color: #ffffff !important;
+            background: linear-gradient(135deg, #00205b 0%, #006f78 100%) !important;
+            box-shadow: 0 8px 18px rgba(0, 32, 91, .22);
+            font: 900 .9rem/1 'Outfit', sans-serif;
+            cursor: pointer;
+            transition: transform .18s ease, box-shadow .18s ease, opacity .18s ease;
+        }
+        #btn-save-member-data:active { transform: scale(.985); }
+        #btn-save-member-data:disabled { opacity: .68; cursor: wait; }
+        .member-data-status {
+            min-height: 1.3rem;
+            margin: .7rem .2rem 0;
+            color: #475569;
+            font-size: .76rem;
+            line-height: 1.35;
+            font-weight: 800;
+            text-align: center;
+        }
+        .member-data-status.success { color: #166534; }
+        .member-data-status.error { color: #b91c1c; }
+        .member-data-note {
+            display: flex;
+            align-items: flex-start;
+            gap: .45rem;
+            margin-top: .7rem;
+            padding: .65rem .75rem;
+            border-radius: .75rem;
+            color: #334155;
+            background: #eef6f7;
+            border: 1px solid #c9e5e8;
+            font-size: .69rem;
+            line-height: 1.4;
+            font-weight: 700;
+        }
+        @media (min-width: 480px) {
+            #member-data-editor { padding: 1.25rem; }
+            .member-data-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .member-data-field.member-data-wide { grid-column: 1 / -1; }
+        }
+
     </style>
 </head>
 <body class="text-slate-600 antialiased selection:bg-movida-teal selection:text-white">
 
-    <!-- PANTALLA DE CARGA (SPLASH SCREEN) NATIVA LUMINOSA -->
-    <div id="splash-screen" class="fixed inset-0 bg-slate-50 flex flex-col items-center justify-center overflow-hidden">
-        <div class="absolute inset-0 z-0" style="background-image: radial-gradient(#cbd5e1 1.5px, transparent 1.5px); background-size: 24px 24px; opacity: 0.7;"></div>
-        <div class="absolute top-1/4 left-1/4 w-72 h-72 bg-movida-teal/15 rounded-full blur-[60px] z-0 animate-pulse"></div>
-        <div class="absolute bottom-1/4 right-1/4 w-72 h-72 bg-movida-yellow/15 rounded-full blur-[60px] z-0 animate-pulse" style="animation-delay: 1s;"></div>
-
-        <div class="relative z-10 w-28 h-28 flex items-center justify-center mb-5">
-            <div class="absolute inset-0 border-4 border-white shadow-[0_0_15px_rgba(0,0,0,0.05)] rounded-full"></div>
-            <div class="absolute inset-0 border-4 border-movida-teal rounded-full border-t-transparent animate-spin"></div>
-            <div class="absolute inset-2 border-4 border-movida-yellow/40 rounded-full border-b-transparent animate-[spin_1.5s_linear_infinite_reverse]"></div>
-            <img src="https://assets.poap.xyz/ff0a7e68-7080-4798-af10-4a481f762e71.jpeg" class="w-16 h-16 rounded-full object-cover shadow-sm z-10 border-2 border-white" alt="Logo Splash">
+    <!-- PANTALLA DE CARGA COMPACTA E INDEPENDIENTE DE TAILWIND -->
+    <div id="splash-screen" aria-label="Abriendo La Movida SST Plus">
+        <div id="splash-brand">
+            <img
+                id="splash-logo"
+                src="https://assets.poap.xyz/ff0a7e68-7080-4798-af10-4a481f762e71.jpeg"
+                width="54"
+                height="54"
+                alt="Logo La Movida SST"
+            >
         </div>
-        <h2 class="relative z-10 text-movida-navy font-black text-2xl tracking-tight shadow-white drop-shadow-md">La Movida SST Plus</h2>
-        <div class="relative z-10 mt-1.5 flex items-center justify-center gap-1.5 bg-movida-navy/5 border border-movida-navy/10 px-3 py-1 rounded-full">
-            <i class="fa-solid fa-mobile-screen-button text-movida-teal text-[10px]"></i>
-            <span class="text-movida-navy font-bold text-[9px] uppercase tracking-widest">Web App Móvil</span>
-        </div>
-        <div class="relative z-10 mt-3 flex flex-col items-center bg-white/60 backdrop-blur-sm px-6 py-2.5 rounded-full border border-white/80 shadow-sm">
-            <p class="text-movida-teal font-bold text-[10px] uppercase tracking-[0.2em] animate-pulse flex items-center gap-2">
-                <i class="fa-solid fa-satellite-dish"></i> Sincronizando Red...
-            </p>
-        </div>
+        <h2 id="splash-title">La Movida SST Plus</h2>
+        <div id="splash-subtitle">Red nacional de profesionales</div>
+        <div id="splash-status">Abriendo aplicación…</div>
     </div>
 
     <header class="fixed top-0 left-0 right-0 z-[60] bg-white/90 backdrop-blur-md border-b border-slate-200 px-3 py-2.5 flex items-center justify-between shadow-sm pt-[max(env(safe-area-inset-top),10px)]">
@@ -152,7 +1054,7 @@
             </button>
         </div>
 
-        <div class="absolute bottom-[100px] left-1/2 transform -translate-x-1/2 z-[400] bg-white/95 backdrop-blur-md px-4 py-2.5 rounded-2xl shadow-glass border border-slate-200 flex items-center gap-3 transition-all pointer-events-none">
+        <div id="map-visible-card" class="absolute bottom-[100px] left-1/2 transform -translate-x-1/2 z-[400] bg-white/95 backdrop-blur-md px-4 py-2.5 rounded-2xl shadow-glass border border-slate-200 flex items-center gap-3 transition-all pointer-events-none">
             <div class="bg-movida-teal/10 w-9 h-9 rounded-full flex items-center justify-center shrink-0">
                 <i class="fa-solid fa-users text-movida-teal text-sm"></i>
             </div>
@@ -500,7 +1402,7 @@
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Código de Registro</label>
-                                    <input type="text" id="portal-code" placeholder="Ej: SDEIS" class="w-full bg-white border border-slate-300 rounded-xl p-3.5 font-mono text-slate-700 uppercase outline-none focus:border-movida-teal focus:ring-4 focus:ring-movida-teal/10 transition-all" oninput="this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '')" maxlength="5">
+                                    <input type="text" id="portal-code" placeholder="Ej: SDEIS" class="w-full bg-white border border-slate-300 rounded-xl p-3.5 font-mono text-slate-700 uppercase outline-none focus:border-movida-teal focus:ring-4 focus:ring-movida-teal/10 transition-all" oninput="this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '')" maxlength="10">
                                     <p class="text-[10px] text-slate-400 mt-1.5"><i class="fa-solid fa-lock mr-1"></i>Código único asignado al registrarte.</p>
                                 </div>
                             </div>
@@ -586,9 +1488,9 @@
                                 <div id="cred-dni" style="position: absolute; top: 243px; left: 208px; font-size: 20px; font-weight: 800; color: #334155; z-index: 20;">12345678</div>
                                 <div style="position: absolute; top: 282px; left: 185px; color: #0d9488; font-size: 20px; line-height: 0; z-index: 20;">&bull;</div>
                                 <div id="cred-grado" style="position: absolute; top: 275px; left: 198px; font-size: 16px; font-weight: 800; color: #334155; z-index: 20;">Universitario</div>
-                                <div style="position: absolute; top: 310px; left: 185px; font-size: 9px; font-weight: 800; color: #94a3b8; letter-spacing: 1px; z-index: 20;">ESTADO</div>
+                                <div style="position: absolute; top: 310px; left: 185px; font-size: 9px; font-weight: 800; color: #94a3b8; letter-spacing: 1px; z-index: 20;">UBICACIÓN</div>
                                 <div style="position: absolute; top: 331px; left: 185px; color: #94a3b8; font-size: 20px; line-height: 0; z-index: 20;">&bull;</div>
-                                <div id="cred-estado" style="position: absolute; top: 324px; left: 198px; font-size: 16px; font-weight: 800; color: #334155; z-index: 20;">Miranda</div>
+                                <div id="cred-estado" style="position: absolute; top: 324px; left: 198px; width: 235px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 16px; font-weight: 800; color: #334155; z-index: 20;">Miranda</div>
                                 <div style="position: absolute; top: 148px; left: 450px; width: 120px; text-align: center; font-size: 8px; font-weight: 800; color: #94a3b8; letter-spacing: 1px; z-index: 20;">CÓDIGO DE VERIFICACIÓN</div>
                                 <div id="cred-code" style="position: absolute; top: 162px; left: 450px; width: 120px; text-align: center; font-size: 22px; font-weight: 700; color: #1e293b; font-family: 'JetBrains Mono', monospace; letter-spacing: 2px; z-index: 20;">SDEIS</div>
                                 <div style="position: absolute; top: 195px; left: 450px; width: 120px; height: 1px; background-color: #e2e8f0; z-index: 20;"></div>
@@ -621,6 +1523,77 @@
                             </div>
                             <p id="portal-upload-status" class="text-center text-sm mt-3 font-medium h-4"></p>
                         </div>
+
+                        <form id="member-data-editor" novalidate>
+                            <div class="member-data-heading">
+                                <div class="member-data-heading-icon"><i class="fa-solid fa-user-pen"></i></div>
+                                <div>
+                                    <h3>Actualizar mis datos</h3>
+                                    <p>Los cambios se reflejarán en tu perfil, el mapa nacional, la credencial y las métricas.</p>
+                                </div>
+                            </div>
+
+                            <div class="member-data-grid">
+                                <div class="member-data-field">
+                                    <label for="member-age">Edad</label>
+                                    <input id="member-age" name="edad" type="number" inputmode="numeric" min="18" max="100" step="1" placeholder="Ej. 35" required>
+                                </div>
+
+                                <div class="member-data-field">
+                                    <label for="member-state">Estado</label>
+                                    <div class="member-data-select-wrap">
+                                        <select id="member-state" name="estado" required>
+                                            <option value="">Selecciona un estado</option>
+                                            <option value="Amazonas">Amazonas</option>
+                                            <option value="Anzoátegui">Anzoátegui</option>
+                                            <option value="Apure">Apure</option>
+                                            <option value="Aragua">Aragua</option>
+                                            <option value="Barinas">Barinas</option>
+                                            <option value="Bolívar">Bolívar</option>
+                                            <option value="Carabobo">Carabobo</option>
+                                            <option value="Cojedes">Cojedes</option>
+                                            <option value="Delta Amacuro">Delta Amacuro</option>
+                                            <option value="Distrito Capital">Distrito Capital</option>
+                                            <option value="Falcón">Falcón</option>
+                                            <option value="Guárico">Guárico</option>
+                                            <option value="La Guaira">La Guaira</option>
+                                            <option value="Lara">Lara</option>
+                                            <option value="Mérida">Mérida</option>
+                                            <option value="Miranda">Miranda</option>
+                                            <option value="Monagas">Monagas</option>
+                                            <option value="Nueva Esparta">Nueva Esparta</option>
+                                            <option value="Portuguesa">Portuguesa</option>
+                                            <option value="Sucre">Sucre</option>
+                                            <option value="Táchira">Táchira</option>
+                                            <option value="Trujillo">Trujillo</option>
+                                            <option value="Yaracuy">Yaracuy</option>
+                                            <option value="Zulia">Zulia</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="member-data-field">
+                                    <label for="member-municipality">Municipio</label>
+                                    <input id="member-municipality" name="municipio" type="text" list="member-municipality-options" maxlength="80" autocomplete="address-level2" placeholder="Escribe o selecciona" required>
+                                    <datalist id="member-municipality-options"></datalist>
+                                </div>
+
+                                <div class="member-data-field">
+                                    <label for="member-email">Correo electrónico</label>
+                                    <input id="member-email" name="correo" type="email" maxlength="160" inputmode="email" autocomplete="email" placeholder="nombre@correo.com" required>
+                                </div>
+                            </div>
+
+                            <button id="btn-save-member-data" type="submit">
+                                <span class="btn-text"><i class="fa-solid fa-cloud-arrow-up mr-2"></i> Guardar y sincronizar</span>
+                            </button>
+                            <p id="member-data-status" class="member-data-status" role="status" aria-live="polite"></p>
+                            <div class="member-data-note">
+                                <i class="fa-solid fa-shield-halved"></i>
+                                <span>Por seguridad sólo se pueden modificar edad, ubicación y correo. Tu nombre, cédula, código y formación permanecen protegidos.</span>
+                            </div>
+                        </form>
+
 
                         <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-2xl">
                             <button id="btn-download" class="w-full bg-blue-600 text-white font-bold h-14 rounded-xl hover:bg-blue-700 transition-all active:scale-[0.98] shadow-md shadow-blue-600/20 flex items-center justify-center gap-2 relative">
@@ -725,18 +1698,23 @@
         </button>
     </nav>
 
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
-    <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
-    <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin="" defer></script>
+    <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js" defer></script>
+    <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0" defer></script>
 
     <script>
+        // MOTOR SUPABASE JS V2 — versión reparada
+        const SUPABASE_URL = 'https://daugxkqywrdcbbqvyabe.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRhdWd4a3F5d3JkY2JicXZ5YWJlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU1NzU1MDQsImV4cCI6MjEwMTE1MTUwNH0.lCEX-pKcGdIKVd7cTegAHJ-dZ8HDrkUxUy9vBUwLE44';
+        let supabaseClient = null;
+
         let map; let markersCluster; let heatmapLayer = null;
         let chartInstances = { lab: null, gen: null, edad: null };
         let globalData = []; 
         let datosGeograficosGlobal = {};
-        let stateFiltros = { academico: 'todos', estado: 'todos', laboral: 'todos', genero: 'todos', nombreBusqueda: '', modoHeatmap: false };
+        let stateFiltros = { academico: 'todos', estado: 'todos', municipio: 'todos', laboral: 'todos', genero: 'todos', nombreBusqueda: '', modoHeatmap: false };
         
         // Variables para renderizado diferido (Lazy Loading) de Gráficos
         let chartsDrawn = false;
@@ -777,17 +1755,160 @@
             return str.toLowerCase().split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
         }
 
-        function initMap() {
-            const venezuelaBounds = L.latLngBounds(L.latLng(0.5, -73.5), L.latLng(12.5, -59.5));
-            map = L.map('map-container', { zoomControl: false, maxBounds: venezuelaBounds, maxBoundsViscosity: 0.9, minZoom: 5 }).setView([7.523, -66.178], 6);
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { attribution: '&copy; OpenStreetMap', subdomains: 'abcd', maxZoom: 19 }).addTo(map);
+        function ocultarSplash() {
+            if (typeof window.__movidaHideSplash === 'function') {
+                window.__movidaHideSplash();
+                return;
+            }
+            const splash = document.getElementById('splash-screen');
+            if (!splash || splash.dataset.hidden === 'true') return;
+            splash.dataset.hidden = 'true';
+            splash.style.opacity = '0';
+            splash.style.pointerEvents = 'none';
+            setTimeout(() => { splash.style.display = 'none'; }, 650);
+        }
 
-            markersCluster = L.markerClusterGroup({ showCoverageOnHover: false, maxClusterRadius: 40, spiderfyOnMaxZoom: true, zoomToBoundsOnClick: true });
+        function mostrarErrorVisible(titulo, detalle = '') {
+            console.error(titulo, detalle);
+            let panel = document.getElementById('startup-error-panel');
+            if (!panel) {
+                panel = document.createElement('div');
+                panel.id = 'startup-error-panel';
+                panel.className = 'fixed left-3 right-3 top-20 z-[100000] max-w-xl mx-auto bg-white border border-rose-200 shadow-2xl rounded-2xl p-4';
+                document.body.appendChild(panel);
+            }
+            panel.innerHTML = `
+                <div class="flex gap-3 items-start">
+                    <div class="w-10 h-10 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center shrink-0">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <p class="font-black text-rose-700 text-sm">${titulo}</p>
+                        <p class="text-xs text-slate-600 mt-1 break-words">${detalle || 'Revise la consola del navegador para conocer el detalle técnico.'}</p>
+                    </div>
+                    <button type="button" class="ml-auto text-slate-400" onclick="this.closest('#startup-error-panel').remove()">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>`;
+        }
+
+        function initSupabase() {
+            if (!window.supabase || typeof window.supabase.createClient !== 'function') {
+                throw new Error('No se cargó la librería de Supabase. Verifique la conexión, el CDN o las políticas CSP del alojamiento.');
+            }
+            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+                auth: { persistSession: false, autoRefreshToken: false }
+            });
+        }
+
+        function conTimeout(promesa, milisegundos, mensaje) {
+            let temporizador;
+            const limite = new Promise((_, reject) => {
+                temporizador = setTimeout(() => reject(new Error(mensaje || 'La operación excedió el tiempo permitido.')), milisegundos);
+            });
+            return Promise.race([Promise.resolve(promesa), limite]).finally(() => clearTimeout(temporizador));
+        }
+
+        function esperarHasta(comprobacion, milisegundos = 7000, intervalo = 100) {
+            return new Promise(resolve => {
+                const inicio = Date.now();
+                const revisar = () => {
+                    if (comprobacion()) return resolve(true);
+                    if (Date.now() - inicio >= milisegundos) return resolve(false);
+                    setTimeout(revisar, intervalo);
+                };
+                revisar();
+            });
+        }
+
+        function normalizarGenero(valor) {
+            const v = (valor || '').toString().trim().toLowerCase();
+            if (['femenino', 'mujer', 'female', 'f'].includes(v)) return 'Femenino';
+            if (['masculino', 'hombre', 'male', 'm'].includes(v)) return 'Masculino';
+            return '';
+        }
+
+        function actualizarAlturaAplicacion() {
+            const viewportHeight = window.visualViewport?.height || window.innerHeight;
+            document.documentElement.style.setProperty('--app-height', `${Math.round(viewportHeight)}px`);
+
+            if (map) {
+                requestAnimationFrame(() => map.invalidateSize({ pan: false, animate: false }));
+            }
+        }
+
+        let temporizadorAjusteMapa = null;
+        function programarAjusteMapa() {
+            clearTimeout(temporizadorAjusteMapa);
+            temporizadorAjusteMapa = setTimeout(actualizarAlturaAplicacion, 80);
+        }
+
+        window.addEventListener('resize', programarAjusteMapa, { passive: true });
+        window.addEventListener('orientationchange', () => {
+            setTimeout(actualizarAlturaAplicacion, 120);
+            setTimeout(actualizarAlturaAplicacion, 500);
+        }, { passive: true });
+        if (window.visualViewport) {
+            window.visualViewport.addEventListener('resize', programarAjusteMapa, { passive: true });
+            window.visualViewport.addEventListener('scroll', programarAjusteMapa, { passive: true });
+        }
+        actualizarAlturaAplicacion();
+
+        function initMap() {
+            if (!window.L) {
+                throw new Error('Leaflet no se cargó.');
+            }
+            if (typeof L.markerClusterGroup !== 'function') {
+                throw new Error('El complemento Leaflet MarkerCluster no se cargó.');
+            }
+
+            const mapContainer = document.getElementById('map-container');
+            if (!mapContainer) throw new Error('No existe el contenedor #map-container.');
+
+            const venezuelaBounds = L.latLngBounds(L.latLng(0.5, -73.5), L.latLng(12.5, -59.5));
+            map = L.map(mapContainer, {
+                zoomControl: false,
+                maxBounds: venezuelaBounds,
+                maxBoundsViscosity: 0.9,
+                minZoom: 5
+            }).setView([7.523, -66.178], 6);
+
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; OpenStreetMap &copy; CARTO',
+                subdomains: 'abcd',
+                maxZoom: 19
+            }).addTo(map);
+
+            markersCluster = L.markerClusterGroup({
+                showCoverageOnHover: false,
+                maxClusterRadius: 40,
+                spiderfyOnMaxZoom: true,
+                zoomToBoundsOnClick: true
+            });
             map.addLayer(markersCluster);
 
-            map.on('locationfound', function(e) {
+            map.on('locationfound', (e) => {
                 mostrarNotificacion('Ubicación obtenida', 'fa-check');
-                L.circleMarker(e.latlng, { radius: 8, fillColor: '#ffb600', color: '#fff', weight: 2, opacity: 1, fillOpacity: 0.8 }).addTo(map).bindPopup("Estás aquí").openPopup();
+                L.circleMarker(e.latlng, {
+                    radius: 8,
+                    fillColor: '#ffb600',
+                    color: '#fff',
+                    weight: 2,
+                    opacity: 1,
+                    fillOpacity: 0.8
+                }).addTo(map).bindPopup('Estás aquí').openPopup();
+            });
+
+            map.on('locationerror', () => {
+                mostrarNotificacion('No fue posible obtener tu ubicación', 'fa-location-crosshairs');
+            });
+
+            // Corrige franjas grises causadas por cambios de altura del navegador móvil.
+            [0, 120, 400, 1000].forEach(delay => {
+                setTimeout(() => {
+                    actualizarAlturaAplicacion();
+                    map.invalidateSize({ pan: false, animate: false });
+                }, delay);
             });
         }
 
@@ -802,57 +1923,84 @@
 
         function localizarUsuario() {
             if(navigator.vibrate) navigator.vibrate(50);
+            if (!map || !navigator.geolocation) {
+                mostrarNotificacion('Geolocalización no disponible', 'fa-location-crosshairs');
+                return;
+            }
             mostrarNotificacion('Buscando tu ubicación...', 'fa-location-crosshairs fa-spin');
-            map.locate({setView: true, maxZoom: 12});
+            map.locate({ setView: true, maxZoom: 12, timeout: 10000 });
         }
 
         async function fetchYProcesarDatos() {
-            const URL_API = 'https://script.google.com/macros/s/AKfycbzi1RUHgJ0zj7docOtNEVDImXXUh0jzcGH1AYa8gjmNYW9NS-Q_Cp4Lb_7O5J4z6xfx/exec';
             try {
-                const res = await fetch(URL_API);
-                if(!res.ok) throw new Error("Fallo en red.");
-                const json = await res.json();
-                
-                if(json.result === "success" && json.data) {
-                    json.data.forEach(item => {
-                        let lab = (item.laboral || "").toString().trim();
-                        if (lab === "Desempleado") lab = "Buscando";
-                        item._laboral_clean = (lab === "Dependiente" || lab === "Independiente") ? lab : "Buscando";
-                        
-                        if (!item._nivel_acad || item._nivel_acad === "Profesional") {
-                            let doc = (item.doctorado || item.Doctorado || item.DOCTORADO || "").toString().toLowerCase();
-                            let pg = (item.postgrado || item.Postgrado || "").toString().toLowerCase();
-                            let gr = (item.grado || item.Grado || "").toString().toLowerCase();
-                            
-                            if (doc !== "") item._nivel_acad = "Doctorado";
-                            else if (pg !== "") item._nivel_acad = "Postgrado";
-                            else if (gr.includes("tsu") || gr.includes("t.s.u") || gr.includes("tecnico") || gr.includes("técnico")) item._nivel_acad = "T.S.U.";
-                            else item._nivel_acad = "Profesional";
-                        }
-                        
-                        let nom = (item.Nombres || item.nombres || "").toString().trim();
-                        let ape = (item.Apellidos || item.apellidos || "").toString().trim();
-                        item._nombre_completo = toTitleCase(nom + " " + ape) || "Profesional SST";
+                if (!supabaseClient) throw new Error('El cliente de Supabase no está inicializado.');
 
-                        let profFinal = item._profesion_clean || (item.carrera ? item.carrera.toString().trim() : "Prevencionista SST");
-                        let cr = (item.carrera || "").toString().toUpperCase();
-                        let crLimpia = cr.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); 
-                        if (crLimpia.includes("ING") && crLimpia.includes("INDUSTRIAL")) profFinal = "Ingeniería Industrial";
-                        item._profesion_clean = toTitleCase(profFinal).replace(/\btsu\b/ig, 'TSU').replace(/\bsst\b/ig, 'SST');
-                    });
+                // Supabase suele limitar las consultas a 1.000 filas. Se cargan todas por páginas.
+                const PAGE_SIZE = 1000;
+                const data = [];
+                let desde = 0;
 
-                    globalData = json.data;
-                    aplicarFiltrosGlobales();
-                    procesarDatosParaDashboard(globalData);
-                    
-                    const splash = document.getElementById('splash-screen');
-                    splash.style.opacity = '0';
-                    setTimeout(() => splash.style.display = 'none', 600);
+                while (true) {
+                    const { data: pagina, error } = await conTimeout(
+                        supabaseClient
+                            .from('integrantes')
+                            .select('*')
+                            .range(desde, desde + PAGE_SIZE - 1),
+                        12000,
+                        'Supabase tardó más de 12 segundos en responder.'
+                    );
+
+                    if (error) throw error;
+                    if (!pagina || pagina.length === 0) break;
+
+                    data.push(...pagina);
+                    if (pagina.length < PAGE_SIZE) break;
+                    desde += PAGE_SIZE;
+                }
+
+                data.forEach(item => {
+                    item.estado = (item.estado || '').toString().trim();
+                    item.municipio = (item.municipio || '').toString().trim();
+                    item.genero = normalizarGenero(item.genero || item.Genero || item.GENERO);
+
+                    let lab = (item.laboral || '').toString().trim();
+                    if (lab.toLowerCase() === 'desempleado') lab = 'Buscando';
+                    item._laboral_clean = ['Dependiente', 'Independiente'].includes(lab) ? lab : 'Buscando';
+
+                    if (!item._nivel_acad || item._nivel_acad === 'Profesional') {
+                        const doc = (item.doctorado || item.Doctorado || item.DOCTORADO || '').toString().trim().toLowerCase();
+                        const pg = (item.postgrado || item.Postgrado || '').toString().trim().toLowerCase();
+                        const gr = (item.grado || item.Grado || '').toString().trim().toLowerCase();
+
+                        if (doc) item._nivel_acad = 'Doctorado';
+                        else if (pg) item._nivel_acad = 'Postgrado';
+                        else if (gr.includes('tsu') || gr.includes('t.s.u') || gr.includes('tecnico') || gr.includes('técnico')) item._nivel_acad = 'T.S.U.';
+                        else item._nivel_acad = 'Profesional';
+                    }
+
+                    const nom = (item.nombres || item.Nombres || '').toString().trim();
+                    const ape = (item.apellidos || item.Apellidos || '').toString().trim();
+                    item._nombre_completo = toTitleCase(`${nom} ${ape}`.trim()) || 'Profesional SST';
+
+                    let profFinal = item._profesion_clean || (item.carrera ? item.carrera.toString().trim() : 'Prevencionista SST');
+                    const crLimpia = (item.carrera || '').toString().toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+                    if (crLimpia.includes('ING') && crLimpia.includes('INDUSTRIAL')) profFinal = 'Ingeniería Industrial';
+                    item._profesion_clean = toTitleCase(profFinal).replace(/\btsu\b/ig, 'TSU').replace(/\bsst\b/ig, 'SST');
+                });
+
+                globalData = data;
+                aplicarFiltrosGlobales();
+                procesarDatosParaDashboard(globalData);
+
+                if (data.length === 0) {
+                    mostrarNotificacion('La tabla integrantes no devolvió registros', 'fa-database');
                 }
             } catch (error) {
-                console.error(error);
-                mostrarNotificacion('Error cargando base de datos', 'fa-triangle-exclamation');
-                document.getElementById('splash-screen').style.display = 'none';
+                const detalle = error?.message || String(error);
+                mostrarNotificacion('Error cargando la base de datos', 'fa-triangle-exclamation');
+                mostrarErrorVisible('No se pudo leer Supabase', `${detalle} Revise la URL, la clave pública y las políticas RLS de la tabla integrantes.`);
+            } finally {
+                ocultarSplash();
             }
         }
 
@@ -978,23 +2126,26 @@
 
         function abrirPerfil(itemStr) {
             const item = JSON.parse(decodeURIComponent(itemStr));
-            let imgUrl = ''; let fotoRaw = item.foto || item.Foto || item.FOTO || '';
+            let imgUrl = ''; let fotoRaw = item.foto_url || item.foto || item.Foto || item.FOTO || '';
+            
+            // Bypass universal (Sirve tanto para Google Drive viejo como para Supabase nuevo)
             if(fotoRaw.includes('id=')) imgUrl = `https://lh3.googleusercontent.com/d/${fotoRaw.split('id=')[1].split('&')[0]}`;
             else if(fotoRaw.includes('/d/')) imgUrl = `https://lh3.googleusercontent.com/d/${fotoRaw.split('/d/')[1].split('/')[0]}`;
+            else imgUrl = fotoRaw; // Si no es Drive, es Supabase, la lee directo.
             
             let colorGen = item.genero === 'Femenino' ? '#70ad47' : '#007b85';
             let initial = item._nombre_completo.charAt(0).toUpperCase();
             let email = item.correo || item.Correo || item.CORREO || '';
 
             let html = `
-                <div class="px-6 pt-4 pb-2 relative">
+                <div class="px-6 pt-4 pb-2 relative participant-profile">
                     <div class="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-4"></div>
-                    <button onclick="cerrarTodosLosPaneles()" class="absolute top-4 right-6 w-8 h-8 bg-slate-100 text-slate-500 rounded-full flex items-center justify-center active:scale-95"><i class="fa-solid fa-times"></i></button>
+                    <button onclick="cerrarTodosLosPaneles()" class="absolute top-4 right-6 w-8 h-8 bg-slate-100 text-slate-500 rounded-full flex items-center justify-center active:scale-95 profile-close-btn"><i class="fa-solid fa-times"></i></button>
                     <div class="h-1.5 w-full flex rounded-full overflow-hidden mb-4"><div class="w-1/3 bg-[#FFCC00]"></div><div class="w-1/3 bg-[#00247D]"></div><div class="w-1/3 bg-[#CF142B]"></div></div>
                     <div class="flex items-center gap-4 mb-4">
-                        <div class="relative w-16 h-16 rounded-2xl p-[2px] bg-gradient-to-tr from-[#FFCC00] via-[#00247D] to-[#CF142B] shadow-md shrink-0">
+                        <div class="relative w-16 h-16 rounded-2xl p-[2px] bg-gradient-to-tr from-[#FFCC00] via-[#00247D] to-[#CF142B] shadow-md shrink-0 participant-avatar">
                             <div class="w-full h-full bg-slate-100 rounded-[14px] flex items-center justify-center overflow-hidden border border-white">
-                                ${imgUrl ? `<img src="${imgUrl}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" class="w-full h-full object-cover">` : ''}
+                                ${imgUrl ? `<img src="${imgUrl}" loading="lazy" decoding="async" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" class="w-full h-full object-cover">` : ''}
                                 <div class="${imgUrl ? 'hidden' : 'flex'} w-full h-full items-center justify-center text-white font-bold text-xl" style="background-color:${colorGen}">${initial}</div>
                             </div>
                         </div>
@@ -1008,22 +2159,22 @@
                         <p class="text-xs text-slate-600 font-medium flex items-center"><i class="fa-solid fa-location-dot text-slate-400 w-5 text-center mr-2 text-sm"></i> ${item.estado}, ${item.municipio}</p>
                         <p class="text-xs text-slate-600 font-medium flex items-center"><i class="fa-solid fa-briefcase text-slate-400 w-5 text-center mr-2 text-sm"></i> ${item._laboral_clean === 'Buscando' ? 'Buscando Oportunidades' : item._laboral_clean}</p>
                     </div>
-                    <div class="w-full flex gap-2">
+                    <div class="w-full flex gap-2 profile-contact-grid">
                         ${(() => {
                             let phone = item.wasap || item.Wasap || item.WASAP || item.whatsapp || item.WhatsApp || item.telefono || item.Telefono || item.celular || item.Celular || '';
-                            let linkLd = item.Linkedin || item.linkedin || item.LINKEDIN || item.LinkedIn || '';
+                            let linkLd = item.linkedin || item.Linkedin || item.LINKEDIN || item.LinkedIn || '';
                             let btns = '';
-                            if (email) btns += `<a href="mailto:${email}" class="flex-1 flex items-center justify-center gap-1.5 bg-movida-navy hover:bg-movida-teal text-white font-bold py-3 rounded-xl shadow-md transition-colors active:scale-95 text-[11px] sm:text-xs"><i class="fa-solid fa-envelope text-base"></i> Correo</a>`;
+                            if (email) btns += `<a href="mailto:${email}" class="flex-1 flex items-center justify-center gap-1.5 bg-movida-navy hover:bg-movida-teal text-white font-bold py-3 rounded-xl shadow-md transition-colors active:scale-95 text-[11px] sm:text-xs profile-contact-btn profile-contact-email"><i class="fa-solid fa-envelope text-base"></i> Correo</a>`;
                             if (item._laboral_clean === 'Buscando' && phone) {
                                 let num = phone.toString().replace(/\D/g, ''); 
                                 if (num.startsWith('0')) num = '58' + num.substring(1); else if (!num.startsWith('58') && num.length === 10) num = '58' + num;
-                                btns += `<a href="https://wa.me/${num}" target="_blank" class="flex-1 flex items-center justify-center gap-1.5 bg-[#25D366] text-white font-bold py-3 rounded-xl shadow-md transition-colors active:scale-95 text-[11px] sm:text-xs"><i class="fa-brands fa-whatsapp text-base"></i> WhatsApp</a>`;
+                                btns += `<a href="https://wa.me/${num}" target="_blank" class="flex-1 flex items-center justify-center gap-1.5 bg-[#25D366] text-white font-bold py-3 rounded-xl shadow-md transition-colors active:scale-95 text-[11px] sm:text-xs profile-contact-btn profile-contact-whatsapp"><i class="fa-brands fa-whatsapp text-base"></i> WhatsApp</a>`;
                             }
                             if (linkLd && linkLd.trim() !== '') {
                                 let href = linkLd.trim().startsWith('http') ? linkLd.trim() : 'https://' + linkLd.trim();
-                                btns += `<a href="${href}" target="_blank" class="flex-1 flex items-center justify-center gap-1.5 bg-[#0A66C2] text-white font-bold py-3 rounded-xl shadow-md transition-colors active:scale-95 text-[11px] sm:text-xs"><i class="fa-brands fa-linkedin-in text-base"></i> LinkedIn</a>`;
+                                btns += `<a href="${href}" target="_blank" class="flex-1 flex items-center justify-center gap-1.5 bg-[#0A66C2] text-white font-bold py-3 rounded-xl shadow-md transition-colors active:scale-95 text-[11px] sm:text-xs profile-contact-btn profile-contact-linkedin"><i class="fa-brands fa-linkedin-in text-base"></i> LinkedIn</a>`;
                             } else {
-                                btns += `<div class="flex-1 flex items-center justify-center gap-1.5 bg-slate-50 text-slate-400 font-bold py-3 rounded-xl border border-slate-200 text-[11px] sm:text-xs shadow-sm cursor-not-allowed"><i class="fa-brands fa-linkedin-in text-base text-slate-300"></i> LinkedIn</div>`;
+                                btns += `<div class="flex-1 flex items-center justify-center gap-1.5 bg-slate-50 text-slate-400 font-bold py-3 rounded-xl border border-slate-200 text-[11px] sm:text-xs shadow-sm cursor-not-allowed profile-contact-btn profile-contact-disabled"><i class="fa-brands fa-linkedin-in text-base text-slate-300"></i> LinkedIn</div>`;
                             }
                             return btns;
                         })()}
@@ -1038,19 +2189,40 @@
             if(baseCoords) map.setView([baseCoords.lat - 0.5, baseCoords.lng], 8, {animate: true, duration: 0.8}); 
         }
 
+        // Unifica el criterio de conteo entre el mapa y las métricas.
+        // Un integrante sólo forma parte del total visible si tiene un estado válido,
+        // exactamente igual que en la sección del mapa.
+        function esRegistroBaseValido(item) {
+            return Boolean(
+                item &&
+                item.estado !== null &&
+                item.estado !== undefined &&
+                item.estado.toString().trim() !== ''
+            );
+        }
+
         function aplicarFiltrosGlobales() {
             const estadoSelect = document.getElementById('filtro-estado');
             const municipioSelect = document.getElementById('filtro-municipio');
+            const nombreInput = document.getElementById('filtro-nombre');
             stateFiltros.estado = estadoSelect ? estadoSelect.value : 'todos';
             stateFiltros.municipio = municipioSelect ? municipioSelect.value : 'todos';
-            
-            markersCluster.clearLayers(); if(heatmapLayer) map.removeLayer(heatmapLayer);
+            stateFiltros.nombreBusqueda = nombreInput ? nombreInput.value.trim().toLowerCase() : '';
+
+            if (!map || !markersCluster) {
+                const countEl = document.getElementById('map-visible-count');
+                if (countEl) countEl.innerText = globalData.length;
+                return;
+            }
+
+            markersCluster.clearLayers();
+            if(heatmapLayer && map.hasLayer(heatmapLayer)) map.removeLayer(heatmapLayer);
             let countVisibles = 0; 
             let heatPoints = [];
-            let marcadoresArray = []; // Guardamos los pines en memoria primero
+            let marcadoresArray = []; 
 
             globalData.forEach(item => {
-                if(!item.estado) return;
+                if (!esRegistroBaseValido(item)) return;
                 if (stateFiltros.academico !== 'todos' && item._nivel_acad !== stateFiltros.academico) return;
                 if (stateFiltros.estado !== 'todos' && item.estado.trim() !== stateFiltros.estado) return;
                 if (stateFiltros.municipio !== 'todos' && (item.municipio || "").trim().toLowerCase() !== stateFiltros.municipio.toLowerCase()) return;
@@ -1069,31 +2241,38 @@
                     const marker = L.circleMarker([lat, lng], { radius: 10, fillColor: pinColor, color: "#ffffff", weight: 3, fillOpacity: 0.95, shadowBlur: 10 });
                     const itemStr = encodeURIComponent(JSON.stringify(item));
                     marker.on('click', () => abrirPerfil(itemStr));
-                    marcadoresArray.push(marker); // Lo metemos a la caja de carga masiva
+                    marcadoresArray.push(marker);
                 }
             });
             
-            // Renderizado súper rápido en bloque
             if (stateFiltros.modoHeatmap && heatPoints.length > 0) {
-                heatmapLayer = L.heatLayer(heatPoints, {radius: 35, blur: 25, maxZoom: 8, gradient: {0.4: 'green', 0.65: 'yellow', 1: 'red'}}).addTo(map);
+                if (typeof L.heatLayer === 'function') {
+                    heatmapLayer = L.heatLayer(heatPoints, {radius: 35, blur: 25, maxZoom: 8, gradient: {0.4: 'green', 0.65: 'yellow', 1: 'red'}}).addTo(map);
+                } else {
+                    stateFiltros.modoHeatmap = false;
+                    mostrarNotificacion('El complemento de mapa de calor no cargó', 'fa-triangle-exclamation');
+                }
             } else if (marcadoresArray.length > 0) {
-                markersCluster.addLayers(marcadoresArray); // Inyectamos TODOS a la vez, el celular no se bloquea.
+                markersCluster.addLayers(marcadoresArray); 
             }
             
             document.getElementById('map-visible-count').innerText = countVisibles;
         }
 
         function procesarDatosParaDashboard(data) {
+            // Las métricas deben usar la misma población que el mapa.
+            // Se excluyen filas incompletas sin estado, que antes inflaban el total.
+            const registrosValidos = (Array.isArray(data) ? data : []).filter(esRegistroBaseValido);
+
             let porEstado = {}; let porMunicipio = new Set(); datosGeograficosGlobal = {}; 
             let genData = { 'Masculino': 0, 'Femenino': 0 }; let labData = { 'Dependiente': 0, 'Independiente': 0, 'Buscando': 0 };
             
-            // Nueva clasificación sociodemográfica generacional
             let edadData = { 'Gen Z (<30)': 0, 'Millennials (30-45)': 0, 'Gen X (46-60)': 0, 'Boomers (61+)': 0 }; 
             
             let carreras = {};
             let statsAcademico = { totalValido: 0, postgrado: 0, doctorado: 0, profesional: 0, tsu: 0 };
             
-            data.forEach(item => {
+            registrosValidos.forEach(item => {
                 if(item.estado) {
                     let e = item.estado.trim(); let m = (item.municipio || "Capital").trim();
                     if(!porEstado[e]) porEstado[e] = 0; porEstado[e]++;
@@ -1106,7 +2285,6 @@
                 if(item.genero === "Masculino" || item.genero === "Femenino") genData[item.genero]++;
                 if(item._laboral_clean === "Dependiente") labData['Dependiente']++; else if(item._laboral_clean === "Independiente") labData['Independiente']++; else if(item._laboral_clean === "Buscando" || item._laboral_clean === "Desempleado") labData['Buscando']++;
                 
-                // Algoritmo de Generaciones
                 if(item.edad && !isNaN(parseInt(item.edad))) { 
                     let e = parseInt(item.edad); 
                     if(e <= 29) edadData['Gen Z (<30)']++; 
@@ -1122,7 +2300,7 @@
                 let prof = item._profesion_clean; if(!carreras[prof]) carreras[prof] = 0; carreras[prof]++;
             });
 
-            document.getElementById('dash-total').innerText = data.length; document.getElementById('dash-estados').innerText = Object.keys(porEstado).length; document.getElementById('dash-municipios').innerText = porMunicipio.size;
+            document.getElementById('dash-total').innerText = registrosValidos.length; document.getElementById('dash-estados').innerText = Object.keys(porEstado).length; document.getElementById('dash-municipios').innerText = porMunicipio.size;
 
             if(statsAcademico.totalValido > 0) {
                 const pDoc = Math.round((statsAcademico.doctorado / statsAcademico.totalValido) * 100); const pPost = Math.round((statsAcademico.postgrado / statsAcademico.totalValido) * 100);
@@ -1135,7 +2313,6 @@
             dibujarTopCarreras(carreras); 
             dibujarListaEstados(datosGeograficosGlobal, 5); 
             
-            // Guardamos las variables para cuando el usuario pida verlas
             globalGenData = genData;
             globalLabData = labData;
             globalEdadData = edadData;
@@ -1190,7 +2367,12 @@
         function mostrarTodosLosEstados() { dibujarListaEstados(datosGeograficosGlobal, null); }
 
         function dibujarGraficos(genData, labData, edadData) {
-            Chart.register(ChartDataLabels); Chart.defaults.font.family = "'Outfit', sans-serif";
+            if (!window.Chart) {
+                mostrarNotificacion('Chart.js no se cargó', 'fa-chart-pie');
+                return false;
+            }
+            if (window.ChartDataLabels) Chart.register(window.ChartDataLabels);
+            Chart.defaults.font.family = "'Outfit', sans-serif";
             const commonOpts = { plugins: { legend: { display: false }, tooltip: { enabled: false }, datalabels: { color: '#00205b', anchor: 'end', align: 'right', font: { weight: 'bold', size: 12 }, padding: {left: 4} } }, scales: { x: { display: false }, y: { grid: { display: false }, border: { display: false } } }, layout: { padding: { right: 35 } } };
 
             if(chartInstances.edad) chartInstances.edad.destroy();
@@ -1212,6 +2394,7 @@
 
             if(chartInstances.gen) chartInstances.gen.destroy();
             chartInstances.gen = new Chart(document.getElementById('chartGenero').getContext('2d'), { type: 'doughnut', data: { labels: ['Masculino', 'Femenino'], datasets: [{ data: [genData['Masculino'], genData['Femenino']], backgroundColor: ['#00205b', '#70ad47'], borderWidth: 2, borderColor: '#ffffff' }] }, options: { maintainAspectRatio: false, cutout: '50%', plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20 } }, tooltip: { enabled: false }, datalabels: { color: '#ffffff', textStrokeColor: 'rgba(0, 32, 91, 0.8)', textStrokeWidth: 3, font: { weight: 'bold', size: 14 }, formatter: (value, ctx) => { let total = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0); return total === 0 ? "" : Math.round((value / total) * 100) + "%"; } } } } });
+            return true;
         }
 
         function initCarouselDrag() {
@@ -1230,21 +2413,28 @@
                 contentPortal: document.getElementById('tab-portal'), contentValidador: document.getElementById('tab-validator')
             };
 
-            // ESCUDO DE SEGURIDAD ABSOLUTO
             if (!tabs.btnPortal) {
                 console.warn("Módulo de Credenciales inactivo por falta de elementos HTML.");
                 return;
             }
 
-            const API_PORTAL = "https://script.google.com/macros/s/AKfycbwe20xoBrpyG-gLcLPiGwXCo-TCF3iwni1pHJE498ltQaiepX7ge_Xa2nqxNfk18SD6/exec";
-            const API_VALIDADOR = "https://script.google.com/macros/s/AKfycbylOlo77GvBbU6iXV8dvQXm8GPBIGdVODQCGAZQO9MG-OheL4QKpiZFXBdwWd0iaGGb/exec";
             const DOMINIO_OFICIAL = "https://directorio.movidasst.com/";
 
-            let currentMemberDNI = null; let currentMemberCode = null; let currentValidatorData = null;
+            let currentMemberDNI = null; let currentMemberCode = null; let currentMemberData = null; let currentValidatorData = null;
             let hubCropper = null; let valMapInstance = null; let valMarkerInstance = null;
 
             const views = { home: document.getElementById('view-home'), portalResult: document.getElementById('view-portal-result'), valResult: document.getElementById('view-validator-result') };
             const portal = { dni: document.getElementById('portal-dni'), code: document.getElementById('portal-code'), btnSubmit: document.getElementById('btn-portal-submit'), error: document.getElementById('portal-error'), photo: document.getElementById('cred-photo'), name: document.getElementById('cred-name'), lastname: document.getElementById('cred-lastname'), dniDisplay: document.getElementById('cred-dni'), grado: document.getElementById('cred-grado'), carrera: document.getElementById('cred-carrera'), estado: document.getElementById('cred-estado'), codeDisplay: document.getElementById('cred-code'), qr: document.getElementById('cred-qr'), uploadPhoto: document.getElementById('photo-upload'), uploadCamera: document.getElementById('camera-upload'), uploadStatus: document.getElementById('portal-upload-status'), btnDownload: document.getElementById('btn-download'), downloadStatus: document.getElementById('portal-download-status'), btnWaGroup: document.getElementById('btn-whatsapp-group') };
+            const editor = {
+                form: document.getElementById('member-data-editor'),
+                age: document.getElementById('member-age'),
+                state: document.getElementById('member-state'),
+                municipality: document.getElementById('member-municipality'),
+                municipalityOptions: document.getElementById('member-municipality-options'),
+                email: document.getElementById('member-email'),
+                btnSave: document.getElementById('btn-save-member-data'),
+                status: document.getElementById('member-data-status')
+            };
             const validator = { input: document.getElementById('val-input'), btnSubmit: document.getElementById('btn-val-submit'), idleState: document.getElementById('val-idle'), errorState: document.getElementById('val-error'), photo: document.getElementById('val-photo'), photoPlaceholder: document.getElementById('val-photo-placeholder'), nombres: document.getElementById('val-nombres'), apellidos: document.getElementById('val-apellidos'), cedula: document.getElementById('val-cedula'), grado: document.getElementById('val-grado'), carrera: document.getElementById('val-carrera'), ubicacion: document.getElementById('val-ubicacion'), btnShare: document.getElementById('btn-val-share'), btnChat: document.getElementById('btn-val-chat') };
             const modal = { container: document.getElementById('cropper-modal'), img: document.getElementById('image-to-crop'), btnCancel: document.getElementById('btn-crop-cancel'), btnSave: document.getElementById('btn-crop-save') };
 
@@ -1286,50 +2476,214 @@
                 return match ? `https://lh3.googleusercontent.com/d/${match[1]}` : url;
             };
 
+            const setEditorStatus = (message = '', type = '') => {
+                if (!editor.status) return;
+                editor.status.textContent = message;
+                editor.status.className = `member-data-status${type ? ` ${type}` : ''}`;
+            };
+
+            const obtenerMunicipiosPorEstado = (estado, municipioActual = '') => {
+                const municipios = new Set();
+                globalData.forEach(item => {
+                    if ((item.estado || '').toString().trim() === estado && item.municipio) {
+                        municipios.add(toTitleCase(item.municipio.toString().trim()));
+                    }
+                });
+                if (municipioActual) municipios.add(toTitleCase(municipioActual.toString().trim()));
+                return Array.from(municipios).filter(Boolean).sort((a, b) => a.localeCompare(b, 'es'));
+            };
+
+            const actualizarSugerenciasMunicipioEditor = (estado, municipioActual = '') => {
+                if (!editor.municipalityOptions) return;
+                editor.municipalityOptions.innerHTML = '';
+                obtenerMunicipiosPorEstado(estado, municipioActual).forEach(municipio => {
+                    const option = document.createElement('option');
+                    option.value = municipio;
+                    editor.municipalityOptions.appendChild(option);
+                });
+            };
+
+            const cargarFormularioDatos = (data) => {
+                if (!editor.form || !data) return;
+                editor.age.value = data.edad ?? '';
+                editor.state.value = (data.estado || '').toString().trim();
+                editor.municipality.value = (data.municipio || '').toString().trim();
+                editor.email.value = (data.correo || data.Correo || data.CORREO || '').toString().trim();
+                actualizarSugerenciasMunicipioEditor(editor.state.value, editor.municipality.value);
+                setEditorStatus('');
+            };
+
+            const normalizarRegistroLocal = (registro) => {
+                registro.estado = (registro.estado || '').toString().trim();
+                registro.municipio = (registro.municipio || '').toString().trim();
+                registro.genero = normalizarGenero(registro.genero || registro.Genero || registro.GENERO);
+
+                let laboral = (registro.laboral || '').toString().trim();
+                if (laboral.toLowerCase() === 'desempleado') laboral = 'Buscando';
+                registro._laboral_clean = ['Dependiente', 'Independiente'].includes(laboral) ? laboral : 'Buscando';
+
+                if (!registro._nivel_acad || registro._nivel_acad === 'Profesional') {
+                    const doctorado = (registro.doctorado || registro.Doctorado || registro.DOCTORADO || '').toString().trim().toLowerCase();
+                    const postgrado = (registro.postgrado || registro.Postgrado || '').toString().trim().toLowerCase();
+                    const grado = (registro.grado || registro.Grado || '').toString().trim().toLowerCase();
+                    if (doctorado) registro._nivel_acad = 'Doctorado';
+                    else if (postgrado) registro._nivel_acad = 'Postgrado';
+                    else if (grado.includes('tsu') || grado.includes('t.s.u') || grado.includes('tecnico') || grado.includes('técnico')) registro._nivel_acad = 'T.S.U.';
+                    else registro._nivel_acad = 'Profesional';
+                }
+
+                const nombres = (registro.nombres || registro.Nombres || '').toString().trim();
+                const apellidos = (registro.apellidos || registro.Apellidos || '').toString().trim();
+                registro._nombre_completo = toTitleCase(`${nombres} ${apellidos}`.trim()) || 'Profesional SST';
+
+                let profesion = registro._profesion_clean || (registro.carrera ? registro.carrera.toString().trim() : 'Prevencionista SST');
+                const carreraLimpia = (registro.carrera || '').toString().toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+                if (carreraLimpia.includes('ING') && carreraLimpia.includes('INDUSTRIAL')) profesion = 'Ingeniería Industrial';
+                registro._profesion_clean = toTitleCase(profesion).replace(/\btsu\b/ig, 'TSU').replace(/\bsst\b/ig, 'SST');
+                return registro;
+            };
+
+            const sincronizarRegistroEnInterfaz = (registroActualizado) => {
+                const indice = globalData.findIndex(item => String(item.cedula) === String(registroActualizado.cedula));
+                const anterior = indice >= 0 ? globalData[indice] : {};
+                const combinado = normalizarRegistroLocal({ ...anterior, ...registroActualizado });
+
+                if (indice >= 0) globalData[indice] = combinado;
+                else globalData.push(combinado);
+
+                currentMemberData = combinado;
+                aplicarFiltrosGlobales();
+                procesarDatosParaDashboard(globalData);
+
+                if (chartsDrawn && globalGenData && typeof window.Chart !== 'undefined') {
+                    dibujarGraficos(globalGenData, globalLabData, globalEdadData);
+                }
+
+                return combinado;
+            };
+
+            // LOGIN PORTAL CONECTADO A SUPABASE
             const loginPortal = async () => {
-                const dni = portal.dni.value.trim(); const code = portal.code.value.trim(); portal.error.textContent = '';
+                const dni = portal.dni.value.trim(); const code = portal.code.value.trim().toUpperCase(); portal.error.textContent = '';
                 if (!dni || !code) { portal.error.textContent = 'Ingrese Cédula y Código.'; return; }
                 manageBtnState(portal.btnSubmit, true);
+                
                 try {
-                    const res = await fetch(`${API_PORTAL}?cedula=${encodeURIComponent(dni)}&codigo=${encodeURIComponent(code)}`);
-                    const data = await res.json();
-                    if (data.result === 'found') { currentMemberDNI = data.cedula; currentMemberCode = data.codigo; renderCredential(data); changeView(views.portalResult); } 
-                    else if (data.result === 'wrong_code') { portal.error.textContent = 'El Código de Registro no coincide.'; } 
-                    else { portal.error.textContent = 'Datos no encontrados en el sistema.'; }
-                } catch (e) { portal.error.textContent = 'Error de conexión. Intente nuevamente.'; } 
-                finally { manageBtnState(portal.btnSubmit, false); }
+                    const { data, error } = await supabaseClient.from('integrantes').select('*').eq('cedula', dni).maybeSingle();
+                    
+                    if (error || !data) { 
+                        portal.error.textContent = 'Datos no encontrados en el sistema.'; 
+                    } else if (data.codigo_integrante !== code) { 
+                        portal.error.textContent = 'El Código de Registro no coincide.'; 
+                    } else { 
+                        currentMemberDNI = data.cedula; 
+                        currentMemberCode = data.codigo_integrante; 
+                        currentMemberData = data;
+                        renderCredential(data); 
+                        changeView(views.portalResult); 
+                    }
+                } catch (e) { 
+                    portal.error.textContent = 'Error de conexión. Intente nuevamente.'; 
+                } finally { 
+                    manageBtnState(portal.btnSubmit, false); 
+                }
             };
 
             const renderCredential = (data) => {
-                const fullName = data.nombre || data.nombres || "N/A"; let nPart = fullName, lPart = data.apellidos || "";
+                const fullName = data.nombres || "N/A"; let nPart = fullName, lPart = data.apellidos || "";
                 if(fullName !== "N/A" && !data.apellidos && fullName.indexOf(' ') > -1) { const parts = fullName.split(' '); nPart = parts.length > 2 ? parts.slice(0, 2).join(' ') : parts[0]; lPart = parts.length > 2 ? parts.slice(2).join(' ') : parts[1]; }
                 
-                // --- INICIO MICROCIRUGÍA SEGURA ---
-                // 1. Calculamos cuál es más largo
                 const maxLength = Math.max(nPart.length, lPart.length);
-                
-                // 2. Elegimos un tamaño de letra seguro (nunca tocamos los márgenes/padding)
                 const fontSizeUniforme = maxLength > 22 ? '17px' : (maxLength > 16 ? '20px' : (maxLength > 12 ? '24px' : '28px'));
                 
-                // 3. Aplicamos SOLO el tamaño de fuente
                 portal.name.style.fontSize = fontSizeUniforme;
                 portal.lastname.style.fontSize = fontSizeUniforme;
-                
-                // 4. Limpiamos y forzamos a CERO cualquier padding que haya deformado el diseño
                 portal.name.style.paddingTop = '0px';
                 portal.lastname.style.paddingTop = '0px';
-                // --- FIN MICROCIRUGÍA SEGURA ---
 
                 portal.name.textContent = nPart; portal.lastname.textContent = lPart; portal.dniDisplay.textContent = data.cedula;
-                portal.grado.textContent = data.grado || data.gradoAcademico || "SST"; portal.carrera.textContent = data.carrera || data.especialidad || "Profesional";
-                portal.estado.textContent = data.estado || data.ubicacion || "Venezuela"; portal.codeDisplay.textContent = data.codigo || "----";
-                const qrUrl = data.codigo ? `https://directorio.movidasst.com/?token=${data.codigo}` : "https://directorio.movidasst.com/";
+                portal.grado.textContent = data.grado || "SST"; portal.carrera.textContent = data.carrera || "Profesional";
+                const ubicacionCredencial = [data.municipio, data.estado].filter(Boolean).join(', ') || 'Venezuela';
+                portal.estado.textContent = ubicacionCredencial;
+                portal.estado.style.fontSize = ubicacionCredencial.length > 26 ? '12px' : (ubicacionCredencial.length > 20 ? '14px' : '16px');
+                portal.codeDisplay.textContent = data.codigo_integrante || "----";
+                const qrUrl = data.codigo_integrante ? `https://directorio.movidasst.com/?token=${data.codigo_integrante}` : "https://directorio.movidasst.com/";
                 portal.qr.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrUrl)}&color=0f766e&bgcolor=ffffff&margin=0" alt="QR" style="width:100%;height:100%;object-fit:contain;" crossorigin="anonymous">`;
                 const placeholder = 'https://placehold.co/120x155/f1f5f9/94a3b8?text=Perfil'; const cacheBuster = `?t=${new Date().getTime()}`;
-                if (data.fotoUrl && data.fotoUrl.includes('http')) {
-                    portal.photo.src = getCorsDriveUrl(data.fotoUrl) + cacheBuster;
-                    portal.photo.onerror = () => { portal.photo.src = transformDriveUrl(data.fotoUrl) + cacheBuster || placeholder; };
+                
+                if (data.foto_url && data.foto_url.includes('http')) {
+                    portal.photo.onerror = () => {
+                        portal.photo.onerror = null;
+                        const fallback = transformDriveUrl(data.foto_url);
+                        portal.photo.src = fallback && fallback !== data.foto_url ? fallback + cacheBuster : placeholder;
+                    };
+                    portal.photo.src = getCorsDriveUrl(data.foto_url) + cacheBuster;
                 } else { portal.photo.src = placeholder; }
+
+                cargarFormularioDatos(data);
+            };
+
+            const guardarDatosPerfil = async (event) => {
+                event.preventDefault();
+                setEditorStatus('');
+
+                if (!supabaseClient || !currentMemberDNI || !currentMemberCode) {
+                    setEditorStatus('La sesión del integrante no está disponible. Ingresa nuevamente.', 'error');
+                    return;
+                }
+
+                const edad = Number.parseInt(editor.age.value, 10);
+                const estado = editor.state.value.trim();
+                const municipio = toTitleCase(editor.municipality.value.trim());
+                const correo = editor.email.value.trim().toLowerCase();
+
+                if (!Number.isInteger(edad) || edad < 18 || edad > 100) {
+                    setEditorStatus('Ingresa una edad válida entre 18 y 100 años.', 'error');
+                    editor.age.focus();
+                    return;
+                }
+                if (!estado) {
+                    setEditorStatus('Selecciona el estado de residencia.', 'error');
+                    editor.state.focus();
+                    return;
+                }
+                if (municipio.length < 2) {
+                    setEditorStatus('Ingresa el municipio de residencia.', 'error');
+                    editor.municipality.focus();
+                    return;
+                }
+                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) {
+                    setEditorStatus('Ingresa un correo electrónico válido.', 'error');
+                    editor.email.focus();
+                    return;
+                }
+
+                manageBtnState(editor.btnSave, true);
+                setEditorStatus('Guardando cambios en Supabase...');
+
+                try {
+                    const cambiosPermitidos = { edad, estado, municipio, correo };
+                    const { data, error } = await supabaseClient
+                        .from('integrantes')
+                        .update(cambiosPermitidos)
+                        .eq('cedula', currentMemberDNI)
+                        .eq('codigo_integrante', currentMemberCode)
+                        .select('*')
+                        .maybeSingle();
+
+                    if (error) throw error;
+                    if (!data) throw new Error('Supabase no confirmó la actualización. Revisa la política RLS de UPDATE.');
+
+                    const actualizado = sincronizarRegistroEnInterfaz(data);
+                    renderCredential(actualizado);
+                    setEditorStatus('Datos actualizados. Mapa, credencial y métricas sincronizados.', 'success');
+                    mostrarNotificacion('Datos actualizados correctamente', 'fa-circle-check');
+                } catch (error) {
+                    console.error('Error actualizando datos del integrante:', error);
+                    setEditorStatus(error?.message || 'No fue posible actualizar los datos.', 'error');
+                } finally {
+                    manageBtnState(editor.btnSave, false);
+                }
             };
 
             const openCropper = (e) => {
@@ -1342,26 +2696,54 @@
                     if(typeof Cropper !== 'undefined') {
                         if(hubCropper) hubCropper.destroy();
                         hubCropper = new Cropper(modal.img, { aspectRatio: 3/4, viewMode: 1, background: false, autoCropArea: 0.9 });
+                    } else {
+                        portal.uploadStatus.textContent = 'No se cargó Cropper.js.';
+                        closeCropper();
                     }
                 };
                 reader.readAsDataURL(file);
             };
 
+            // ACTUALIZAR FOTO EN SUPABASE STORAGE
             const uploadCropped = () => {
-                if(!hubCropper) return; manageBtnState(modal.btnSave, true); portal.uploadStatus.textContent = 'Subiendo imagen...';
-                hubCropper.getCroppedCanvas({ width: 300, height: 400 }).toBlob((blob) => {
-                    const reader = new FileReader(); reader.readAsDataURL(blob);
-                    reader.onloadend = () => {
-                        const base64Data = reader.result.split(',')[1]; const formData = new URLSearchParams();
-                        formData.append('action', 'updateFoto'); formData.append('cedula', currentMemberDNI); formData.append('fotoMimeType', blob.type); formData.append('fotoName', `foto_${currentMemberDNI}.jpg`); formData.append('fotoData', base64Data);
-                        fetch(API_PORTAL, { method: 'POST', body: formData }).then(r => r.json()).then(d => {
-                            if(d.result === 'success' || d.status === 'success') {
-                                portal.uploadStatus.innerHTML = '<span class="text-movida-green">¡Foto actualizada!</span> Recargando...'; closeCropper(); setTimeout(() => loginPortal(), 2000); 
-                            } else throw new Error();
-                        }).catch(() => {
-                            portal.uploadStatus.innerHTML = '<span class="text-teal-600">Procesando en el servidor...</span>'; closeCropper(); setTimeout(() => loginPortal(), 4000); 
-                        }).finally(() => manageBtnState(modal.btnSave, false));
-                    };
+                if(!hubCropper) return; manageBtnState(modal.btnSave, true); portal.uploadStatus.textContent = 'Subiendo imagen a Supabase...';
+                hubCropper.getCroppedCanvas({ width: 300, height: 400 }).toBlob(async (blob) => {
+                    try {
+                        const nombreFotoSeguro = `${currentMemberDNI}_update_${Date.now()}.jpg`;
+
+                        const { error: uploadError } = await supabaseClient.storage
+                            .from('fotos_perfil')
+                            .upload(nombreFotoSeguro, blob, { contentType: 'image/jpeg', upsert: false });
+
+                        if (uploadError) throw uploadError;
+
+                        const { data: publicUrlData } = supabaseClient.storage
+                            .from('fotos_perfil')
+                            .getPublicUrl(nombreFotoSeguro);
+
+                        const nuevaUrl = publicUrlData.publicUrl;
+
+                        const { data: updatedData, error: updateError } = await supabaseClient
+                            .from('integrantes')
+                            .update({ foto_url: nuevaUrl })
+                            .eq('cedula', currentMemberDNI)
+                            .eq('codigo_integrante', currentMemberCode)
+                            .select('*')
+                            .maybeSingle();
+
+                        if (updateError) throw updateError;
+                        if (!updatedData) throw new Error('Supabase no confirmó la actualización de la foto.');
+
+                        const actualizado = sincronizarRegistroEnInterfaz(updatedData);
+                        renderCredential(actualizado);
+                        portal.uploadStatus.innerHTML = '<span style="color:#166534;font-weight:900">¡Foto actualizada correctamente!</span>';
+                        closeCropper(); 
+                    } catch (e) {
+                        portal.uploadStatus.innerHTML = '<span class="text-rose-600">Error en el servidor.</span>'; 
+                        closeCropper();
+                    } finally { 
+                        manageBtnState(modal.btnSave, false); 
+                    }
                 }, 'image/jpeg', 0.9);
             };
 
@@ -1370,52 +2752,101 @@
                 setTimeout(() => { modal.container.style.display = 'none'; modal.container.classList.add('invisible'); if(hubCropper) hubCropper.destroy(); hubCropper = null; portal.uploadPhoto.value = ''; portal.uploadCamera.value = ''; }, 300);
             };
 
-            const downloadCred = () => {
-                manageBtnState(portal.btnDownload, true); portal.downloadStatus.textContent = 'Generando imagen alta calidad...';
-                setTimeout(() => {
-                    const el = document.getElementById('credential');
-                    if(typeof html2canvas !== 'undefined') {
-                        html2canvas(el, { scale: 3, useCORS: true, allowTaint: false, backgroundColor: '#ffffff', width: 600, height: 380, scrollX: 0, scrollY: 0, windowWidth: 800, windowHeight: 600, onclone: (doc) => { const clone = doc.getElementById('credential'); clone.style.transform = 'none'; clone.style.margin = '0'; clone.style.boxShadow = 'none'; }
-                        }).then(canvas => {
-                            const link = document.createElement('a'); link.download = `Credencial_${currentMemberDNI}.png`; link.href = canvas.toDataURL("image/png", 1.0); link.click(); portal.downloadStatus.textContent = "¡Descarga completada!";
-                        }).catch(e => { portal.downloadStatus.textContent = "Error al generar imagen."; }).finally(() => manageBtnState(portal.btnDownload, false));
+            const downloadCred = async () => {
+                manageBtnState(portal.btnDownload, true);
+                portal.downloadStatus.textContent = 'Generando imagen en alta calidad...';
+
+                try {
+                    if (typeof window.html2canvas !== 'function') {
+                        throw new Error('No se cargó html2canvas.');
                     }
-                }, 500);
+
+                    const el = document.getElementById('credential');
+                    if (!el) throw new Error('No existe el elemento de la credencial.');
+
+                    await new Promise(resolve => setTimeout(resolve, 250));
+                    const canvas = await window.html2canvas(el, {
+                        scale: 3,
+                        useCORS: true,
+                        allowTaint: false,
+                        backgroundColor: '#ffffff',
+                        width: 600,
+                        height: 380,
+                        scrollX: 0,
+                        scrollY: 0,
+                        windowWidth: 800,
+                        windowHeight: 600,
+                        imageTimeout: 12000,
+                        onclone: (doc) => {
+                            const clone = doc.getElementById('credential');
+                            if (clone) {
+                                clone.style.transform = 'none';
+                                clone.style.margin = '0';
+                                clone.style.boxShadow = 'none';
+                            }
+                        }
+                    });
+
+                    const link = document.createElement('a');
+                    link.download = `Credencial_${currentMemberDNI || 'MovidaSST'}.png`;
+                    link.href = canvas.toDataURL('image/png', 1.0);
+                    document.body.appendChild(link);
+                    link.click();
+                    link.remove();
+                    portal.downloadStatus.textContent = '¡Descarga completada!';
+                } catch (error) {
+                    console.error(error);
+                    portal.downloadStatus.textContent = `No se pudo generar la imagen: ${error.message || error}`;
+                } finally {
+                    manageBtnState(portal.btnDownload, false);
+                }
             };
 
-            const searchValidator = (query, type) => {
+            // BUSCADOR VALIDADOR CONECTADO A SUPABASE
+            const searchValidator = async (query, type) => {
                 if(!query) return; validator.idleState.classList.add('hidden'); validator.errorState.classList.add('hidden'); manageBtnState(validator.btnSubmit, true);
-                const url = type === 'token' ? `${API_VALIDADOR}?token=${query}` : `${API_VALIDADOR}?cedula=${query}`;
-                fetch(url).then(r => r.json()).then(data => {
-                    if(data && data.result === 'found') { currentValidatorData = data; renderValidator(data); changeView(views.valResult); } 
-                    else { validator.errorState.classList.remove('hidden'); }
-                }).catch(() => validator.errorState.classList.remove('hidden')).finally(() => manageBtnState(validator.btnSubmit, false));
+                try {
+                    let dbQuery = supabaseClient.from('integrantes').select('*');
+                    if (type === 'token') {
+                        dbQuery = dbQuery.eq('codigo_integrante', query);
+                    } else {
+                        dbQuery = dbQuery.eq('cedula', query);
+                    }
+                    const { data, error } = await dbQuery.maybeSingle();
+
+                    if (data && !error) { 
+                        currentValidatorData = data; 
+                        renderValidator(data); 
+                        changeView(views.valResult); 
+                    } else { 
+                        validator.errorState.classList.remove('hidden'); 
+                    }
+                } catch(e) { 
+                    validator.errorState.classList.remove('hidden'); 
+                } finally { 
+                    manageBtnState(validator.btnSubmit, false); 
+                }
             };
 
             const renderValidator = (d) => {
                 validator.nombres.textContent = d.nombres || "N/A";
                 validator.apellidos.textContent = d.apellidos || "";
                 
-                // Escudo de seguridad retirado para no mostrar la cédula
-                if (validator.cedula) validator.cedula.textContent = d.cedula.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+                if (validator.cedula) validator.cedula.textContent = (d.cedula || '').toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
                 
-                // Mostrar perfil académico limpio (Sin edad ni datos sensibles)
                 validator.grado.textContent = d.grado || '-';
                 validator.carrera.textContent = d.carrera || '-';
                 validator.ubicacion.textContent = `${d.municipio || ''}, Edo. ${d.estado || ''}`;
 
-                // Procesar Fotografía con Inteligencia y Bypass Anti-CORS
-                let fotoData = d.fotoUrl || d.foto || d.Foto || d.FOTO || '';
+                let fotoData = d.foto_url || d.foto || '';
                 
                 if(fotoData && fotoData.includes('http')) {
                     const cacheBuster = `?t=${new Date().getTime()}`;
                     validator.photo.crossOrigin = "anonymous";
                     
-                    // Intento 1: Carga rápida de Google (Bypass)
                     validator.photo.src = getCorsDriveUrl(fotoData) + cacheBuster;
                     validator.photo.onload = () => { validator.photo.classList.remove('hidden'); validator.photoPlaceholder.classList.add('hidden'); };
                     
-                    // Intento 2: Si falla por privacidad, usamos el Thumbnail seguro
                     validator.photo.onerror = () => { 
                         validator.photo.src = transformDriveUrl(fotoData) + cacheBuster;
                         validator.photo.onerror = () => { validator.photo.classList.add('hidden'); validator.photoPlaceholder.classList.remove('hidden'); };
@@ -1424,11 +2855,13 @@
                     validator.photo.classList.add('hidden'); validator.photoPlaceholder.classList.remove('hidden');
                 }
 
-                // WhatsApp dinámico
-                const w = (d.wasap || '').toString().replace(/\D/g, '');
+                let w = (d.wasap || d.whatsapp || d.telefono || d.celular || '').toString().replace(/\D/g, '');
+                if (w.startsWith('0')) w = '58' + w.substring(1);
+                else if (!w.startsWith('58') && w.length === 10) w = '58' + w;
                 validator.btnChat.href = w ? `https://wa.me/${w}` : '#';
+                validator.btnChat.classList.toggle('pointer-events-none', !w);
+                validator.btnChat.classList.toggle('opacity-50', !w);
 
-                // Inicializar o Actualizar Mapa del Validador
                 const coords = geodata.estados[d.estado] || { lat: 10.5, lng: -66.9 };
                 const latLng = [coords.lat, coords.lng];
                 
@@ -1442,7 +2875,6 @@
                 }
             };
 
-            // Eventos de la Interfaz
             tabs.btnPortal.addEventListener('click', () => switchHubTab('portal'));
             tabs.btnValidador.addEventListener('click', () => switchHubTab('validator'));
 
@@ -1450,13 +2882,16 @@
                 btn.addEventListener('click', () => {
                     changeView(views.home);
                     portal.dni.value = ''; portal.code.value = ''; portal.error.textContent = ''; portal.uploadStatus.textContent = '';
+                    currentMemberDNI = null; currentMemberCode = null; currentMemberData = null;
+                    if (editor.form) editor.form.reset();
+                    setEditorStatus('');
                     validator.input.value = ''; validator.idleState.classList.remove('hidden'); validator.errorState.classList.add('hidden');
                 });
             });
 
             validator.btnSubmit.addEventListener('click', () => {
                 const q = validator.input.value.trim().toUpperCase();
-                searchValidator(q, /^[A-Z]+$/.test(q) ? 'token' : 'cedula');
+                searchValidator(q, /^\d+$/.test(q) ? 'cedula' : 'token');
             });
             
             validator.input.addEventListener('keypress', (e) => { if(e.key === 'Enter') validator.btnSubmit.click(); });
@@ -1464,12 +2899,17 @@
 
             validator.btnShare.addEventListener('click', () => {
                 if(!currentValidatorData) return;
-                const text = `*Credencial Auténtica - Movida SST Plus* 🛡️\n👤 ${currentValidatorData.nombres} ${currentValidatorData.apellidos}\n📍 ${currentValidatorData.estado}\n💼 ${currentValidatorData.carrera}\n🔗 Valida aquí: ${DOMINIO_OFICIAL}?token=${currentValidatorData.codigo}`;
+                const text = `*Credencial Auténtica - Movida SST Plus* 🛡️\n👤 ${currentValidatorData.nombres} ${currentValidatorData.apellidos}\n📍 ${currentValidatorData.estado}\n💼 ${currentValidatorData.carrera}\n🔗 Valida aquí: ${DOMINIO_OFICIAL}?token=${currentValidatorData.codigo_integrante}`;
                 window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
             });
 
-            // EVENTOS VITALES DEL PORTAL (Conecta los botones con sus funciones)
             portal.btnSubmit.addEventListener('click', loginPortal);
+            if (editor.form) editor.form.addEventListener('submit', guardarDatosPerfil);
+            if (editor.state) editor.state.addEventListener('change', () => {
+                editor.municipality.value = '';
+                actualizarSugerenciasMunicipioEditor(editor.state.value);
+                setEditorStatus('');
+            });
             portal.uploadPhoto.addEventListener('change', openCropper);
             portal.uploadCamera.addEventListener('change', openCropper);
             modal.btnSave.addEventListener('click', uploadCropped);
@@ -1479,7 +2919,6 @@
             portal.dni.addEventListener('keypress', (e) => { if(e.key === 'Enter') loginPortal(); });
             portal.code.addEventListener('keypress', (e) => { if(e.key === 'Enter') loginPortal(); });
 
-            // Auto-escaneo QR inicial
             const urlParams = new URLSearchParams(window.location.search);
             const qrToken = urlParams.get('token');
             if (qrToken) {
@@ -1490,7 +2929,6 @@
             }
         } 
 
-        // CONTROLADOR MAESTRO DE VISTAS (Protegido y con renderizado diferido)
         function switchTab(tabId) {
             if(navigator.vibrate) navigator.vibrate(50);
             
@@ -1517,22 +2955,66 @@
                 }
             });
             
-            // Refresco de mapas y Lazy Load de Gráficos (Ahorra muchísima RAM)
             if(tabId === 'map-view') {
                 setTimeout(() => { if(map) map.invalidateSize() }, 300);
             } else if (tabId === 'dashboard-view' && !chartsDrawn && globalGenData) {
-                // Dibujamos las métricas SÓLO cuando el usuario abre la pestaña
-                dibujarGraficos(globalGenData, globalLabData, globalEdadData);
-                chartsDrawn = true;
+                chartsDrawn = dibujarGraficos(globalGenData, globalLabData, globalEdadData) === true;
             }
         }
 
-        window.onload = () => { 
-            initMap(); 
-            fetchYProcesarDatos(); 
-            initCarouselDrag(); 
-            initCredenciales(); 
-        };
+        async function iniciarAplicacion() {
+            if (window.__movidaStartupStarted) return;
+            window.__movidaStartupStarted = true;
+            actualizarAlturaAplicacion();
+
+            // El splash nunca bloquea la navegación.
+            setTimeout(ocultarSplash, 700);
+
+            try { initCarouselDrag(); } catch (error) { console.error('Carrusel:', error); }
+            try { initCredenciales(); }
+            catch (error) { mostrarErrorVisible('El módulo de credenciales no pudo iniciarse', error.message || String(error)); }
+
+            const iniciarSupabase = (async () => {
+                const listo = await esperarHasta(
+                    () => Boolean(window.supabase && typeof window.supabase.createClient === 'function'),
+                    7000
+                );
+                if (!listo) {
+                    mostrarErrorVisible('Supabase no cargó', 'La aplicación abrió, pero no pudo descargar los datos. Revise la conexión, el CDN o la política CSP del alojamiento.');
+                    return;
+                }
+                try {
+                    initSupabase();
+                    await fetchYProcesarDatos();
+                } catch (error) {
+                    mostrarErrorVisible('Supabase no pudo iniciarse', error.message || String(error));
+                }
+            })();
+
+            const iniciarLeaflet = (async () => {
+                const listo = await esperarHasta(
+                    () => Boolean(window.L && typeof window.L.map === 'function' && typeof window.L.markerClusterGroup === 'function'),
+                    7000
+                );
+                if (!listo) {
+                    mostrarErrorVisible('Leaflet no cargó', 'La aplicación seguirá disponible, pero el mapa no podrá mostrarse.');
+                    return;
+                }
+                try {
+                    initMap();
+                    if (globalData.length) aplicarFiltrosGlobales();
+                } catch (error) {
+                    mostrarErrorVisible('El mapa no pudo iniciarse', error.message || String(error));
+                }
+            })();
+
+            // No bloquea la interfaz; sólo evita rechazos no controlados.
+            Promise.allSettled([iniciarSupabase, iniciarLeaflet]);
+        }
+
+        // No se usa window.load: ese evento espera imágenes, fuentes y recursos externos.
+        iniciarAplicacion();
+        document.addEventListener('DOMContentLoaded', iniciarAplicacion, { once: true });
     </script>
 </body>
 </html>
