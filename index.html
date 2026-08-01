@@ -1270,21 +1270,7 @@
     <main id="info-view" class="view-hidden absolute inset-0 z-20 overflow-y-auto pb-[120px] pt-[85px] px-2">
         <div class="p-4 space-y-5 max-w-lg mx-auto">
             
-            <!-- 1. TARJETA LINKEDIN -->
-            <div class="glass-card p-5 mt-2 border-t-4 border-[#0A66C2] relative overflow-hidden shadow-sm">
-                <div class="absolute top-[-10px] right-[-10px] text-[#0A66C2]/5 text-7xl pointer-events-none"><i class="fa-brands fa-linkedin"></i></div>
-                <h3 class="text-movida-navy font-black text-[13px] uppercase tracking-wide mb-2 flex items-center gap-2 relative z-10">
-                    <i class="fa-brands fa-linkedin text-[#0A66C2]"></i> ¡Conecta tu LinkedIn!
-                </h3>
-                <p class="text-xs text-slate-600 mb-4 leading-relaxed font-medium relative z-10">
-                    Si ya estás en el directorio y necesitas agregar tu enlace de <strong class="text-[#0A66C2]">LinkedIn</strong> a tu tarjeta, completa esta breve solicitud:
-                </p>
-                <a href="https://docs.google.com/forms/d/e/1FAIpQLSfdStckiRZ4tunmCuyH1X7Pt_sXUviczmPXHIYZSrXBBbTF0A/viewform?usp=header" target="_blank" class="flex items-center justify-center gap-2 w-full bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 font-bold py-3 rounded-xl shadow-sm active:scale-95 transition-transform text-xs relative z-10">
-                    <i class="fa-brands fa-linkedin text-[#0A66C2] text-base"></i> Agregar mi LinkedIn
-                </a>
-            </div>
-
-            <!-- NUEVO BOTÓN: GRUPO DE ESTUDIO (ALTO IMPACTO) -->
+            <!-- GRUPO DE ESTUDIO (ALTO IMPACTO) -->
             <div class="relative group">
                 <div class="absolute -inset-1 bg-gradient-to-r from-movida-yellow via-movida-teal to-movida-green rounded-xl blur opacity-75 animate-pulse"></div>
                 <a href="https://estudio.movidasst.com" target="_blank" class="relative flex items-center justify-between w-full bg-movida-navy text-white font-black py-4 px-5 rounded-xl shadow-[0_10px_20px_rgba(0,32,91,0.3)] active:scale-95 transition-all overflow-hidden border border-movida-navy/50">
@@ -1304,12 +1290,12 @@
                 </a>
             </div>
 
-            <!-- 2. BOTÓN ÚNETE (SIN target="_blank") -->
+            <!-- BOTÓN ÚNETE (SIN target="_blank") -->
             <a href="https://registro.movidasst.com/" class="flex items-center justify-center gap-2 w-full bg-movida-yellow hover:bg-yellow-400 text-movida-navy font-black py-4 rounded-xl shadow-md active:scale-95 transition-transform">
                 <i class="fa-solid fa-rocket"></i> Únete a nuestro Directorio Nacional
             </a>
             
-            <!-- 3. TARJETA ACADEMIA (NUEVA) -->
+            <!-- TARJETA ACADEMIA -->
             <div class="glass-card p-5 mt-2 border-t-4 border-[#00205b] relative overflow-hidden shadow-sm">
                 <div class="absolute top-[-10px] right-[-10px] text-[#00205b]/5 text-7xl pointer-events-none"><i class="fa-solid fa-graduation-cap"></i></div>
                 <h3 class="text-movida-navy font-black text-[13px] uppercase tracking-wide mb-2 flex items-center gap-2 relative z-10">
@@ -1402,7 +1388,7 @@
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Código de Registro</label>
-                                    <input type="text" id="portal-code" placeholder="Ej: SDEIS" class="w-full bg-white border border-slate-300 rounded-xl p-3.5 font-mono text-slate-700 uppercase outline-none focus:border-movida-teal focus:ring-4 focus:ring-movida-teal/10 transition-all" oninput="this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '')" maxlength="10">
+                                    <input type="text" id="portal-code" placeholder="Ej: 48327" class="w-full bg-white border border-slate-300 rounded-xl p-3.5 font-mono text-slate-700 uppercase outline-none focus:border-movida-teal focus:ring-4 focus:ring-movida-teal/10 transition-all" oninput="this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '')" maxlength="5">
                                     <p class="text-[10px] text-slate-400 mt-1.5"><i class="fa-solid fa-lock mr-1"></i>Código único asignado al registrarte.</p>
                                 </div>
                             </div>
@@ -1424,7 +1410,7 @@
                             <div>
                                 <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Cédula o Token (QR)</label>
                                 <div class="relative flex gap-2">
-                                    <input type="text" id="val-input" placeholder="Ej. 12345678 o SDEIS" class="w-full bg-white border border-slate-300 rounded-xl p-3.5 font-mono font-bold text-movida-blue uppercase outline-none focus:border-movida-teal focus:ring-4 focus:ring-movida-teal/10 transition-all">
+                                    <input type="text" id="val-input" placeholder="Ej. 12345678 o 48327" class="w-full bg-white border border-slate-300 rounded-xl p-3.5 font-mono font-bold text-movida-blue uppercase outline-none focus:border-movida-teal focus:ring-4 focus:ring-movida-teal/10 transition-all">
                                     <button id="btn-val-submit" class="bg-movida-blue text-white w-14 rounded-xl flex items-center justify-center shadow-md hover:bg-blue-900 active:scale-95 transition-transform shrink-0 relative disabled:opacity-70">
                                         <i class="fa-solid fa-magnifying-glass text-lg btn-text"></i>
                                     </button>
@@ -1492,7 +1478,7 @@
                                 <div style="position: absolute; top: 331px; left: 185px; color: #94a3b8; font-size: 20px; line-height: 0; z-index: 20;">&bull;</div>
                                 <div id="cred-estado" style="position: absolute; top: 324px; left: 198px; width: 235px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 16px; font-weight: 800; color: #334155; z-index: 20;">Miranda</div>
                                 <div style="position: absolute; top: 148px; left: 450px; width: 120px; text-align: center; font-size: 8px; font-weight: 800; color: #94a3b8; letter-spacing: 1px; z-index: 20;">CÓDIGO DE VERIFICACIÓN</div>
-                                <div id="cred-code" style="position: absolute; top: 162px; left: 450px; width: 120px; text-align: center; font-size: 22px; font-weight: 700; color: #1e293b; font-family: 'JetBrains Mono', monospace; letter-spacing: 2px; z-index: 20;">SDEIS</div>
+                                <div id="cred-code" style="position: absolute; top: 162px; left: 450px; width: 120px; text-align: center; font-size: 22px; font-weight: 700; color: #1e293b; font-family: 'JetBrains Mono', monospace; letter-spacing: 2px; z-index: 20;">00000</div>
                                 <div style="position: absolute; top: 195px; left: 450px; width: 120px; height: 1px; background-color: #e2e8f0; z-index: 20;"></div>
                                 <div style="position: absolute; top: 212px; left: 455px; width: 110px; height: 110px; border: 1px solid #e2e8f0; border-radius: 12px; padding: 5px; box-sizing: border-box; background-color: #ffffff; z-index: 20;">
                                     <div id="cred-qr" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;"></div>
@@ -2891,7 +2877,7 @@
 
             validator.btnSubmit.addEventListener('click', () => {
                 const q = validator.input.value.trim().toUpperCase();
-                searchValidator(q, /^\d+$/.test(q) ? 'cedula' : 'token');
+                searchValidator(q, /^\d{5}$/.test(q) ? 'token' : 'cedula');
             });
             
             validator.input.addEventListener('keypress', (e) => { if(e.key === 'Enter') validator.btnSubmit.click(); });
