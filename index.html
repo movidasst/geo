@@ -748,14 +748,14 @@
             color: #fff !important;
             background: linear-gradient(135deg,#07539e,#0a66c2) !important;
         }
-        #info-view a[href*="estudia.movidasst.com"] {
+        #info-view a[href*="estudio.movidasst.com"] {
             color: #fff !important;
             background: linear-gradient(135deg,var(--movida-navy-deep),var(--movida-navy)) !important;
             border-color: rgba(0,124,131,.36) !important;
         }
-        #info-view a[href*="estudia.movidasst.com"] span,
-        #info-view a[href*="estudia.movidasst.com"] i { color: #fff !important; }
-        #info-view a[href*="estudia.movidasst.com"] span:first-child { color: #ffd65c !important; }
+        #info-view a[href*="estudio.movidasst.com"] span,
+        #info-view a[href*="estudio.movidasst.com"] i { color: #fff !important; }
+        #info-view a[href*="estudio.movidasst.com"] span:first-child { color: #ffd65c !important; }
         #info-view a[href*="registro.movidasst.com"] {
             color: var(--movida-navy-deep) !important;
             background: var(--movida-yellow) !important;
@@ -932,6 +932,17 @@
             -webkit-appearance: none;
         }
         .member-data-field input::placeholder { color: #94a3b8; opacity: 1; }
+        .member-data-help {
+            display: flex;
+            align-items: flex-start;
+            gap: .35rem;
+            margin: .38rem .15rem 0;
+            color: #64748b;
+            font-size: .68rem;
+            line-height: 1.35;
+            font-weight: 700;
+        }
+        .member-data-help i { color: #007b85; margin-top: .08rem; }
         .member-data-field input:focus,
         .member-data-field select:focus {
             border-color: #007b85;
@@ -1273,7 +1284,7 @@
             <!-- GRUPO DE ESTUDIO (ALTO IMPACTO) -->
             <div class="relative group">
                 <div class="absolute -inset-1 bg-gradient-to-r from-movida-yellow via-movida-teal to-movida-green rounded-xl blur opacity-75 animate-pulse"></div>
-                <a href="https://estudia.movidasst.com" target="_blank" class="relative flex items-center justify-between w-full bg-movida-navy text-white font-black py-4 px-5 rounded-xl shadow-[0_10px_20px_rgba(0,32,91,0.3)] active:scale-95 transition-all overflow-hidden border border-movida-navy/50">
+                <a href="https://estudio.movidasst.com" target="_blank" class="relative flex items-center justify-between w-full bg-movida-navy text-white font-black py-4 px-5 rounded-xl shadow-[0_10px_20px_rgba(0,32,91,0.3)] active:scale-95 transition-all overflow-hidden border border-movida-navy/50">
                     <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl transform translate-x-10 -translate-y-10"></div>
                     <div class="flex items-center gap-3.5 relative z-10">
                         <div class="bg-gradient-to-br from-movida-yellow to-amber-600 w-11 h-11 rounded-full flex items-center justify-center shrink-0 shadow-inner border border-amber-300/50">
@@ -1515,7 +1526,7 @@
                                 <div class="member-data-heading-icon"><i class="fa-solid fa-user-pen"></i></div>
                                 <div>
                                     <h3>Actualizar mis datos</h3>
-                                    <p>Los cambios se reflejarán en tu perfil, el mapa nacional, la credencial y las métricas.</p>
+                                    <p>Actualiza tus datos de contacto, ubicación y formación. Los cambios se reflejarán en tu perfil, el mapa nacional, la credencial y las métricas.</p>
                                 </div>
                             </div>
 
@@ -1568,6 +1579,41 @@
                                     <label for="member-email">Correo electrónico</label>
                                     <input id="member-email" name="correo" type="email" maxlength="160" inputmode="email" autocomplete="email" placeholder="nombre@correo.com" required>
                                 </div>
+
+                                <div class="member-data-field">
+                                    <label for="member-whatsapp">WhatsApp</label>
+                                    <input id="member-whatsapp" name="wasap" type="tel" inputmode="numeric" autocomplete="tel" maxlength="17" placeholder="+58 414 123 4567" required aria-describedby="member-whatsapp-help">
+                                    <p id="member-whatsapp-help" class="member-data-help"><i class="fa-solid fa-circle-info"></i> 12 dígitos, sin cero inicial y comenzando por 584.</p>
+                                </div>
+
+                                <div class="member-data-field">
+                                    <label for="member-degree">Grado de instrucción</label>
+                                    <div class="member-data-select-wrap">
+                                        <select id="member-degree" name="grado" required>
+                                            <option value="">Selecciona tu grado académico</option>
+                                            <option value="Primaria">Primaria</option>
+                                            <option value="Bachiller">Bachiller</option>
+                                            <option value="TSU">TSU (Técnico Superior Universitario)</option>
+                                            <option value="Universitario">Universitario (Lic./Ing.)</option>
+                                            <option value="Postgrado">Postgrado</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="member-data-field member-data-wide">
+                                    <label for="member-career">Carrera o profesión</label>
+                                    <input id="member-career" name="carrera" type="text" maxlength="160" autocomplete="organization-title" placeholder="Ej. Ingeniería Industrial" required>
+                                </div>
+
+                                <div class="member-data-field">
+                                    <label for="member-postgraduate">Postgrado</label>
+                                    <input id="member-postgraduate" name="postgrado" type="text" maxlength="160" placeholder="Ej. Maestría en SST">
+                                </div>
+
+                                <div class="member-data-field">
+                                    <label for="member-doctorate">Doctorado / postdoctorado</label>
+                                    <input id="member-doctorate" name="doctorado" type="text" maxlength="160" placeholder="Si aplica">
+                                </div>
                             </div>
 
                             <button id="btn-save-member-data" type="submit">
@@ -1576,7 +1622,7 @@
                             <p id="member-data-status" class="member-data-status" role="status" aria-live="polite"></p>
                             <div class="member-data-note">
                                 <i class="fa-solid fa-shield-halved"></i>
-                                <span>Por seguridad sólo se pueden modificar edad, ubicación y correo. Tu nombre, cédula, código y formación permanecen protegidos.</span>
+                                <span>Puedes actualizar edad, ubicación, correo, WhatsApp y formación académica. Tu nombre, cédula y código de integrante permanecen protegidos.</span>
                             </div>
                         </form>
 
@@ -1959,7 +2005,7 @@
                         const gr = (item.grado || item.Grado || '').toString().trim().toLowerCase();
 
                         if (doc) item._nivel_acad = 'Doctorado';
-                        else if (pg) item._nivel_acad = 'Postgrado';
+                        else if (pg || gr.includes('postgrado')) item._nivel_acad = 'Postgrado';
                         else if (gr.includes('tsu') || gr.includes('t.s.u') || gr.includes('tecnico') || gr.includes('técnico')) item._nivel_acad = 'T.S.U.';
                         else item._nivel_acad = 'Profesional';
                     }
@@ -2418,6 +2464,11 @@
                 municipality: document.getElementById('member-municipality'),
                 municipalityOptions: document.getElementById('member-municipality-options'),
                 email: document.getElementById('member-email'),
+                whatsapp: document.getElementById('member-whatsapp'),
+                degree: document.getElementById('member-degree'),
+                career: document.getElementById('member-career'),
+                postgraduate: document.getElementById('member-postgraduate'),
+                doctorate: document.getElementById('member-doctorate'),
                 btnSave: document.getElementById('btn-save-member-data'),
                 status: document.getElementById('member-data-status')
             };
@@ -2468,6 +2519,47 @@
                 editor.status.className = `member-data-status${type ? ` ${type}` : ''}`;
             };
 
+            const obtenerDigitosWasap = (valor) => String(valor ?? '').replace(/\D/g, '');
+
+            const normalizarWasapVenezuela = (valor) => {
+                let digitos = obtenerDigitosWasap(valor);
+                if (/^584\d{9}$/.test(digitos)) return digitos;
+                if (/^04\d{9}$/.test(digitos)) return `58${digitos.slice(1)}`;
+                if (/^4\d{9}$/.test(digitos)) return `58${digitos}`;
+                if (/^0584\d{9}$/.test(digitos)) return digitos.slice(1);
+                return digitos.slice(0, 12);
+            };
+
+            const formatearWasapVenezuela = (valor) => {
+                const digitos = obtenerDigitosWasap(valor).slice(0, 12);
+                if (!digitos) return '';
+                if (!digitos.startsWith('58')) return digitos;
+                const pais = digitos.slice(0, 2);
+                const operadora = digitos.slice(2, 5);
+                const bloque1 = digitos.slice(5, 8);
+                const bloque2 = digitos.slice(8, 12);
+                return `+${pais}${operadora ? ` ${operadora}` : ''}${bloque1 ? ` ${bloque1}` : ''}${bloque2 ? ` ${bloque2}` : ''}`;
+            };
+
+            const establecerValorSelectSeguro = (select, valor) => {
+                if (!select) return;
+                const limpio = String(valor ?? '').trim();
+                select.querySelectorAll('option[data-dynamic="true"]').forEach(option => option.remove());
+                if (!limpio) {
+                    select.value = '';
+                    return;
+                }
+                const existe = Array.from(select.options).some(option => option.value === limpio);
+                if (!existe) {
+                    const option = document.createElement('option');
+                    option.value = limpio;
+                    option.textContent = limpio;
+                    option.dataset.dynamic = 'true';
+                    select.appendChild(option);
+                }
+                select.value = limpio;
+            };
+
             const obtenerMunicipiosPorEstado = (estado, municipioActual = '') => {
                 const municipios = new Set();
                 globalData.forEach(item => {
@@ -2495,6 +2587,17 @@
                 editor.state.value = (data.estado || '').toString().trim();
                 editor.municipality.value = (data.municipio || '').toString().trim();
                 editor.email.value = (data.correo || data.Correo || data.CORREO || '').toString().trim();
+
+                const wasapActual = data.wasap || data.Wasap || data.WASAP || data.whatsapp || data.WhatsApp || '';
+                const wasapNormalizado = normalizarWasapVenezuela(wasapActual);
+                editor.whatsapp.value = formatearWasapVenezuela(wasapNormalizado);
+                editor.whatsapp.setCustomValidity('');
+
+                establecerValorSelectSeguro(editor.degree, data.grado || data.Grado || '');
+                editor.career.value = (data.carrera || data.Carrera || '').toString().trim();
+                editor.postgraduate.value = (data.postgrado || data.Postgrado || '').toString().trim();
+                editor.doctorate.value = (data.doctorado || data.Doctorado || data.DOCTORADO || '').toString().trim();
+
                 actualizarSugerenciasMunicipioEditor(editor.state.value, editor.municipality.value);
                 setEditorStatus('');
             };
@@ -2508,15 +2611,13 @@
                 if (laboral.toLowerCase() === 'desempleado') laboral = 'Buscando';
                 registro._laboral_clean = ['Dependiente', 'Independiente'].includes(laboral) ? laboral : 'Buscando';
 
-                if (!registro._nivel_acad || registro._nivel_acad === 'Profesional') {
-                    const doctorado = (registro.doctorado || registro.Doctorado || registro.DOCTORADO || '').toString().trim().toLowerCase();
-                    const postgrado = (registro.postgrado || registro.Postgrado || '').toString().trim().toLowerCase();
-                    const grado = (registro.grado || registro.Grado || '').toString().trim().toLowerCase();
-                    if (doctorado) registro._nivel_acad = 'Doctorado';
-                    else if (postgrado) registro._nivel_acad = 'Postgrado';
-                    else if (grado.includes('tsu') || grado.includes('t.s.u') || grado.includes('tecnico') || grado.includes('técnico')) registro._nivel_acad = 'T.S.U.';
-                    else registro._nivel_acad = 'Profesional';
-                }
+                const doctorado = (registro.doctorado || registro.Doctorado || registro.DOCTORADO || '').toString().trim().toLowerCase();
+                const postgrado = (registro.postgrado || registro.Postgrado || '').toString().trim().toLowerCase();
+                const grado = (registro.grado || registro.Grado || '').toString().trim().toLowerCase();
+                if (doctorado) registro._nivel_acad = 'Doctorado';
+                else if (postgrado || grado.includes('postgrado')) registro._nivel_acad = 'Postgrado';
+                else if (grado.includes('tsu') || grado.includes('t.s.u') || grado.includes('tecnico') || grado.includes('técnico')) registro._nivel_acad = 'T.S.U.';
+                else registro._nivel_acad = 'Profesional';
 
                 const nombres = (registro.nombres || registro.Nombres || '').toString().trim();
                 const apellidos = (registro.apellidos || registro.Apellidos || '').toString().trim();
@@ -2622,6 +2723,11 @@
                 const estado = editor.state.value.trim();
                 const municipio = toTitleCase(editor.municipality.value.trim());
                 const correo = editor.email.value.trim().toLowerCase();
+                const wasap = obtenerDigitosWasap(editor.whatsapp.value);
+                const grado = editor.degree.value.trim();
+                const carrera = editor.career.value.trim();
+                const postgrado = editor.postgraduate.value.trim();
+                const doctorado = editor.doctorate.value.trim();
 
                 if (!Number.isInteger(edad) || edad < 18 || edad > 100) {
                     setEditorStatus('Ingresa una edad válida entre 18 y 100 años.', 'error');
@@ -2643,12 +2749,40 @@
                     editor.email.focus();
                     return;
                 }
+                if (!/^584\d{9}$/.test(wasap)) {
+                    editor.whatsapp.setCustomValidity('Debe contener 12 dígitos y comenzar por 584. Ejemplo: +58 414 123 4567.');
+                    setEditorStatus('El WhatsApp debe tener 12 dígitos y comenzar por 584.', 'error');
+                    editor.whatsapp.focus();
+                    editor.whatsapp.reportValidity();
+                    return;
+                }
+                editor.whatsapp.setCustomValidity('');
+                if (!grado) {
+                    setEditorStatus('Selecciona el grado de instrucción.', 'error');
+                    editor.degree.focus();
+                    return;
+                }
+                if (carrera.length < 2) {
+                    setEditorStatus('Ingresa la carrera o profesión.', 'error');
+                    editor.career.focus();
+                    return;
+                }
 
                 manageBtnState(editor.btnSave, true);
                 setEditorStatus('Guardando cambios en Supabase...');
 
                 try {
-                    const cambiosPermitidos = { edad, estado, municipio, correo };
+                    const cambiosPermitidos = {
+                        edad,
+                        estado,
+                        municipio,
+                        correo,
+                        wasap,
+                        grado,
+                        carrera,
+                        postgrado: postgrado || null,
+                        doctorado: doctorado || null
+                    };
                     const { data, error } = await supabaseClient
                         .from('integrantes')
                         .update(cambiosPermitidos)
@@ -2662,7 +2796,7 @@
 
                     const actualizado = sincronizarRegistroEnInterfaz(data);
                     renderCredential(actualizado);
-                    setEditorStatus('Datos actualizados. Mapa, credencial y métricas sincronizados.', 'success');
+                    setEditorStatus('Datos de contacto y formación actualizados. Mapa, credencial y métricas sincronizados.', 'success');
                     mostrarNotificacion('Datos actualizados correctamente', 'fa-circle-check');
                 } catch (error) {
                     console.error('Error actualizando datos del integrante:', error);
@@ -2896,6 +3030,23 @@
                 actualizarSugerenciasMunicipioEditor(editor.state.value);
                 setEditorStatus('');
             });
+            if (editor.whatsapp) {
+                editor.whatsapp.addEventListener('input', function () {
+                    const digitos = obtenerDigitosWasap(this.value).slice(0, 12);
+                    this.value = formatearWasapVenezuela(digitos);
+                    this.setCustomValidity('');
+                    setEditorStatus('');
+                });
+                editor.whatsapp.addEventListener('blur', function () {
+                    const normalizado = normalizarWasapVenezuela(this.value);
+                    this.value = formatearWasapVenezuela(normalizado);
+                    if (normalizado && !/^584\d{9}$/.test(normalizado)) {
+                        this.setCustomValidity('Debe contener 12 dígitos y comenzar por 584.');
+                    } else {
+                        this.setCustomValidity('');
+                    }
+                });
+            }
             portal.uploadPhoto.addEventListener('change', openCropper);
             portal.uploadCamera.addEventListener('change', openCropper);
             modal.btnSave.addEventListener('click', uploadCropped);
