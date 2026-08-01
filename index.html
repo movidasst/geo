@@ -51,6 +51,7 @@
             }
         }
     </script>
+    
     <style>
         html, body { height: 100dvh; width: 100vw; margin: 0; padding: 0; overflow: hidden; overscroll-behavior-y: none; font-family: 'Outfit', sans-serif; background-color: #f8fafc; }
         
@@ -255,7 +256,7 @@
                     <div>
                         <span class="bg-movida-yellow text-movida-navy text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md mb-2 inline-block">Súmate a la red</span>
                         <h3 class="font-black text-lg leading-tight">¡Únete a La Movida SST Plus!</h3>
-                        <p class="text-xs text-slate-200 mt-1.5 font-medium">Regístrate y aparece en nuestro directorio nacional.</p>
+                        <p class="text-xs text-slate-200 mt-1.5 font-medium">Regístrate y aparece en nuestro Directorio nacional.</p>
                     </div>
                     <div class="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center shrink-0 shadow-inner">
                         <i class="fa-solid fa-arrow-right text-lg text-white"></i>
@@ -736,6 +737,12 @@
         let globalData = []; 
         let datosGeograficosGlobal = {};
         let stateFiltros = { academico: 'todos', estado: 'todos', laboral: 'todos', genero: 'todos', nombreBusqueda: '', modoHeatmap: false };
+        
+        // Variables para renderizado diferido (Lazy Loading) de Gráficos
+        let chartsDrawn = false;
+        let globalGenData = null;
+        let globalLabData = null;
+        let globalEdadData = null;
 
         const geodata = {
             municipios: {
@@ -800,15 +807,10 @@
         }
 
         async function fetchYProcesarDatos() {
-            // VERIFICA QUE ESTA URL SEA LA CORRECTA Y LA ÚLTIMA IMPLEMENTACIÓN
-            const URL_API = 'https://script.google.com/macros/s/AKfycbwh8-Lb58mE_M7MF7kgApx7lrpWiAtqd518zepZ36pQ9ECrOZOofF37X51Gd253zlKP/exec';
+            const URL_API = 'https://script.google.com/macros/s/AKfycbzi1RUHgJ0zj7docOtNEVDImXXUh0jzcGH1AYa8gjmNYW9NS-Q_Cp4Lb_7O5J4z6xfx/exec';
             try {
-                const res = await fetch(URL_API, { method: 'GET', redirect: 'follow' });
-                
-                if(!res.ok) {
-                    throw new Error(`Fallo del servidor de Google (HTTP ${res.status}). Verifica los permisos y estado de tu Apps Script.`);
-                }
-                
+                const res = await fetch(URL_API);
+                if(!res.ok) throw new Error("Fallo en red.");
                 const json = await res.json();
                 
                 if(json.result === "success" && json.data) {
@@ -1043,7 +1045,9 @@
             stateFiltros.municipio = municipioSelect ? municipioSelect.value : 'todos';
             
             markersCluster.clearLayers(); if(heatmapLayer) map.removeLayer(heatmapLayer);
-            let countVisibles = 0; let heatPoints = [];
+            let countVisibles = 0; 
+            let heatPoints = [];
+            let marcadoresArray = []; // Guardamos los pines en memoria primero
 
             globalData.forEach(item => {
                 if(!item.estado) return;
@@ -1065,18 +1069,28 @@
                     const marker = L.circleMarker([lat, lng], { radius: 10, fillColor: pinColor, color: "#ffffff", weight: 3, fillOpacity: 0.95, shadowBlur: 10 });
                     const itemStr = encodeURIComponent(JSON.stringify(item));
                     marker.on('click', () => abrirPerfil(itemStr));
-                    markersCluster.addLayer(marker);
+                    marcadoresArray.push(marker); // Lo metemos a la caja de carga masiva
                 }
             });
             
-            if (stateFiltros.modoHeatmap && heatPoints.length > 0) heatmapLayer = L.heatLayer(heatPoints, {radius: 35, blur: 25, maxZoom: 8, gradient: {0.4: 'green', 0.65: 'yellow', 1: 'red'}}).addTo(map);
+            // Renderizado súper rápido en bloque
+            if (stateFiltros.modoHeatmap && heatPoints.length > 0) {
+                heatmapLayer = L.heatLayer(heatPoints, {radius: 35, blur: 25, maxZoom: 8, gradient: {0.4: 'green', 0.65: 'yellow', 1: 'red'}}).addTo(map);
+            } else if (marcadoresArray.length > 0) {
+                markersCluster.addLayers(marcadoresArray); // Inyectamos TODOS a la vez, el celular no se bloquea.
+            }
+            
             document.getElementById('map-visible-count').innerText = countVisibles;
         }
 
         function procesarDatosParaDashboard(data) {
             let porEstado = {}; let porMunicipio = new Set(); datosGeograficosGlobal = {}; 
             let genData = { 'Masculino': 0, 'Femenino': 0 }; let labData = { 'Dependiente': 0, 'Independiente': 0, 'Buscando': 0 };
-            let edadData = { '< 30': 0, '31 - 40': 0, '41 - 50': 0, '50+': 0 }; let carreras = {};
+            
+            // Nueva clasificación sociodemográfica generacional
+            let edadData = { 'Gen Z (<30)': 0, 'Millennials (30-45)': 0, 'Gen X (46-60)': 0, 'Boomers (61+)': 0 }; 
+            
+            let carreras = {};
             let statsAcademico = { totalValido: 0, postgrado: 0, doctorado: 0, profesional: 0, tsu: 0 };
             
             data.forEach(item => {
@@ -1091,7 +1105,16 @@
                 }
                 if(item.genero === "Masculino" || item.genero === "Femenino") genData[item.genero]++;
                 if(item._laboral_clean === "Dependiente") labData['Dependiente']++; else if(item._laboral_clean === "Independiente") labData['Independiente']++; else if(item._laboral_clean === "Buscando" || item._laboral_clean === "Desempleado") labData['Buscando']++;
-                if(item.edad && !isNaN(parseInt(item.edad))) { let e = parseInt(item.edad); if(e <= 30) edadData['< 30']++; else if(e <= 40) edadData['31 - 40']++; else if(e <= 50) edadData['41 - 50']++; else edadData['50+']++; }
+                
+                // Algoritmo de Generaciones
+                if(item.edad && !isNaN(parseInt(item.edad))) { 
+                    let e = parseInt(item.edad); 
+                    if(e <= 29) edadData['Gen Z (<30)']++; 
+                    else if(e <= 45) edadData['Millennials (30-45)']++; 
+                    else if(e <= 60) edadData['Gen X (46-60)']++; 
+                    else edadData['Boomers (61+)']++; 
+                }
+                
                 if(item._nivel_acad) {
                     statsAcademico.totalValido++;
                     if(item._nivel_acad === "Doctorado") statsAcademico.doctorado++; else if(item._nivel_acad === "Postgrado") statsAcademico.postgrado++; else if(item._nivel_acad === "Profesional") statsAcademico.profesional++; else if(item._nivel_acad === "T.S.U.") statsAcademico.tsu++;
@@ -1109,7 +1132,13 @@
                 document.getElementById('txt-acad-prof').innerText = pProf + "%"; document.getElementById('bar-acad-prof').style.width = pProf + "%";
                 document.getElementById('txt-acad-tsu').innerText = pTsu + "%"; document.getElementById('bar-acad-tsu').style.width = pTsu + "%";
             }
-            dibujarTopCarreras(carreras); dibujarListaEstados(datosGeograficosGlobal, 5); dibujarGraficos(genData, labData, edadData);
+            dibujarTopCarreras(carreras); 
+            dibujarListaEstados(datosGeograficosGlobal, 5); 
+            
+            // Guardamos las variables para cuando el usuario pida verlas
+            globalGenData = genData;
+            globalLabData = labData;
+            globalEdadData = edadData;
         }
 
         function dibujarTopCarreras(carrerasObj) {
@@ -1165,7 +1194,18 @@
             const commonOpts = { plugins: { legend: { display: false }, tooltip: { enabled: false }, datalabels: { color: '#00205b', anchor: 'end', align: 'right', font: { weight: 'bold', size: 12 }, padding: {left: 4} } }, scales: { x: { display: false }, y: { grid: { display: false }, border: { display: false } } }, layout: { padding: { right: 35 } } };
 
             if(chartInstances.edad) chartInstances.edad.destroy();
-            chartInstances.edad = new Chart(document.getElementById('chartEdad').getContext('2d'), { type: 'bar', data: { labels: ['< 30', '31-40', '41-50', '50+'], datasets: [{ data: [edadData['< 30'], edadData['31 - 40'], edadData['41 - 50'], edadData['50+']], backgroundColor: '#70ad47', borderRadius: 4 }] }, options: { ...commonOpts, indexAxis: 'y', maintainAspectRatio: false } });
+            chartInstances.edad = new Chart(document.getElementById('chartEdad').getContext('2d'), { 
+                type: 'bar', 
+                data: { 
+                    labels: ['Gen Z', 'Millennials', 'Gen X', 'Boomers'], 
+                    datasets: [{ 
+                        data: [edadData['Gen Z (<30)'], edadData['Millennials (30-45)'], edadData['Gen X (46-60)'], edadData['Boomers (61+)']], 
+                        backgroundColor: ['#70ad47', '#007b85', '#00205b', '#ffb600'], 
+                        borderRadius: 4 
+                    }] 
+                }, 
+                options: { ...commonOpts, indexAxis: 'y', maintainAspectRatio: false } 
+            });
 
             if(chartInstances.lab) chartInstances.lab.destroy();
             chartInstances.lab = new Chart(document.getElementById('chartLaboral').getContext('2d'), { type: 'bar', data: { labels: ['Dependiente', 'Independiente', 'Buscando'], datasets: [{ data: [labData['Dependiente'], labData['Independiente'], labData['Buscando']], backgroundColor: ['#00205b', '#007b85', '#ffb600'], borderRadius: 6 }] }, options: { ...commonOpts, indexAxis: 'y', maintainAspectRatio: false } });
@@ -1356,7 +1396,7 @@
                 validator.nombres.textContent = d.nombres || "N/A";
                 validator.apellidos.textContent = d.apellidos || "";
                 
-                // Escudo de seguridad: Solo actualiza la cédula si el elemento existe visualmente
+                // Escudo de seguridad retirado para no mostrar la cédula
                 if (validator.cedula) validator.cedula.textContent = d.cedula.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
                 
                 // Mostrar perfil académico limpio (Sin edad ni datos sensibles)
@@ -1368,10 +1408,9 @@
                 let fotoData = d.fotoUrl || d.foto || d.Foto || d.FOTO || '';
                 
                 if(fotoData && fotoData.includes('http')) {
-                    // Prevenir problemas de caché y seguridad
                     const cacheBuster = `?t=${new Date().getTime()}`;
-                    validator.photo.crossOrigin = "anonymous"; // Bypass para CORS
-
+                    validator.photo.crossOrigin = "anonymous";
+                    
                     // Intento 1: Carga rápida de Google (Bypass)
                     validator.photo.src = getCorsDriveUrl(fotoData) + cacheBuster;
                     validator.photo.onload = () => { validator.photo.classList.remove('hidden'); validator.photoPlaceholder.classList.add('hidden'); };
@@ -1449,9 +1488,9 @@
                 validator.input.value = qrToken.toUpperCase();
                 searchValidator(qrToken.toUpperCase(), 'token');
             }
-        } // <- ESTA LLAVE FALTABA: Cierra la función initCredenciales
+        } 
 
-        // CONTROLADOR MAESTRO DE VISTAS (Protegido contra errores null)
+        // CONTROLADOR MAESTRO DE VISTAS (Protegido y con renderizado diferido)
         function switchTab(tabId) {
             if(navigator.vibrate) navigator.vibrate(50);
             
@@ -1459,7 +1498,6 @@
                 const el = document.getElementById(id); 
                 const btn = document.getElementById(`btn-${id}`);
                 
-                // Escudo protector activo
                 if (!el || !btn) return; 
                 
                 let zIndex = id === 'map-view' ? 'z-10' : 'z-20';
@@ -1474,15 +1512,18 @@
                     btn.classList.add('text-slate-400'); 
                 }
                 
-                // El mapa tiene su display especial z-10
                 if(id === 'map-view') {
                     el.className = (id === tabId) ? 'view-active absolute inset-0 z-10' : 'view-hidden absolute inset-0 z-10';
                 }
             });
             
-            // Refresco de mapas
+            // Refresco de mapas y Lazy Load de Gráficos (Ahorra muchísima RAM)
             if(tabId === 'map-view') {
                 setTimeout(() => { if(map) map.invalidateSize() }, 300);
+            } else if (tabId === 'dashboard-view' && !chartsDrawn && globalGenData) {
+                // Dibujamos las métricas SÓLO cuando el usuario abre la pestaña
+                dibujarGraficos(globalGenData, globalLabData, globalEdadData);
+                chartsDrawn = true;
             }
         }
 
