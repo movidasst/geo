@@ -384,7 +384,7 @@
             <!-- NUEVO BOTÓN: GRUPO DE ESTUDIO (ALTO IMPACTO) -->
             <div class="relative group">
                 <div class="absolute -inset-1 bg-gradient-to-r from-movida-yellow via-movida-teal to-movida-green rounded-xl blur opacity-75 animate-pulse"></div>
-                <a href="https://estudia.movidasst.com" target="_blank" class="relative flex items-center justify-between w-full bg-movida-navy text-white font-black py-4 px-5 rounded-xl shadow-[0_10px_20px_rgba(0,32,91,0.3)] active:scale-95 transition-all overflow-hidden border border-movida-navy/50">
+                <a href="https://estudio.movidasst.com" target="_blank" class="relative flex items-center justify-between w-full bg-movida-navy text-white font-black py-4 px-5 rounded-xl shadow-[0_10px_20px_rgba(0,32,91,0.3)] active:scale-95 transition-all overflow-hidden border border-movida-navy/50">
                     <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl transform translate-x-10 -translate-y-10"></div>
                     <div class="flex items-center gap-3.5 relative z-10">
                         <div class="bg-gradient-to-br from-movida-yellow to-amber-600 w-11 h-11 rounded-full flex items-center justify-center shrink-0 shadow-inner border border-amber-300/50">
@@ -800,10 +800,15 @@
         }
 
         async function fetchYProcesarDatos() {
+            // VERIFICA QUE ESTA URL SEA LA CORRECTA Y LA ÚLTIMA IMPLEMENTACIÓN
             const URL_API = 'https://script.google.com/macros/s/AKfycbwh8-Lb58mE_M7MF7kgApx7lrpWiAtqd518zepZ36pQ9ECrOZOofF37X51Gd253zlKP/exec';
             try {
-                const res = await fetch(URL_API);
-                if(!res.ok) throw new Error("Fallo en red.");
+                const res = await fetch(URL_API, { method: 'GET', redirect: 'follow' });
+                
+                if(!res.ok) {
+                    throw new Error(`Fallo del servidor de Google (HTTP ${res.status}). Verifica los permisos y estado de tu Apps Script.`);
+                }
+                
                 const json = await res.json();
                 
                 if(json.result === "success" && json.data) {
@@ -832,7 +837,6 @@
                         let crLimpia = cr.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); 
                         if (crLimpia.includes("ING") && crLimpia.includes("INDUSTRIAL")) profFinal = "Ingeniería Industrial";
                         item._profesion_clean = toTitleCase(profFinal).replace(/\btsu\b/ig, 'TSU').replace(/\bsst\b/ig, 'SST');
-                        item._resumen_ia = item._resumen_ia || "Profesional SST preparado para proyectos, auditorías y asesorías.";
                     });
 
                     globalData = json.data;
@@ -997,10 +1001,6 @@
                             <p class="text-xs font-bold text-slate-500 truncate mt-0.5">${item._profesion_clean}</p>
                             <p class="text-[10px] font-black text-movida-teal uppercase tracking-wide mt-0.5">${item._nivel_acad}</p>
                         </div>
-                    </div>
-                    <div class="bg-gradient-to-r from-movida-navy/5 to-movida-teal/10 p-3 rounded-xl mb-4 border border-movida-teal/20 shadow-inner">
-                        <p class="text-[10px] font-extrabold text-movida-teal uppercase tracking-wider m-0 mb-1 flex items-center gap-1.5"><i class="fa-solid fa-wand-magic-sparkles"></i> Perfil IA Match</p>
-                        <p class="text-xs text-slate-700 font-medium m-0 leading-snug italic">"${item._resumen_ia}"</p>
                     </div>
                     <div class="space-y-2 mb-5">
                         <p class="text-xs text-slate-600 font-medium flex items-center"><i class="fa-solid fa-location-dot text-slate-400 w-5 text-center mr-2 text-sm"></i> ${item.estado}, ${item.municipio}</p>
