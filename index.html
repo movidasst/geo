@@ -3033,13 +3033,6 @@
                 editor.whatsapp.value = formatearWasapVenezuela(wasapNormalizado);
                 editor.whatsapp.setCustomValidity('');
                 editor.linkedin.setCustomValidity('');
-                if (linkedinIngresado && linkedin === null) {
-                    editor.linkedin.setCustomValidity('Ingresa un enlace válido de LinkedIn, por ejemplo: https://www.linkedin.com/in/tu-perfil');
-                    setEditorStatus('El enlace debe pertenecer a LinkedIn.', 'error');
-                    editor.linkedin.focus();
-                    editor.linkedin.reportValidity();
-                    return;
-                }
 
                 establecerValorSelectSeguro(editor.degree, data.grado || data.Grado || '');
                 editor.career.value = (data.carrera || data.Carrera || '').toString().trim();
@@ -3108,8 +3101,9 @@
                         renderCredential(data); 
                         changeView(views.portalResult); 
                     }
-                } catch (e) { 
-                    portal.error.textContent = 'Error de conexión. Intente nuevamente.'; 
+                } catch (e) {
+                    console.error('Error al abrir el acceso de integrantes:', e);
+                    portal.error.textContent = 'No se pudo abrir la credencial. Intente nuevamente.';
                 } finally { 
                     manageBtnState(portal.btnSubmit, false); 
                 }
@@ -3198,6 +3192,16 @@
                     return;
                 }
                 editor.whatsapp.setCustomValidity('');
+
+                editor.linkedin.setCustomValidity('');
+                if (linkedinIngresado && linkedin === null) {
+                    editor.linkedin.setCustomValidity('Ingresa un enlace válido de LinkedIn, por ejemplo: https://www.linkedin.com/in/tu-perfil');
+                    setEditorStatus('El enlace debe pertenecer a LinkedIn.', 'error');
+                    editor.linkedin.focus();
+                    editor.linkedin.reportValidity();
+                    return;
+                }
+
                 if (!grado) {
                     setEditorStatus('Selecciona el grado de instrucción.', 'error');
                     editor.degree.focus();
