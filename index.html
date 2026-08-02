@@ -1012,6 +1012,171 @@
             .member-data-field.member-data-wide { grid-column: 1 / -1; }
         }
 
+        /* Cambio privado del código de acceso */
+        #member-code-change {
+            width: 100%;
+            max-width: 42rem;
+            margin: 1rem auto 0;
+            padding: 1rem;
+            border: 1px solid #c9e5e8;
+            border-radius: 1.25rem;
+            background: linear-gradient(180deg, #f4fbfb 0%, #ffffff 100%);
+            box-shadow: 0 8px 24px rgba(0, 123, 133, 0.08);
+        }
+        .code-change-heading {
+            display: flex;
+            align-items: flex-start;
+            gap: .75rem;
+            margin-bottom: 1rem;
+        }
+        .code-change-heading-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            flex: 0 0 2.5rem;
+            display: grid;
+            place-items: center;
+            border-radius: .8rem;
+            color: #ffffff;
+            background: linear-gradient(135deg, #006f78, #0f766e);
+            box-shadow: 0 6px 14px rgba(0, 123, 133, .18);
+        }
+        .code-change-heading h3 {
+            margin: 0;
+            color: #00205b;
+            font-size: .95rem;
+            line-height: 1.2;
+            font-weight: 900;
+        }
+        .code-change-heading p {
+            margin: .25rem 0 0;
+            color: #475569;
+            font-size: .75rem;
+            line-height: 1.45;
+            font-weight: 600;
+        }
+        .code-change-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: .85rem;
+        }
+        .code-change-field label {
+            display: block;
+            margin: 0 0 .38rem .15rem;
+            color: #334155;
+            font-size: .68rem;
+            line-height: 1;
+            font-weight: 900;
+            letter-spacing: .055em;
+            text-transform: uppercase;
+        }
+        .code-change-input-wrap {
+            position: relative;
+        }
+        .code-change-field input {
+            display: block;
+            width: 100%;
+            min-height: 50px;
+            box-sizing: border-box;
+            padding: .75rem 3.35rem .75rem .9rem;
+            border: 1.5px solid #9fbfc2;
+            border-radius: .85rem;
+            color: #0f2747 !important;
+            background: #ffffff !important;
+            font: 900 1rem/1.2 'JetBrains Mono', monospace;
+            letter-spacing: .22em;
+            text-transform: uppercase;
+            box-shadow: inset 0 1px 2px rgba(15, 39, 71, .03);
+            outline: none;
+        }
+        .code-change-field input::placeholder {
+            color: #94a3b8;
+            opacity: 1;
+            letter-spacing: .12em;
+        }
+        .code-change-field input:focus {
+            border-color: #007b85;
+            box-shadow: 0 0 0 4px rgba(0, 123, 133, .12);
+        }
+        .code-eye-btn {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 3.25rem;
+            height: 100%;
+            display: grid;
+            place-items: center;
+            border: 0;
+            border-radius: 0 .85rem .85rem 0;
+            color: #64748b;
+            background: transparent;
+            cursor: pointer;
+        }
+        .code-eye-btn:focus-visible {
+            outline: 2px solid #007b85;
+            outline-offset: -4px;
+        }
+        .code-change-help {
+            display: flex;
+            align-items: flex-start;
+            gap: .35rem;
+            margin: .45rem .15rem 0;
+            color: #526579;
+            font-size: .69rem;
+            line-height: 1.4;
+            font-weight: 700;
+        }
+        .code-change-help i {
+            color: #007b85;
+            margin-top: .08rem;
+        }
+        #btn-change-member-code {
+            position: relative;
+            width: 100%;
+            min-height: 52px;
+            margin-top: 1rem;
+            border: 0;
+            border-radius: .9rem;
+            color: #ffffff !important;
+            background: linear-gradient(135deg, #006f78 0%, #0f766e 100%) !important;
+            box-shadow: 0 8px 18px rgba(0, 123, 133, .22);
+            font: 900 .9rem/1 'Outfit', sans-serif;
+            cursor: pointer;
+            transition: transform .18s ease, opacity .18s ease;
+        }
+        #btn-change-member-code:active { transform: scale(.985); }
+        #btn-change-member-code:disabled { opacity: .68; cursor: wait; }
+        .code-change-status {
+            min-height: 1.3rem;
+            margin: .7rem .2rem 0;
+            color: #475569;
+            font-size: .76rem;
+            line-height: 1.35;
+            font-weight: 800;
+            text-align: center;
+        }
+        .code-change-status.success { color: #166534; }
+        .code-change-status.error { color: #b91c1c; }
+        .code-change-warning {
+            display: flex;
+            align-items: flex-start;
+            gap: .45rem;
+            margin-top: .7rem;
+            padding: .7rem .75rem;
+            border-radius: .75rem;
+            color: #713f12;
+            background: #fff8db;
+            border: 1px solid #f0d167;
+            font-size: .69rem;
+            line-height: 1.42;
+            font-weight: 800;
+        }
+        @media (min-width: 480px) {
+            #member-code-change { padding: 1.25rem; }
+            .code-change-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
     </style>
 </head>
 <body class="text-slate-600 antialiased selection:bg-movida-teal selection:text-white">
@@ -1429,9 +1594,32 @@
                                     <input type="text" id="portal-dni" placeholder="Ej: 12345678" inputmode="numeric" class="w-full bg-white border border-slate-300 rounded-xl p-3.5 font-mono text-slate-700 outline-none focus:border-movida-teal focus:ring-4 focus:ring-movida-teal/10 transition-all" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Código de Registro</label>
-                                    <input type="text" id="portal-code" placeholder="Ej: 48327" class="w-full bg-white border border-slate-300 rounded-xl p-3.5 font-mono text-slate-700 uppercase outline-none focus:border-movida-teal focus:ring-4 focus:ring-movida-teal/10 transition-all" oninput="this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '')" maxlength="5">
-                                    <p class="text-[10px] text-slate-400 mt-1.5"><i class="fa-solid fa-lock mr-1"></i>Código único asignado al registrarte.</p>
+                                    <label for="portal-code" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Código de Registro</label>
+                                    <div class="relative">
+                                        <input
+                                            type="password"
+                                            id="portal-code"
+                                            placeholder="•••••"
+                                            autocomplete="current-password"
+                                            inputmode="text"
+                                            aria-describedby="portal-code-help"
+                                            class="w-full bg-white border border-slate-300 rounded-xl p-3.5 pr-14 font-mono text-slate-700 tracking-[0.22em] outline-none focus:border-movida-teal focus:ring-4 focus:ring-movida-teal/10 transition-all"
+                                            oninput="this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '')"
+                                            maxlength="5"
+                                        >
+                                        <button
+                                            type="button"
+                                            id="portal-code-toggle"
+                                            class="absolute inset-y-0 right-0 flex w-14 items-center justify-center rounded-r-xl text-slate-400 hover:text-movida-teal focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-movida-teal transition-colors"
+                                            aria-label="Mostrar código"
+                                            aria-controls="portal-code"
+                                            aria-pressed="false"
+                                            title="Mostrar código"
+                                        >
+                                            <i class="fa-solid fa-eye" aria-hidden="true"></i>
+                                        </button>
+                                    </div>
+                                    <p id="portal-code-help" class="text-[10px] text-slate-400 mt-1.5"><i class="fa-solid fa-lock mr-1"></i>El código permanece oculto. Pulsa el ojo para comprobarlo antes de ingresar.</p>
                                 </div>
                             </div>
                             
@@ -1450,9 +1638,9 @@
                             </div>
                             
                             <div>
-                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Cédula o Token (QR)</label>
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Cédula de verificación</label>
                                 <div class="relative flex gap-2">
-                                    <input type="text" id="val-input" placeholder="Ej. 12345678 o 48327" class="w-full bg-white border border-slate-300 rounded-xl p-3.5 font-mono font-bold text-movida-blue uppercase outline-none focus:border-movida-teal focus:ring-4 focus:ring-movida-teal/10 transition-all">
+                                    <input type="text" id="val-input" placeholder="Ej. 12345678" inputmode="numeric" maxlength="12" autocomplete="off" class="w-full bg-white border border-slate-300 rounded-xl p-3.5 font-mono font-bold text-movida-blue outline-none focus:border-movida-teal focus:ring-4 focus:ring-movida-teal/10 transition-all">
                                     <button id="btn-val-submit" class="bg-movida-blue text-white w-14 rounded-xl flex items-center justify-center shadow-md hover:bg-blue-900 active:scale-95 transition-transform shrink-0 relative disabled:opacity-70">
                                         <i class="fa-solid fa-magnifying-glass text-lg btn-text"></i>
                                     </button>
@@ -1463,7 +1651,7 @@
                                 <div class="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 mb-2">
                                     <i class="fa-solid fa-qrcode text-xl"></i>
                                 </div>
-                                <p class="text-xs text-slate-500 font-medium">Escanea un código QR oficial o ingresa los datos para verificar.</p>
+                                <p class="text-xs text-slate-500 font-medium">Escanea el QR oficial o ingresa la cédula para verificar.</p>
                             </div>
 
                             <div id="val-error" class="hidden flex flex-col items-center justify-center p-6 mt-6 bg-rose-50 border border-rose-100 rounded-xl text-center shadow-sm">
@@ -1519,8 +1707,8 @@
                                 <div style="position: absolute; top: 310px; left: 185px; font-size: 9px; font-weight: 800; color: #94a3b8; letter-spacing: 1px; z-index: 20;">UBICACIÓN</div>
                                 <div style="position: absolute; top: 331px; left: 185px; color: #94a3b8; font-size: 20px; line-height: 0; z-index: 20;">&bull;</div>
                                 <div id="cred-estado" style="position: absolute; top: 324px; left: 198px; width: 235px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 16px; font-weight: 800; color: #334155; z-index: 20;">Miranda</div>
-                                <div style="position: absolute; top: 148px; left: 450px; width: 120px; text-align: center; font-size: 8px; font-weight: 800; color: #94a3b8; letter-spacing: 1px; z-index: 20;">CÓDIGO DE VERIFICACIÓN</div>
-                                <div id="cred-code" style="position: absolute; top: 162px; left: 450px; width: 120px; text-align: center; font-size: 22px; font-weight: 700; color: #1e293b; font-family: 'JetBrains Mono', monospace; letter-spacing: 2px; z-index: 20;">00000</div>
+                                <div style="position: absolute; top: 148px; left: 450px; width: 120px; text-align: center; font-size: 8px; font-weight: 800; color: #94a3b8; letter-spacing: 1px; z-index: 20;">VERIFICACIÓN PÚBLICA</div>
+                                <div id="cred-code" style="position: absolute; top: 163px; left: 450px; width: 120px; text-align: center; font-size: 13px; font-weight: 900; color: #0f766e; font-family: 'Outfit', sans-serif; letter-spacing: 1px; z-index: 20;">QR OFICIAL</div>
                                 <div style="position: absolute; top: 195px; left: 450px; width: 120px; height: 1px; background-color: #e2e8f0; z-index: 20;"></div>
                                 <div style="position: absolute; top: 212px; left: 455px; width: 110px; height: 110px; border: 1px solid #e2e8f0; border-radius: 12px; padding: 5px; box-sizing: border-box; background-color: #ffffff; z-index: 20;">
                                     <div id="cred-qr" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;"></div>
@@ -1659,7 +1847,104 @@
                             <p id="member-data-status" class="member-data-status" role="status" aria-live="polite"></p>
                             <div class="member-data-note">
                                 <i class="fa-solid fa-shield-halved"></i>
-                                <span>Puedes actualizar edad, ubicación, correo, WhatsApp, LinkedIn y formación académica. Tu nombre, cédula y código de integrante permanecen protegidos.</span>
+                                <span>Puedes actualizar edad, ubicación, correo, WhatsApp, LinkedIn y formación académica. Tu nombre y cédula permanecen protegidos. El código se cambia únicamente en la sección privada siguiente.</span>
+                            </div>
+                        </form>
+
+                        <form id="member-code-change" novalidate>
+                            <div class="code-change-heading">
+                                <div class="code-change-heading-icon">
+                                    <i class="fa-solid fa-key"></i>
+                                </div>
+                                <div>
+                                    <h3>Cambiar código de acceso</h3>
+                                    <p>Define un nuevo código privado de exactamente 5 caracteres. Puede contener letras mayúsculas y números.</p>
+                                </div>
+                            </div>
+
+                            <div class="code-change-grid">
+                                <div class="code-change-field">
+                                    <label for="member-new-code">Nuevo código</label>
+                                    <div class="code-change-input-wrap">
+                                        <input
+                                            id="member-new-code"
+                                            name="nuevo_codigo"
+                                            type="password"
+                                            inputmode="text"
+                                            autocomplete="new-password"
+                                            minlength="5"
+                                            maxlength="5"
+                                            pattern="[A-Za-z0-9]{5}"
+                                            placeholder="•••••"
+                                            aria-describedby="member-code-rules"
+                                            required
+                                        >
+                                        <button
+                                            id="member-new-code-toggle"
+                                            class="code-eye-btn"
+                                            type="button"
+                                            aria-label="Mostrar nuevo código"
+                                            aria-controls="member-new-code"
+                                            aria-pressed="false"
+                                            title="Mostrar nuevo código"
+                                        >
+                                            <i class="fa-solid fa-eye" aria-hidden="true"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="code-change-field">
+                                    <label for="member-confirm-code">Confirmar nuevo código</label>
+                                    <div class="code-change-input-wrap">
+                                        <input
+                                            id="member-confirm-code"
+                                            name="confirmar_codigo"
+                                            type="password"
+                                            inputmode="text"
+                                            autocomplete="new-password"
+                                            minlength="5"
+                                            maxlength="5"
+                                            pattern="[A-Za-z0-9]{5}"
+                                            placeholder="•••••"
+                                            required
+                                        >
+                                        <button
+                                            id="member-confirm-code-toggle"
+                                            class="code-eye-btn"
+                                            type="button"
+                                            aria-label="Mostrar confirmación del código"
+                                            aria-controls="member-confirm-code"
+                                            aria-pressed="false"
+                                            title="Mostrar confirmación del código"
+                                        >
+                                            <i class="fa-solid fa-eye" aria-hidden="true"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <p id="member-code-rules" class="code-change-help">
+                                <i class="fa-solid fa-circle-info"></i>
+                                <span>Usa solamente letras de la A a la Z y números del 0 al 9. No se permiten espacios, acentos ni símbolos.</span>
+                            </p>
+
+                            <button id="btn-change-member-code" type="submit">
+                                <span class="btn-text">
+                                    <i class="fa-solid fa-rotate mr-2"></i>
+                                    Cambiar mi código
+                                </span>
+                            </button>
+
+                            <p
+                                id="member-code-status"
+                                class="code-change-status"
+                                role="status"
+                                aria-live="polite"
+                            ></p>
+
+                            <div class="code-change-warning">
+                                <i class="fa-solid fa-triangle-exclamation"></i>
+                                <span>Al guardar, el código anterior dejará de funcionar inmediatamente. Anota el nuevo código en un lugar seguro.</span>
                             </div>
                         </form>
 
@@ -2876,7 +3161,7 @@
             let hubCropper = null; let valMapInstance = null; let valMarkerInstance = null;
 
             const views = { home: document.getElementById('view-home'), portalResult: document.getElementById('view-portal-result'), valResult: document.getElementById('view-validator-result') };
-            const portal = { dni: document.getElementById('portal-dni'), code: document.getElementById('portal-code'), btnSubmit: document.getElementById('btn-portal-submit'), error: document.getElementById('portal-error'), photo: document.getElementById('cred-photo'), name: document.getElementById('cred-name'), lastname: document.getElementById('cred-lastname'), dniDisplay: document.getElementById('cred-dni'), grado: document.getElementById('cred-grado'), carrera: document.getElementById('cred-carrera'), estado: document.getElementById('cred-estado'), codeDisplay: document.getElementById('cred-code'), qr: document.getElementById('cred-qr'), uploadPhoto: document.getElementById('photo-upload'), uploadCamera: document.getElementById('camera-upload'), uploadStatus: document.getElementById('portal-upload-status'), btnDownload: document.getElementById('btn-download'), downloadStatus: document.getElementById('portal-download-status'), btnWaGroup: document.getElementById('btn-whatsapp-group') };
+            const portal = { dni: document.getElementById('portal-dni'), code: document.getElementById('portal-code'), codeToggle: document.getElementById('portal-code-toggle'), btnSubmit: document.getElementById('btn-portal-submit'), error: document.getElementById('portal-error'), photo: document.getElementById('cred-photo'), name: document.getElementById('cred-name'), lastname: document.getElementById('cred-lastname'), dniDisplay: document.getElementById('cred-dni'), grado: document.getElementById('cred-grado'), carrera: document.getElementById('cred-carrera'), estado: document.getElementById('cred-estado'), codeDisplay: document.getElementById('cred-code'), qr: document.getElementById('cred-qr'), uploadPhoto: document.getElementById('photo-upload'), uploadCamera: document.getElementById('camera-upload'), uploadStatus: document.getElementById('portal-upload-status'), btnDownload: document.getElementById('btn-download'), downloadStatus: document.getElementById('portal-download-status'), btnWaGroup: document.getElementById('btn-whatsapp-group') };
             const editor = {
                 form: document.getElementById('member-data-editor'),
                 age: document.getElementById('member-age'),
@@ -2893,6 +3178,15 @@
                 btnSave: document.getElementById('btn-save-member-data'),
                 status: document.getElementById('member-data-status')
             };
+            const codeChange = {
+                form: document.getElementById('member-code-change'),
+                newCode: document.getElementById('member-new-code'),
+                confirmCode: document.getElementById('member-confirm-code'),
+                newCodeToggle: document.getElementById('member-new-code-toggle'),
+                confirmCodeToggle: document.getElementById('member-confirm-code-toggle'),
+                btnSave: document.getElementById('btn-change-member-code'),
+                status: document.getElementById('member-code-status')
+            };
             const validator = { input: document.getElementById('val-input'), btnSubmit: document.getElementById('btn-val-submit'), idleState: document.getElementById('val-idle'), errorState: document.getElementById('val-error'), photo: document.getElementById('val-photo'), photoPlaceholder: document.getElementById('val-photo-placeholder'), nombres: document.getElementById('val-nombres'), apellidos: document.getElementById('val-apellidos'), cedula: document.getElementById('val-cedula'), grado: document.getElementById('val-grado'), carrera: document.getElementById('val-carrera'), ubicacion: document.getElementById('val-ubicacion'), btnShare: document.getElementById('btn-val-share'), btnChat: document.getElementById('btn-val-chat') };
             const modal = { container: document.getElementById('cropper-modal'), img: document.getElementById('image-to-crop'), btnCancel: document.getElementById('btn-crop-cancel'), btnSave: document.getElementById('btn-crop-save') };
 
@@ -2904,6 +3198,46 @@
                 } else {
                     if (textEl) textEl.classList.remove('opacity-0');
                     const s = btn.querySelector('.spinner'); if (s) s.remove();
+                }
+            };
+
+            const setCodeChangeStatus = (message = '', type = '') => {
+                if (!codeChange.status) return;
+                codeChange.status.textContent = message;
+                codeChange.status.className = `code-change-status${type ? ` ${type}` : ''}`;
+            };
+
+            const normalizarCodigoPrivado = (value) => {
+                return String(value || '')
+                    .toUpperCase()
+                    .replace(/[^A-Z0-9]/g, '')
+                    .slice(0, 5);
+            };
+
+            const establecerVisibilidadCampoCodigo = (input, button, mostrar) => {
+                if (!input || !button) return;
+
+                input.type = mostrar ? 'text' : 'password';
+                button.setAttribute('aria-pressed', String(mostrar));
+
+                const descripcion = input === codeChange.confirmCode
+                    ? 'confirmación del código'
+                    : 'nuevo código';
+
+                button.setAttribute(
+                    'aria-label',
+                    `${mostrar ? 'Ocultar' : 'Mostrar'} ${descripcion}`
+                );
+                button.setAttribute(
+                    'title',
+                    `${mostrar ? 'Ocultar' : 'Mostrar'} ${descripcion}`
+                );
+
+                const icon = button.querySelector('i');
+                if (icon) {
+                    icon.className = mostrar
+                        ? 'fa-solid fa-eye-slash'
+                        : 'fa-solid fa-eye';
                 }
             };
 
@@ -3081,6 +3415,39 @@
                 return combinado;
             };
 
+            const establecerVisibilidadCodigo = (mostrar) => {
+                if (!portal.code || !portal.codeToggle) return;
+
+                portal.code.type = mostrar ? 'text' : 'password';
+                portal.codeToggle.setAttribute('aria-pressed', String(mostrar));
+                portal.codeToggle.setAttribute(
+                    'aria-label',
+                    mostrar ? 'Ocultar código' : 'Mostrar código'
+                );
+                portal.codeToggle.setAttribute(
+                    'title',
+                    mostrar ? 'Ocultar código' : 'Mostrar código'
+                );
+
+                const icon = portal.codeToggle.querySelector('i');
+                if (icon) {
+                    icon.className = mostrar
+                        ? 'fa-solid fa-eye-slash'
+                        : 'fa-solid fa-eye';
+                }
+            };
+
+            if (portal.codeToggle) {
+                portal.codeToggle.addEventListener('click', () => {
+                    establecerVisibilidadCodigo(portal.code.type === 'password');
+                    portal.code.focus();
+                    const cursor = portal.code.value.length;
+                    portal.code.setSelectionRange(cursor, cursor);
+                });
+            }
+
+            establecerVisibilidadCodigo(false);
+
             // LOGIN PORTAL CONECTADO A SUPABASE
             const loginPortal = async () => {
                 const dni = portal.dni.value.trim(); const code = portal.code.value.trim().toUpperCase(); portal.error.textContent = '';
@@ -3126,9 +3493,12 @@
                 const ubicacionCredencial = [data.municipio, data.estado].filter(Boolean).join(', ') || 'Venezuela';
                 portal.estado.textContent = ubicacionCredencial;
                 portal.estado.style.fontSize = ubicacionCredencial.length > 26 ? '12px' : (ubicacionCredencial.length > 20 ? '14px' : '16px');
-                portal.codeDisplay.textContent = data.codigo_integrante || "----";
-                const qrUrl = data.codigo_integrante ? `https://directorio.movidasst.com/?token=${data.codigo_integrante}` : "https://directorio.movidasst.com/";
-                portal.qr.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrUrl)}&color=0f766e&bgcolor=ffffff&margin=0" alt="QR" style="width:100%;height:100%;object-fit:contain;" crossorigin="anonymous">`;
+                portal.codeDisplay.textContent = "QR OFICIAL";
+                const cedulaVerificacion = (data.cedula || '').toString().replace(/\D/g, '');
+                const qrUrl = cedulaVerificacion
+                    ? `https://directorio.movidasst.com/?verificar=${encodeURIComponent(cedulaVerificacion)}`
+                    : "https://directorio.movidasst.com/";
+                portal.qr.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrUrl)}&color=0f766e&bgcolor=ffffff&margin=0" alt="QR de verificación por cédula" style="width:100%;height:100%;object-fit:contain;" crossorigin="anonymous">`;
                 const placeholder = 'https://placehold.co/120x155/f1f5f9/94a3b8?text=Perfil'; const cacheBuster = `?t=${new Date().getTime()}`;
                 
                 if (data.foto_url && data.foto_url.includes('http')) {
@@ -3252,6 +3622,109 @@
                 }
             };
 
+            const cambiarCodigoIntegrante = async (event) => {
+                event.preventDefault();
+                setCodeChangeStatus('');
+
+                if (!supabaseClient || !currentMemberDNI || !currentMemberCode) {
+                    setCodeChangeStatus(
+                        'La sesión del integrante no está disponible. Ingresa nuevamente.',
+                        'error'
+                    );
+                    return;
+                }
+
+                const nuevoCodigo = normalizarCodigoPrivado(codeChange.newCode.value);
+                const confirmacion = normalizarCodigoPrivado(codeChange.confirmCode.value);
+
+                codeChange.newCode.value = nuevoCodigo;
+                codeChange.confirmCode.value = confirmacion;
+
+                if (!/^[A-Z0-9]{5}$/.test(nuevoCodigo)) {
+                    setCodeChangeStatus(
+                        'El nuevo código debe contener exactamente 5 letras o números.',
+                        'error'
+                    );
+                    codeChange.newCode.focus();
+                    return;
+                }
+
+                if (nuevoCodigo !== confirmacion) {
+                    setCodeChangeStatus(
+                        'La confirmación no coincide con el nuevo código.',
+                        'error'
+                    );
+                    codeChange.confirmCode.focus();
+                    return;
+                }
+
+                if (nuevoCodigo === String(currentMemberCode).toUpperCase()) {
+                    setCodeChangeStatus(
+                        'El nuevo código debe ser diferente del código actual.',
+                        'error'
+                    );
+                    codeChange.newCode.focus();
+                    return;
+                }
+
+                manageBtnState(codeChange.btnSave, true);
+                setCodeChangeStatus('Actualizando el código privado...');
+
+                try {
+                    const codigoAnterior = currentMemberCode;
+
+                    const { data, error } = await supabaseClient
+                        .from('integrantes')
+                        .update({ codigo_integrante: nuevoCodigo })
+                        .eq('cedula', currentMemberDNI)
+                        .eq('codigo_integrante', codigoAnterior)
+                        .select('*')
+                        .maybeSingle();
+
+                    if (error) throw error;
+                    if (!data) {
+                        throw new Error(
+                            'Supabase no confirmó el cambio. Revisa la política RLS de UPDATE.'
+                        );
+                    }
+
+                    currentMemberCode = nuevoCodigo;
+                    portal.code.value = nuevoCodigo;
+
+                    const actualizado = sincronizarRegistroEnInterfaz(data);
+                    currentMemberData = actualizado;
+
+                    codeChange.form.reset();
+                    establecerVisibilidadCampoCodigo(
+                        codeChange.newCode,
+                        codeChange.newCodeToggle,
+                        false
+                    );
+                    establecerVisibilidadCampoCodigo(
+                        codeChange.confirmCode,
+                        codeChange.confirmCodeToggle,
+                        false
+                    );
+
+                    setCodeChangeStatus(
+                        'Código actualizado correctamente. El código anterior ya no permite ingresar.',
+                        'success'
+                    );
+                    mostrarNotificacion(
+                        'Código privado actualizado',
+                        'fa-key'
+                    );
+                } catch (error) {
+                    console.error('Error cambiando el código del integrante:', error);
+                    setCodeChangeStatus(
+                        error?.message || 'No fue posible cambiar el código.',
+                        'error'
+                    );
+                } finally {
+                    manageBtnState(codeChange.btnSave, false);
+                }
+            };
+
             const openCropper = (e) => {
                 const file = e.target.files[0]; if(!file) return;
                 if (file.size > 5 * 1024 * 1024) { portal.uploadStatus.textContent = 'Archivo muy grande (>5MB).'; return; }
@@ -3369,28 +3842,38 @@
             };
 
             // BUSCADOR VALIDADOR CONECTADO A SUPABASE
-            const searchValidator = async (query, type) => {
-                if(!query) return; validator.idleState.classList.add('hidden'); validator.errorState.classList.add('hidden'); manageBtnState(validator.btnSubmit, true);
-                try {
-                    let dbQuery = supabaseClient.from('integrantes').select('*');
-                    if (type === 'token') {
-                        dbQuery = dbQuery.eq('codigo_integrante', query);
-                    } else {
-                        dbQuery = dbQuery.eq('cedula', query);
-                    }
-                    const { data, error } = await dbQuery.maybeSingle();
+            const searchValidator = async (query) => {
+                const cedulaConsulta = (query || '').toString().replace(/\D/g, '');
 
-                    if (data && !error) { 
-                        currentValidatorData = data; 
-                        renderValidator(data); 
-                        changeView(views.valResult); 
-                    } else { 
-                        validator.errorState.classList.remove('hidden'); 
+                validator.idleState.classList.add('hidden');
+                validator.errorState.classList.add('hidden');
+
+                if (!/^\d{5,12}$/.test(cedulaConsulta)) {
+                    validator.errorState.classList.remove('hidden');
+                    return;
+                }
+
+                manageBtnState(validator.btnSubmit, true);
+
+                try {
+                    const { data, error } = await supabaseClient
+                        .from('integrantes')
+                        .select('*')
+                        .eq('cedula', cedulaConsulta)
+                        .maybeSingle();
+
+                    if (data && !error) {
+                        currentValidatorData = data;
+                        renderValidator(data);
+                        changeView(views.valResult);
+                    } else {
+                        validator.errorState.classList.remove('hidden');
                     }
-                } catch(e) { 
-                    validator.errorState.classList.remove('hidden'); 
-                } finally { 
-                    manageBtnState(validator.btnSubmit, false); 
+                } catch (e) {
+                    console.error('Error en la verificación pública:', e);
+                    validator.errorState.classList.remove('hidden');
+                } finally {
+                    manageBtnState(validator.btnSubmit, false);
                 }
             };
 
@@ -3451,26 +3934,84 @@
                     currentMemberDNI = null; currentMemberCode = null; currentMemberData = null;
                     if (editor.form) editor.form.reset();
                     setEditorStatus('');
+                    if (codeChange.form) codeChange.form.reset();
+                    setCodeChangeStatus('');
+                    establecerVisibilidadCampoCodigo(codeChange.newCode, codeChange.newCodeToggle, false);
+                    establecerVisibilidadCampoCodigo(codeChange.confirmCode, codeChange.confirmCodeToggle, false);
+                    establecerVisibilidadCodigo(false);
                     validator.input.value = ''; validator.idleState.classList.remove('hidden'); validator.errorState.classList.add('hidden');
                 });
             });
 
             validator.btnSubmit.addEventListener('click', () => {
-                const q = validator.input.value.trim().toUpperCase();
-                searchValidator(q, /^\d{5}$/.test(q) ? 'token' : 'cedula');
+                const q = validator.input.value.replace(/\D/g, '');
+                validator.input.value = q.slice(0, 12);
+                searchValidator(validator.input.value);
             });
-            
+
             validator.input.addEventListener('keypress', (e) => { if(e.key === 'Enter') validator.btnSubmit.click(); });
-            validator.input.addEventListener('input', function() { this.value = this.value.toUpperCase().replace(/[^0-9A-Z]/g, ''); });
+            validator.input.addEventListener('input', function() {
+                this.value = this.value.replace(/\D/g, '').slice(0, 12);
+            });
 
             validator.btnShare.addEventListener('click', () => {
                 if(!currentValidatorData) return;
-                const text = `*Credencial Auténtica - Movida SST Plus* 🛡️\n👤 ${currentValidatorData.nombres} ${currentValidatorData.apellidos}\n📍 ${currentValidatorData.estado}\n💼 ${currentValidatorData.carrera}\n🔗 Valida aquí: ${DOMINIO_OFICIAL}?token=${currentValidatorData.codigo_integrante}`;
+                const cedulaVerificacion = (currentValidatorData.cedula || '').toString().replace(/\D/g, '');
+                const text = `*Credencial Auténtica - Movida SST Plus* 🛡️\n👤 ${currentValidatorData.nombres} ${currentValidatorData.apellidos}\n📍 ${currentValidatorData.estado}\n💼 ${currentValidatorData.carrera}\n🔗 Valida aquí: ${DOMINIO_OFICIAL}?verificar=${cedulaVerificacion}`;
                 window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
             });
 
             portal.btnSubmit.addEventListener('click', loginPortal);
             if (editor.form) editor.form.addEventListener('submit', guardarDatosPerfil);
+            if (codeChange.form) codeChange.form.addEventListener('submit', cambiarCodigoIntegrante);
+
+            [codeChange.newCode, codeChange.confirmCode].forEach(input => {
+                if (!input) return;
+                input.addEventListener('input', function () {
+                    this.value = normalizarCodigoPrivado(this.value);
+                    this.setCustomValidity('');
+                    setCodeChangeStatus('');
+                });
+            });
+
+            if (codeChange.newCodeToggle) {
+                codeChange.newCodeToggle.addEventListener('click', () => {
+                    const mostrar = codeChange.newCode.type === 'password';
+                    establecerVisibilidadCampoCodigo(
+                        codeChange.newCode,
+                        codeChange.newCodeToggle,
+                        mostrar
+                    );
+                    codeChange.newCode.focus();
+                    const cursor = codeChange.newCode.value.length;
+                    codeChange.newCode.setSelectionRange(cursor, cursor);
+                });
+            }
+
+            if (codeChange.confirmCodeToggle) {
+                codeChange.confirmCodeToggle.addEventListener('click', () => {
+                    const mostrar = codeChange.confirmCode.type === 'password';
+                    establecerVisibilidadCampoCodigo(
+                        codeChange.confirmCode,
+                        codeChange.confirmCodeToggle,
+                        mostrar
+                    );
+                    codeChange.confirmCode.focus();
+                    const cursor = codeChange.confirmCode.value.length;
+                    codeChange.confirmCode.setSelectionRange(cursor, cursor);
+                });
+            }
+
+            establecerVisibilidadCampoCodigo(
+                codeChange.newCode,
+                codeChange.newCodeToggle,
+                false
+            );
+            establecerVisibilidadCampoCodigo(
+                codeChange.confirmCode,
+                codeChange.confirmCodeToggle,
+                false
+            );
             if (editor.state) editor.state.addEventListener('change', () => {
                 editor.municipality.value = '';
                 actualizarSugerenciasMunicipioEditor(editor.state.value);
@@ -3503,12 +4044,13 @@
             portal.code.addEventListener('keypress', (e) => { if(e.key === 'Enter') loginPortal(); });
 
             const urlParams = new URLSearchParams(window.location.search);
-            const qrToken = urlParams.get('token');
-            if (qrToken) {
+            const cedulaVerificacion = (urlParams.get('verificar') || '').replace(/\D/g, '');
+
+            if (/^\d{5,12}$/.test(cedulaVerificacion)) {
                 switchTab('credencial-view');
-                switchHubTab('validator'); 
-                validator.input.value = qrToken.toUpperCase();
-                searchValidator(qrToken.toUpperCase(), 'token');
+                switchHubTab('validator');
+                validator.input.value = cedulaVerificacion;
+                searchValidator(cedulaVerificacion);
             }
         } 
 
