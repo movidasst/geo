@@ -1214,6 +1214,10 @@
                             <div class="flex justify-between text-xs mb-1 font-bold"><span class="text-movida-green flex items-center gap-1.5"><i class="fa-solid fa-book-open text-sm w-4 text-center"></i> T.S.U.</span><span id="txt-acad-tsu" class="text-slate-600">0%</span></div>
                             <div class="w-full bg-slate-100 rounded-full h-2"><div id="bar-acad-tsu" class="bg-movida-green h-2 rounded-full transition-all duration-1000" style="width: 0%"></div></div>
                         </div>
+                        <div>
+                            <div class="flex justify-between text-xs mb-1 font-bold"><span class="text-slate-500 flex items-center gap-1.5"><i class="fa-solid fa-school text-sm w-4 text-center"></i> Bachiller / Otros</span><span id="txt-acad-otros" class="text-slate-600">0%</span></div>
+                            <div class="w-full bg-slate-100 rounded-full h-2"><div id="bar-acad-otros" class="bg-slate-400 h-2 rounded-full transition-all duration-1000" style="width: 0%"></div></div>
+                        </div>
                     </div>
                 </div>
                 <div class="snap-center shrink-0 w-[85vw] max-w-[320px] glass-card p-5">
@@ -1246,6 +1250,60 @@
                 <div id="states-list" class="space-y-3"><p class="text-center text-slate-400 text-sm py-4">Sincronizando...</p></div>
                 <button id="btn-show-more-states" onclick="mostrarTodosLosEstados()" class="hidden w-full mt-4 bg-slate-50 text-movida-navy border border-slate-200 font-bold text-xs py-3 rounded-xl hover:bg-slate-100 transition-colors">Ver todos los estados</button>
             </div>
+
+
+            <!-- CITA ACADÉMICA APA 7 -->
+            <section id="apa-citation-card" class="glass-card p-5 border-l-4 border-movida-teal" aria-labelledby="apa-citation-title">
+                <div class="flex items-start gap-3">
+                    <div class="w-11 h-11 rounded-xl bg-movida-teal/10 text-movida-teal flex items-center justify-center shrink-0">
+                        <i class="fa-solid fa-quote-left text-lg"></i>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <p class="text-[10px] font-black uppercase tracking-[0.16em] text-movida-teal">Uso académico</p>
+                        <h3 id="apa-citation-title" class="text-movida-navy font-black text-base leading-tight mt-1">¿Cómo citar este directorio en APA 7?</h3>
+                        <p class="text-xs text-slate-500 leading-relaxed mt-2">
+                            Para tesis, trabajos de grado, artículos e informes académicos. La fecha de recuperación se actualiza automáticamente porque los datos del directorio cambian con el tiempo.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="mt-4 bg-slate-50 border border-slate-200 rounded-2xl p-4">
+                    <p class="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2">Referencia bibliográfica</p>
+                    <p id="apa-reference-display" class="text-sm text-slate-700 leading-7 break-words">
+                        Linares Brea, D. (s. f.). <em>Directorio nacional de profesionales de Seguridad y Salud en el Trabajo</em> [Directorio en línea]. La Movida SST Plus. Recuperado el <span id="apa-retrieval-date">día de consulta</span>, de https://directorio.movidasst.com
+                    </p>
+                </div>
+
+                <button id="btn-copy-apa-reference" type="button" onclick="copiarReferenciaAPA()" class="w-full mt-3 bg-movida-navy text-white font-black text-sm py-3.5 px-4 rounded-xl shadow-md active:scale-[0.98] transition-transform flex items-center justify-center gap-2">
+                    <i class="fa-regular fa-copy"></i>
+                    <span>Copiar referencia APA 7</span>
+                </button>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
+                    <div class="bg-white border border-slate-200 rounded-xl p-3">
+                        <p class="text-[10px] font-black uppercase tracking-wide text-slate-400">Cita parentética</p>
+                        <div class="flex items-center justify-between gap-2 mt-1.5">
+                            <code class="text-xs font-bold text-movida-navy">(Linares Brea, s. f.)</code>
+                            <button type="button" onclick="copiarTextoAPA('(Linares Brea, s. f.)', 'Cita parentética copiada')" aria-label="Copiar cita parentética" class="w-9 h-9 rounded-lg bg-slate-100 text-movida-teal flex items-center justify-center active:scale-95">
+                                <i class="fa-regular fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="bg-white border border-slate-200 rounded-xl p-3">
+                        <p class="text-[10px] font-black uppercase tracking-wide text-slate-400">Cita narrativa</p>
+                        <div class="flex items-center justify-between gap-2 mt-1.5">
+                            <code class="text-xs font-bold text-movida-navy">Linares Brea (s. f.)</code>
+                            <button type="button" onclick="copiarTextoAPA('Linares Brea (s. f.)', 'Cita narrativa copiada')" aria-label="Copiar cita narrativa" class="w-9 h-9 rounded-lg bg-slate-100 text-movida-teal flex items-center justify-center active:scale-95">
+                                <i class="fa-regular fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <p class="text-[11px] text-slate-500 leading-relaxed mt-4">
+                    <strong class="text-movida-navy">Autor responsable:</strong> David Linares Brea. Al citar cifras específicas, indique también en el texto la fecha en que consultó el directorio.
+                </p>
+            </section>
 
             <footer class="mt-8 mb-6 pb-4">
                 <div class="glass-card p-6 text-center border-t-4 border-movida-navy">
@@ -1853,11 +1911,54 @@
             });
         }
 
+        function normalizarTextoMetrica(valor) {
+            return (valor || '')
+                .toString()
+                .trim()
+                .toLowerCase()
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '');
+        }
+
         function normalizarGenero(valor) {
-            const v = (valor || '').toString().trim().toLowerCase();
+            const v = normalizarTextoMetrica(valor);
             if (['femenino', 'mujer', 'female', 'f'].includes(v)) return 'Femenino';
             if (['masculino', 'hombre', 'male', 'm'].includes(v)) return 'Masculino';
             return '';
+        }
+
+        function normalizarLaboral(valor) {
+            const v = normalizarTextoMetrica(valor);
+            if (['dependiente', 'empleado', 'empleada'].includes(v)) return 'Dependiente';
+            if (['independiente', 'autonomo', 'autonoma', 'freelance'].includes(v)) return 'Independiente';
+            if (['buscando', 'desempleado', 'desempleada', 'buscando oportunidades'].includes(v)) return 'Buscando';
+            return '';
+        }
+
+        function normalizarNivelAcademico(item) {
+            const grado = normalizarTextoMetrica(item?.grado || item?.Grado);
+            const carrera = normalizarTextoMetrica(item?.carrera || item?.Carrera);
+            const postgrado = normalizarTextoMetrica(item?.postgrado || item?.Postgrado);
+            const doctorado = normalizarTextoMetrica(item?.doctorado || item?.Doctorado || item?.DOCTORADO);
+
+            if (doctorado || grado.includes('doctorado') || grado.includes('postdoctorado')) return 'Doctorado';
+            if (postgrado || ['postgrado', 'maestria', 'especializacion', 'especialista'].some(t => grado.includes(t))) return 'Postgrado';
+            if (['tsu', 't.s.u', 'tecnico superior', 'tecnico universitario'].some(t => grado.includes(t))) return 'T.S.U.';
+            if (
+                carrera ||
+                ['universitario', 'licenciado', 'licenciada', 'ingeniero', 'ingeniera', 'abogado', 'abogada', 'medico', 'medica', 'enfermero', 'enfermera', 'psicologo', 'psicologa', 'terapeuta'].some(t => grado.includes(t))
+            ) return 'Profesional';
+            return 'Otros';
+        }
+
+        function obtenerEdadValida(valor) {
+            const edad = Number.parseInt(valor, 10);
+            return Number.isInteger(edad) && edad >= 18 && edad <= 100 ? edad : null;
+        }
+
+        function porcentaje(valor, total, decimales = 1) {
+            if (!total) return 0;
+            return Number(((valor / total) * 100).toFixed(decimales));
         }
 
         function actualizarAlturaAplicacion() {
@@ -1953,6 +2054,61 @@
             setTimeout(() => toast.classList.add('opacity-0'), 3500);
         }
 
+
+
+        function obtenerFechaRecuperacionAPA() {
+            try {
+                return new Intl.DateTimeFormat('es-VE', {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric'
+                }).format(new Date());
+            } catch (error) {
+                const fecha = new Date();
+                return `${fecha.getDate()}/${fecha.getMonth() + 1}/${fecha.getFullYear()}`;
+            }
+        }
+
+        function construirReferenciaAPA() {
+            const fecha = obtenerFechaRecuperacionAPA();
+            return `Linares Brea, D. (s. f.). Directorio nacional de profesionales de Seguridad y Salud en el Trabajo [Directorio en línea]. La Movida SST Plus. Recuperado el ${fecha}, de https://directorio.movidasst.com`;
+        }
+
+        function actualizarBloqueAPA() {
+            const fechaElement = document.getElementById('apa-retrieval-date');
+            if (fechaElement) fechaElement.textContent = obtenerFechaRecuperacionAPA();
+        }
+
+        async function copiarTextoAPA(texto, mensajeExito) {
+            try {
+                if (navigator.clipboard && window.isSecureContext) {
+                    await navigator.clipboard.writeText(texto);
+                } else {
+                    const area = document.createElement('textarea');
+                    area.value = texto;
+                    area.setAttribute('readonly', '');
+                    area.style.position = 'fixed';
+                    area.style.opacity = '0';
+                    area.style.pointerEvents = 'none';
+                    document.body.appendChild(area);
+                    area.select();
+                    const copiado = document.execCommand('copy');
+                    document.body.removeChild(area);
+                    if (!copiado) throw new Error('El navegador rechazó la copia.');
+                }
+                mostrarNotificacion(mensajeExito || 'Texto copiado', 'fa-check');
+                return true;
+            } catch (error) {
+                console.error('No se pudo copiar:', error);
+                mostrarNotificacion('No se pudo copiar automáticamente', 'fa-triangle-exclamation');
+                return false;
+            }
+        }
+
+        function copiarReferenciaAPA() {
+            return copiarTextoAPA(construirReferenciaAPA(), 'Referencia APA 7 copiada');
+        }
+
         function localizarUsuario() {
             if(navigator.vibrate) navigator.vibrate(50);
             if (!map || !navigator.geolocation) {
@@ -1995,20 +2151,8 @@
                     item.municipio = (item.municipio || '').toString().trim();
                     item.genero = normalizarGenero(item.genero || item.Genero || item.GENERO);
 
-                    let lab = (item.laboral || '').toString().trim();
-                    if (lab.toLowerCase() === 'desempleado') lab = 'Buscando';
-                    item._laboral_clean = ['Dependiente', 'Independiente'].includes(lab) ? lab : 'Buscando';
-
-                    if (!item._nivel_acad || item._nivel_acad === 'Profesional') {
-                        const doc = (item.doctorado || item.Doctorado || item.DOCTORADO || '').toString().trim().toLowerCase();
-                        const pg = (item.postgrado || item.Postgrado || '').toString().trim().toLowerCase();
-                        const gr = (item.grado || item.Grado || '').toString().trim().toLowerCase();
-
-                        if (doc) item._nivel_acad = 'Doctorado';
-                        else if (pg || gr.includes('postgrado')) item._nivel_acad = 'Postgrado';
-                        else if (gr.includes('tsu') || gr.includes('t.s.u') || gr.includes('tecnico') || gr.includes('técnico')) item._nivel_acad = 'T.S.U.';
-                        else item._nivel_acad = 'Profesional';
-                    }
+                    item._laboral_clean = normalizarLaboral(item.laboral || item.Laboral || item.LABORAL);
+                    item._nivel_acad = normalizarNivelAcademico(item);
 
                     const nom = (item.nombres || item.Nombres || '').toString().trim();
                     const ape = (item.apellidos || item.Apellidos || '').toString().trim();
@@ -2292,62 +2436,107 @@
         }
 
         function procesarDatosParaDashboard(data) {
-            // Las métricas deben usar la misma población que el mapa.
-            // Se excluyen filas incompletas sin estado, que antes inflaban el total.
+            // Todos los indicadores usan exactamente la misma población base del mapa:
+            // registros con estado informado. Cada indicador declara además sus datos válidos.
             const registrosValidos = (Array.isArray(data) ? data : []).filter(esRegistroBaseValido);
 
-            let porEstado = {}; let porMunicipio = new Set(); datosGeograficosGlobal = {}; 
-            let genData = { 'Masculino': 0, 'Femenino': 0 }; let labData = { 'Dependiente': 0, 'Independiente': 0, 'Buscando': 0 };
-            
-            let edadData = { 'Gen Z (<30)': 0, 'Millennials (30-45)': 0, 'Gen X (46-60)': 0, 'Boomers (61+)': 0 }; 
-            
-            let carreras = {};
-            let statsAcademico = { totalValido: 0, postgrado: 0, doctorado: 0, profesional: 0, tsu: 0 };
-            
+            const porEstado = {};
+            const porMunicipio = new Set();
+            datosGeograficosGlobal = {};
+
+            const genData = { 'Masculino': 0, 'Femenino': 0, 'Sin especificar': 0 };
+            const labData = { 'Dependiente': 0, 'Independiente': 0, 'Buscando': 0, 'Sin especificar': 0 };
+            const edadData = {
+                'Gen Z (<30)': 0,
+                'Millennials (30-45)': 0,
+                'Gen X (46-60)': 0,
+                'Boomers (61+)': 0,
+                'Sin especificar': 0
+            };
+            const carreras = {};
+            const statsAcademico = {
+                total: registrosValidos.length,
+                postgrado: 0,
+                doctorado: 0,
+                profesional: 0,
+                tsu: 0,
+                otros: 0
+            };
+
             registrosValidos.forEach(item => {
-                if(item.estado) {
-                    let e = item.estado.trim(); let m = (item.municipio || "Capital").trim();
-                    if(!porEstado[e]) porEstado[e] = 0; porEstado[e]++;
-                    if(item.municipio) porMunicipio.add(e + "_" + m);
-                    if(!datosGeograficosGlobal[e]) datosGeograficosGlobal[e] = { total: 0, municipios: {} };
-                    datosGeograficosGlobal[e].total++;
-                    if(!datosGeograficosGlobal[e].municipios[m]) datosGeograficosGlobal[e].municipios[m] = 0;
-                    datosGeograficosGlobal[e].municipios[m]++;
+                const estado = (item.estado || '').toString().trim();
+                const municipio = (item.municipio || '').toString().trim();
+
+                if (estado) {
+                    const municipioContable = municipio || 'Sin especificar';
+                    porEstado[estado] = (porEstado[estado] || 0) + 1;
+                    if (municipio) porMunicipio.add(`${estado}_${municipio}`);
+
+                    if (!datosGeograficosGlobal[estado]) {
+                        datosGeograficosGlobal[estado] = { total: 0, municipios: {} };
+                    }
+                    datosGeograficosGlobal[estado].total++;
+                    datosGeograficosGlobal[estado].municipios[municipioContable] =
+                        (datosGeograficosGlobal[estado].municipios[municipioContable] || 0) + 1;
                 }
-                if(item.genero === "Masculino" || item.genero === "Femenino") genData[item.genero]++;
-                if(item._laboral_clean === "Dependiente") labData['Dependiente']++; else if(item._laboral_clean === "Independiente") labData['Independiente']++; else if(item._laboral_clean === "Buscando" || item._laboral_clean === "Desempleado") labData['Buscando']++;
-                
-                if(item.edad && !isNaN(parseInt(item.edad))) { 
-                    let e = parseInt(item.edad); 
-                    if(e <= 29) edadData['Gen Z (<30)']++; 
-                    else if(e <= 45) edadData['Millennials (30-45)']++; 
-                    else if(e <= 60) edadData['Gen X (46-60)']++; 
-                    else edadData['Boomers (61+)']++; 
-                }
-                
-                if(item._nivel_acad) {
-                    statsAcademico.totalValido++;
-                    if(item._nivel_acad === "Doctorado") statsAcademico.doctorado++; else if(item._nivel_acad === "Postgrado") statsAcademico.postgrado++; else if(item._nivel_acad === "Profesional") statsAcademico.profesional++; else if(item._nivel_acad === "T.S.U.") statsAcademico.tsu++;
-                }
-                let prof = item._profesion_clean; if(!carreras[prof]) carreras[prof] = 0; carreras[prof]++;
+
+                const genero = normalizarGenero(item.genero || item.Genero || item.GENERO);
+                genData[genero || 'Sin especificar']++;
+
+                const laboral = normalizarLaboral(item.laboral || item.Laboral || item.LABORAL);
+                labData[laboral || 'Sin especificar']++;
+
+                const edad = obtenerEdadValida(item.edad);
+                if (edad === null) edadData['Sin especificar']++;
+                else if (edad <= 29) edadData['Gen Z (<30)']++;
+                else if (edad <= 45) edadData['Millennials (30-45)']++;
+                else if (edad <= 60) edadData['Gen X (46-60)']++;
+                else edadData['Boomers (61+)']++;
+
+                const nivel = normalizarNivelAcademico(item);
+                item._nivel_acad = nivel;
+                if (nivel === 'Doctorado') statsAcademico.doctorado++;
+                else if (nivel === 'Postgrado') statsAcademico.postgrado++;
+                else if (nivel === 'Profesional') statsAcademico.profesional++;
+                else if (nivel === 'T.S.U.') statsAcademico.tsu++;
+                else statsAcademico.otros++;
+
+                const carreraOriginal = (item.carrera || item.Carrera || '').toString().trim();
+                const profesion = carreraOriginal ? item._profesion_clean : '';
+                if (profesion) carreras[profesion] = (carreras[profesion] || 0) + 1;
             });
 
-            document.getElementById('dash-total').innerText = registrosValidos.length; document.getElementById('dash-estados').innerText = Object.keys(porEstado).length; document.getElementById('dash-municipios').innerText = porMunicipio.size;
+            document.getElementById('dash-total').innerText = registrosValidos.length;
+            document.getElementById('dash-estados').innerText = Object.keys(porEstado).length;
+            document.getElementById('dash-municipios').innerText = porMunicipio.size;
 
-            if(statsAcademico.totalValido > 0) {
-                const pDoc = Math.round((statsAcademico.doctorado / statsAcademico.totalValido) * 100); const pPost = Math.round((statsAcademico.postgrado / statsAcademico.totalValido) * 100);
-                const pProf = Math.round((statsAcademico.profesional / statsAcademico.totalValido) * 100); const pTsu = Math.round((statsAcademico.tsu / statsAcademico.totalValido) * 100);
-                document.getElementById('txt-acad-doc').innerText = pDoc + "%"; document.getElementById('bar-acad-doc').style.width = pDoc + "%";
-                document.getElementById('txt-acad-post').innerText = pPost + "%"; document.getElementById('bar-acad-post').style.width = pPost + "%";
-                document.getElementById('txt-acad-prof').innerText = pProf + "%"; document.getElementById('bar-acad-prof').style.width = pProf + "%";
-                document.getElementById('txt-acad-tsu').innerText = pTsu + "%"; document.getElementById('bar-acad-tsu').style.width = pTsu + "%";
-            }
-            dibujarTopCarreras(carreras); 
-            dibujarListaEstados(datosGeograficosGlobal, 5); 
-            
+            const totalAcademico = statsAcademico.total;
+            const actualizarBarra = (idTexto, idBarra, cantidad) => {
+                const p = porcentaje(cantidad, totalAcademico, 1);
+                const texto = document.getElementById(idTexto);
+                const barra = document.getElementById(idBarra);
+                if (texto) texto.innerText = `${p.toFixed(1)}% · ${cantidad}`;
+                if (barra) barra.style.width = `${p}%`;
+            };
+
+            actualizarBarra('txt-acad-doc', 'bar-acad-doc', statsAcademico.doctorado);
+            actualizarBarra('txt-acad-post', 'bar-acad-post', statsAcademico.postgrado);
+            actualizarBarra('txt-acad-prof', 'bar-acad-prof', statsAcademico.profesional);
+            actualizarBarra('txt-acad-tsu', 'bar-acad-tsu', statsAcademico.tsu);
+            actualizarBarra('txt-acad-otros', 'bar-acad-otros', statsAcademico.otros);
+
+            dibujarTopCarreras(carreras);
+            dibujarListaEstados(datosGeograficosGlobal, 5);
+
             globalGenData = genData;
             globalLabData = labData;
             globalEdadData = edadData;
+
+            // Si el panel ya está visible, refresca los gráficos inmediatamente.
+            const dashboardVisible = document.getElementById('dashboard-view')?.classList.contains('view-active');
+            if (dashboardVisible && typeof window.Chart !== 'undefined') {
+                chartsDrawn = dibujarGraficos(globalGenData, globalLabData, globalEdadData) === true;
+            }
         }
 
         function dibujarTopCarreras(carrerasObj) {
@@ -2403,29 +2592,148 @@
                 mostrarNotificacion('Chart.js no se cargó', 'fa-chart-pie');
                 return false;
             }
-            if (window.ChartDataLabels) Chart.register(window.ChartDataLabels);
-            Chart.defaults.font.family = "'Outfit', sans-serif";
-            const commonOpts = { plugins: { legend: { display: false }, tooltip: { enabled: false }, datalabels: { color: '#00205b', anchor: 'end', align: 'right', font: { weight: 'bold', size: 12 }, padding: {left: 4} } }, scales: { x: { display: false }, y: { grid: { display: false }, border: { display: false } } }, layout: { padding: { right: 35 } } };
 
-            if(chartInstances.edad) chartInstances.edad.destroy();
-            chartInstances.edad = new Chart(document.getElementById('chartEdad').getContext('2d'), { 
-                type: 'bar', 
-                data: { 
-                    labels: ['Gen Z', 'Millennials', 'Gen X', 'Boomers'], 
-                    datasets: [{ 
-                        data: [edadData['Gen Z (<30)'], edadData['Millennials (30-45)'], edadData['Gen X (46-60)'], edadData['Boomers (61+)']], 
-                        backgroundColor: ['#70ad47', '#007b85', '#00205b', '#ffb600'], 
-                        borderRadius: 4 
-                    }] 
-                }, 
-                options: { ...commonOpts, indexAxis: 'y', maintainAspectRatio: false } 
+            if (window.ChartDataLabels) {
+                try {
+                    if (!Chart.registry?.plugins?.get('datalabels')) Chart.register(window.ChartDataLabels);
+                } catch (_) {
+                    Chart.register(window.ChartDataLabels);
+                }
+            }
+
+            Chart.defaults.font.family = "'Outfit', sans-serif";
+
+            const construirSerie = (fuente, orden) => {
+                const filas = orden
+                    .map(item => ({ label: item.label, key: item.key, color: item.color, value: Number(fuente[item.key] || 0) }))
+                    .filter(item => item.value > 0 || item.key !== 'Sin especificar');
+                return {
+                    labels: filas.map(item => item.label),
+                    values: filas.map(item => item.value),
+                    colors: filas.map(item => item.color)
+                };
+            };
+
+            const opcionesBarras = (values) => {
+                const total = values.reduce((sum, value) => sum + Number(value || 0), 0);
+                return {
+                    indexAxis: 'y',
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            enabled: true,
+                            callbacks: {
+                                label: context => `${context.raw} personas (${porcentaje(context.raw, total, 1).toFixed(1)}%)`
+                            }
+                        },
+                        datalabels: {
+                            color: '#00205b',
+                            anchor: 'end',
+                            align: 'right',
+                            clamp: true,
+                            font: { weight: 'bold', size: 11 },
+                            formatter: value => value > 0 ? `${value} · ${porcentaje(value, total, 1).toFixed(1)}%` : ''
+                        }
+                    },
+                    scales: {
+                        x: { display: false, beginAtZero: true },
+                        y: { grid: { display: false }, border: { display: false } }
+                    },
+                    layout: { padding: { right: 70 } }
+                };
+            };
+
+            const edadSerie = construirSerie(edadData, [
+                { key: 'Gen Z (<30)', label: 'Gen Z (<30)', color: '#70ad47' },
+                { key: 'Millennials (30-45)', label: 'Millennials (30–45)', color: '#007b85' },
+                { key: 'Gen X (46-60)', label: 'Gen X (46–60)', color: '#00205b' },
+                { key: 'Boomers (61+)', label: '61 años o más', color: '#ffb600' },
+                { key: 'Sin especificar', label: 'Sin edad', color: '#94a3b8' }
+            ]);
+
+            if (chartInstances.edad) chartInstances.edad.destroy();
+            chartInstances.edad = new Chart(document.getElementById('chartEdad').getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: edadSerie.labels,
+                    datasets: [{ data: edadSerie.values, backgroundColor: edadSerie.colors, borderRadius: 4 }]
+                },
+                options: opcionesBarras(edadSerie.values)
             });
 
-            if(chartInstances.lab) chartInstances.lab.destroy();
-            chartInstances.lab = new Chart(document.getElementById('chartLaboral').getContext('2d'), { type: 'bar', data: { labels: ['Dependiente', 'Independiente', 'Buscando'], datasets: [{ data: [labData['Dependiente'], labData['Independiente'], labData['Buscando']], backgroundColor: ['#00205b', '#007b85', '#ffb600'], borderRadius: 6 }] }, options: { ...commonOpts, indexAxis: 'y', maintainAspectRatio: false } });
+            const laboralSerie = construirSerie(labData, [
+                { key: 'Dependiente', label: 'Dependiente', color: '#00205b' },
+                { key: 'Independiente', label: 'Independiente', color: '#007b85' },
+                { key: 'Buscando', label: 'Buscando', color: '#ffb600' },
+                { key: 'Sin especificar', label: 'Sin especificar', color: '#94a3b8' }
+            ]);
 
-            if(chartInstances.gen) chartInstances.gen.destroy();
-            chartInstances.gen = new Chart(document.getElementById('chartGenero').getContext('2d'), { type: 'doughnut', data: { labels: ['Masculino', 'Femenino'], datasets: [{ data: [genData['Masculino'], genData['Femenino']], backgroundColor: ['#00205b', '#70ad47'], borderWidth: 2, borderColor: '#ffffff' }] }, options: { maintainAspectRatio: false, cutout: '50%', plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20 } }, tooltip: { enabled: false }, datalabels: { color: '#ffffff', textStrokeColor: 'rgba(0, 32, 91, 0.8)', textStrokeWidth: 3, font: { weight: 'bold', size: 14 }, formatter: (value, ctx) => { let total = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0); return total === 0 ? "" : Math.round((value / total) * 100) + "%"; } } } } });
+            if (chartInstances.lab) chartInstances.lab.destroy();
+            chartInstances.lab = new Chart(document.getElementById('chartLaboral').getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: laboralSerie.labels,
+                    datasets: [{ data: laboralSerie.values, backgroundColor: laboralSerie.colors, borderRadius: 6 }]
+                },
+                options: opcionesBarras(laboralSerie.values)
+            });
+
+            const generoSerie = construirSerie(genData, [
+                { key: 'Masculino', label: 'Masculino', color: '#00205b' },
+                { key: 'Femenino', label: 'Femenino', color: '#70ad47' },
+                { key: 'Sin especificar', label: 'Sin especificar', color: '#94a3b8' }
+            ]);
+            const totalGenero = generoSerie.values.reduce((sum, value) => sum + Number(value || 0), 0);
+
+            if (chartInstances.gen) chartInstances.gen.destroy();
+            chartInstances.gen = new Chart(document.getElementById('chartGenero').getContext('2d'), {
+                type: 'doughnut',
+                data: {
+                    labels: generoSerie.labels,
+                    datasets: [{
+                        data: generoSerie.values,
+                        backgroundColor: generoSerie.colors,
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    cutout: '50%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 14,
+                                generateLabels: chart => {
+                                    const base = Chart.defaults.plugins.legend.labels.generateLabels(chart);
+                                    return base.map(label => {
+                                        const value = Number(chart.data.datasets[0].data[label.index] || 0);
+                                        const p = porcentaje(value, totalGenero, 1).toFixed(1);
+                                        return { ...label, text: `${label.text}: ${value} (${p}%)` };
+                                    });
+                                }
+                            }
+                        },
+                        tooltip: {
+                            enabled: true,
+                            callbacks: {
+                                label: context => `${context.label}: ${context.raw} personas (${porcentaje(context.raw, totalGenero, 1).toFixed(1)}%)`
+                            }
+                        },
+                        datalabels: {
+                            color: '#ffffff',
+                            textStrokeColor: 'rgba(0, 32, 91, 0.8)',
+                            textStrokeWidth: 3,
+                            font: { weight: 'bold', size: 13 },
+                            formatter: value => value > 0 ? `${porcentaje(value, totalGenero, 1).toFixed(1)}%` : ''
+                        }
+                    }
+                }
+            });
+
             return true;
         }
 
@@ -2607,17 +2915,8 @@
                 registro.municipio = (registro.municipio || '').toString().trim();
                 registro.genero = normalizarGenero(registro.genero || registro.Genero || registro.GENERO);
 
-                let laboral = (registro.laboral || '').toString().trim();
-                if (laboral.toLowerCase() === 'desempleado') laboral = 'Buscando';
-                registro._laboral_clean = ['Dependiente', 'Independiente'].includes(laboral) ? laboral : 'Buscando';
-
-                const doctorado = (registro.doctorado || registro.Doctorado || registro.DOCTORADO || '').toString().trim().toLowerCase();
-                const postgrado = (registro.postgrado || registro.Postgrado || '').toString().trim().toLowerCase();
-                const grado = (registro.grado || registro.Grado || '').toString().trim().toLowerCase();
-                if (doctorado) registro._nivel_acad = 'Doctorado';
-                else if (postgrado || grado.includes('postgrado')) registro._nivel_acad = 'Postgrado';
-                else if (grado.includes('tsu') || grado.includes('t.s.u') || grado.includes('tecnico') || grado.includes('técnico')) registro._nivel_acad = 'T.S.U.';
-                else registro._nivel_acad = 'Profesional';
+                registro._laboral_clean = normalizarLaboral(registro.laboral || registro.Laboral || registro.LABORAL);
+                registro._nivel_acad = normalizarNivelAcademico(registro);
 
                 const nombres = (registro.nombres || registro.Nombres || '').toString().trim();
                 const apellidos = (registro.apellidos || registro.Apellidos || '').toString().trim();
@@ -3094,7 +3393,7 @@
             
             if(tabId === 'map-view') {
                 setTimeout(() => { if(map) map.invalidateSize() }, 300);
-            } else if (tabId === 'dashboard-view' && !chartsDrawn && globalGenData) {
+            } else if (tabId === 'dashboard-view' && globalGenData) {
                 chartsDrawn = dibujarGraficos(globalGenData, globalLabData, globalEdadData) === true;
             }
         }
@@ -3151,7 +3450,11 @@
 
         // No se usa window.load: ese evento espera imágenes, fuentes y recursos externos.
         iniciarAplicacion();
-        document.addEventListener('DOMContentLoaded', iniciarAplicacion, { once: true });
+        actualizarBloqueAPA();
+        document.addEventListener('DOMContentLoaded', () => {
+            iniciarAplicacion();
+            actualizarBloqueAPA();
+        }, { once: true });
     </script>
 </body>
 </html>
