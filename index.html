@@ -2094,6 +2094,13 @@
         // MOTOR SUPABASE JS V2 — versión reparada
         const SUPABASE_URL = 'https://daugxkqywrdcbbqvyabe.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRhdWd4a3F5d3JkY2JicXZ5YWJlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU1NzU1MDQsImV4cCI6MjEwMTE1MTUwNH0.lCEX-pKcGdIKVd7cTegAHJ-dZ8HDrkUxUy9vBUwLE44';
+
+        /*
+         * La fotografía se guarda en Google Drive.
+         * Apps Script actualiza foto_url en Supabase.
+         */
+        const PHOTO_SCRIPT_URL =
+            'https://script.google.com/macros/s/AKfycbxjVsqI9Lsn3GuALojpwolYD7MK5JUZaTP1RNPn86I1Je1z8KvdG-E7Jr52PQJvtVbp/exec';
         let supabaseClient = null;
 
         let map; let markersCluster; let heatmapLayer = null;
@@ -3914,47 +3921,192 @@
                 reader.readAsDataURL(file);
             };
 
-            // ACTUALIZAR FOTO EN SUPABASE STORAGE
+            // ACTUALIZAR FOTO: GOOGLE DRIVE + URL EN SUPABASE
+            const blobToBase64 = (blob) => {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+
+                    reader.onload = () => {
+                        const dataUrl =
+                            String(reader.result || '');
+
+                        resolve(
+                            dataUrl.split(',')[1] || ''
+                        );
+                    };
+
+                    reader.onerror = () => {
+                        reject(
+                            new Error(
+                                'No fue posible preparar la fotografía.'
+                            )
+                        );
+                    };
+
+                    reader.readAsDataURL(blob);
+                });
+            };
+
             const uploadCropped = () => {
-                if(!hubCropper) return; manageBtnState(modal.btnSave, true); portal.uploadStatus.textContent = 'Subiendo imagen a Supabase...';
-                hubCropper.getCroppedCanvas({ width: 300, height: 400 }).toBlob(async (blob) => {
-                    try {
-                        const nombreFotoSeguro = `${currentMemberDNI}_update_${Date.now()}.jpg`;
+                if (!hubCropper) return;
 
-                        const { error: uploadError } = await supabaseClient.storage
-                            .from('fotos_perfil')
-                            .upload(nombreFotoSeguro, blob, { contentType: 'image/jpeg', upsert: false });
+                manageBtnState(
+                    modal.btnSave,
+                    true
+                );
 
-                        if (uploadError) throw uploadError;
+                portal.uploadStatus.textContent =
+                    'Preparando fotografía...';
 
-                        const { data: publicUrlData } = supabaseClient.storage
-                            .from('fotos_perfil')
-                            .getPublicUrl(nombreFotoSeguro);
+                hubCropper
+                    .getCroppedCanvas({
+                        width: 300,
+                        height: 400,
+                        imageSmoothingEnabled: true,
+                        imageSmoothingQuality: 'high'
+                    })
+                    .toBlob(async (blob) => {
+                        const controller =
+                            new AbortController();
 
-                        const nuevaUrl = publicUrlData.publicUrl;
+                        const timeoutId =
+                            setTimeout(
+                                () => controller.abort(),
+                                70000
+                            );
 
-                        const { data: updatedData, error: updateError } = await supabaseClient
-                            .from('integrantes')
-                            .update({ foto_url: nuevaUrl })
-                            .eq('cedula', currentMemberDNI)
-                            .eq('codigo_integrante', currentMemberCode)
-                            .select('*')
-                            .maybeSingle();
+                        try {
+                            if (!blob) {
+                                throw new Error(
+                                    'No se pudo preparar la fotografía recortada.'
+                                );
+                            }
 
-                        if (updateError) throw updateError;
-                        if (!updatedData) throw new Error('Supabase no confirmó la actualización de la foto.');
+                            portal.uploadStatus.textContent =
+                                'Subiendo fotografía a Google Drive...';
 
-                        const actualizado = sincronizarRegistroEnInterfaz(updatedData);
-                        renderCredential(actualizado);
-                        portal.uploadStatus.innerHTML = '<span style="color:#166534;font-weight:900">¡Foto actualizada correctamente!</span>';
-                        closeCropper(); 
-                    } catch (e) {
-                        portal.uploadStatus.innerHTML = '<span class="text-rose-600">Error en el servidor.</span>'; 
-                        closeCropper();
-                    } finally { 
-                        manageBtnState(modal.btnSave, false); 
-                    }
-                }, 'image/jpeg', 0.9);
+                            const fotoBase64 =
+                                await blobToBase64(blob);
+
+                            const body =
+                                new URLSearchParams({
+                                    action:
+                                        'upload_member_photo',
+
+                                    cedula:
+                                        currentMemberDNI,
+
+                                    codigo_integrante:
+                                        currentMemberCode,
+
+                                    mime_type:
+                                        'image/jpeg',
+
+                                    foto_base64:
+                                        fotoBase64
+                                });
+
+                            const response =
+                                await fetch(
+                                    PHOTO_SCRIPT_URL,
+                                    {
+                                        method:
+                                            'POST',
+
+                                        body:
+                                            body,
+
+                                        headers: {
+                                            'Content-Type':
+                                                'application/x-www-form-urlencoded;charset=UTF-8'
+                                        },
+
+                                        redirect:
+                                            'follow',
+
+                                        signal:
+                                            controller.signal
+                                    }
+                                );
+
+                            const rawText =
+                                await response.text();
+
+                            let result;
+
+                            try {
+                                result =
+                                    JSON.parse(rawText);
+                            } catch (parseError) {
+                                throw new Error(
+                                    'El servidor devolvió una respuesta no válida.'
+                                );
+                            }
+
+                            if (
+                                !response.ok ||
+                                result?.result !== 'success' ||
+                                !result?.foto_url
+                            ) {
+                                throw new Error(
+                                    result?.message ||
+                                    'No fue posible guardar la fotografía.'
+                                );
+                            }
+
+                            /*
+                             * Apps Script ya guardó la fotografía en Drive
+                             * y actualizó foto_url en Supabase.
+                             */
+                            const actualizado =
+                                sincronizarRegistroEnInterfaz({
+                                    ...(currentMemberData || {}),
+                                    foto_url:
+                                        result.foto_url
+                                });
+
+                            currentMemberData =
+                                actualizado;
+
+                            renderCredential(
+                                actualizado
+                            );
+
+                            portal.uploadStatus.innerHTML =
+                                '<span style="color:#166534;font-weight:900">' +
+                                '¡Foto actualizada correctamente!' +
+                                '</span>';
+
+                            closeCropper();
+
+                        } catch (error) {
+                            console.error(
+                                'Error actualizando la fotografía:',
+                                error
+                            );
+
+                            const message =
+                                error?.name === 'AbortError'
+                                    ? 'La carga tardó demasiado. Revisa tu conexión e intenta nuevamente.'
+                                    : (
+                                        error?.message ||
+                                        'No fue posible actualizar la fotografía.'
+                                    );
+
+                            portal.uploadStatus.innerHTML =
+                                '<span class="text-rose-600">' +
+                                message +
+                                '</span>';
+
+                        } finally {
+                            clearTimeout(timeoutId);
+
+                            manageBtnState(
+                                modal.btnSave,
+                                false
+                            );
+                        }
+                    }, 'image/jpeg', 0.9);
             };
 
             const closeCropper = () => {
