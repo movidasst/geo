@@ -2,16 +2,13 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#00205b">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
     <title>Directorio de Profesionales de SST en Venezuela | La Movida SST Plus</title>
-    <meta name="description" content="Consulta profesionales de Seguridad y Salud en el Trabajo por estado, municipio, formación académica y situación laboral en el directorio nacional de La Movida SST Plus.">
-    <meta name="robots" content="index, follow, max-image-preview:large">
-    <link rel="canonical" href="https://directorio.movidasst.com/">
 
     <script>
         // WATCHDOG: evita que la pantalla de carga bloquee la aplicación.
@@ -35,51 +32,21 @@
         })(5);
     </script>
     
-    <!-- SEO social y datos estructurados -->
+    <!-- Etiquetas Súper SEO y Open Graph para WhatsApp/Telegram -->
     <meta property="og:title" content="Directorio de Profesionales de SST en Venezuela | La Movida SST Plus">
-    <meta property="og:description" content="Consulta la distribución nacional de profesionales de Seguridad y Salud en el Trabajo por estado, municipio, formación y situación laboral.">
+    <meta property="og:description" content="Consulta profesionales de Seguridad y Salud en el Trabajo por estado, municipio, formación académica y situación laboral en el directorio nacional de La Movida SST Plus.">
     <meta property="og:image" content="https://assets.poap.xyz/ff0a7e68-7080-4798-af10-4a481f762e71.jpeg">
-    <meta property="og:image:alt" content="Logo de La Movida SST Plus">
     <meta property="og:image:width" content="800">
     <meta property="og:image:height" content="800">
     <meta property="og:url" content="https://directorio.movidasst.com/">
     <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="description" content="Consulta profesionales de Seguridad y Salud en el Trabajo por estado, municipio, formación académica y situación laboral en Venezuela.">
+    <link rel="canonical" href="https://directorio.movidasst.com/">
     <meta property="og:site_name" content="La Movida SST Plus">
     <meta property="og:locale" content="es_VE">
-    <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Directorio de Profesionales de SST en Venezuela">
-    <meta name="twitter:description" content="Consulta profesionales de SST por estado, municipio, formación y situación laboral.">
-    <meta name="twitter:image" content="https://assets.poap.xyz/ff0a7e68-7080-4798-af10-4a481f762e71.jpeg">
-
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@graph": [
-        {
-          "@type": "Organization",
-          "@id": "https://www.movidasst.com/#organization",
-          "name": "La Movida SST Plus",
-          "url": "https://www.movidasst.com/",
-          "logo": "https://assets.poap.xyz/ff0a7e68-7080-4798-af10-4a481f762e71.jpeg",
-          "email": "info@movidasst.com"
-        },
-        {
-          "@type": "WebSite",
-          "@id": "https://directorio.movidasst.com/#website",
-          "url": "https://directorio.movidasst.com/",
-          "name": "Directorio de Profesionales de SST en Venezuela",
-          "description": "Directorio nacional de profesionales de Seguridad y Salud en el Trabajo de La Movida SST Plus.",
-          "inLanguage": "es-VE",
-          "publisher": { "@id": "https://www.movidasst.com/#organization" }
-        }
-      ]
-    }
-    </script>
-
-    <!-- Conexiones anticipadas para recursos críticos -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://daugxkqywrdcbbqvyabe.supabase.co" crossorigin>
+    <meta name="twitter:description" content="Consulta profesionales de SST por estado, municipio, formación académica y situación laboral.">
 
     <!-- Fuentes y Tailwind -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
@@ -1045,74 +1012,6 @@
             .member-data-field.member-data-wide { grid-column: 1 / -1; }
         }
 
-
-
-        /* =========================================================
-           MEJORAS MOBILE-FIRST, UX Y ACCESIBILIDAD — CAPA DE PRUEBA
-           No modifica la lógica de Supabase, Leaflet ni Chart.js.
-           ========================================================= */
-        html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
-
-        #toast-notification {
-            width: max-content;
-            max-width: calc(100vw - 24px);
-            white-space: normal !important;
-            text-align: center;
-            line-height: 1.4;
-        }
-
-        .filter-pill,
-        #advanced-filters-sheet button,
-        #apa-citation-card button,
-        #cropper-modal button,
-        .btn-volver,
-        .profile-close-btn,
-        button[aria-label] {
-            min-width: 44px;
-            min-height: 44px;
-        }
-
-        #bottom-nav .nav-item {
-            min-height: 56px;
-            border-radius: 14px;
-        }
-        #bottom-nav .nav-item span {
-            font-size: 10px !important;
-            letter-spacing: .05em !important;
-        }
-
-        body > header h1 { font-size: 14px !important; }
-        body > header p { font-size: 10px !important; letter-spacing: .08em !important; }
-
-        button:focus-visible,
-        a:focus-visible,
-        input:focus-visible,
-        select:focus-visible,
-        textarea:focus-visible,
-        [tabindex]:focus-visible {
-            outline: 3px solid var(--movida-yellow) !important;
-            outline-offset: 3px !important;
-        }
-
-        @media (max-width: 640px) {
-            input:not([type="file"]),
-            select,
-            textarea {
-                font-size: 16px !important;
-            }
-            #advanced-filters-sheet { padding-left: 18px !important; padding-right: 18px !important; }
-            #apa-citation-card code { font-size: 12px !important; }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            *, *::before, *::after {
-                scroll-behavior: auto !important;
-                animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
-                transition-duration: 0.01ms !important;
-            }
-        }
-
     </style>
 </head>
 <body class="text-slate-600 antialiased selection:bg-movida-teal selection:text-white">
@@ -1135,7 +1034,7 @@
 
     <header class="fixed top-0 left-0 right-0 z-[60] bg-white/90 backdrop-blur-md border-b border-slate-200 px-3 py-2.5 flex items-center justify-between shadow-sm pt-[max(env(safe-area-inset-top),10px)]">
         <div class="flex items-center gap-2 overflow-hidden pr-2">
-            <img src="https://assets.poap.xyz/ff0a7e68-7080-4798-af10-4a481f762e71.jpeg" width="36" height="36" alt="Logo de La Movida SST Plus" class="w-9 h-9 rounded-full border-2 border-movida-teal object-cover shrink-0">
+            <img src="https://assets.poap.xyz/ff0a7e68-7080-4798-af10-4a481f762e71.jpeg" alt="Logo" class="w-9 h-9 rounded-full border-2 border-movida-teal object-cover shrink-0">
             <div class="truncate">
                 <h1 class="text-movida-navy font-extrabold text-[13px] leading-tight truncate">La Movida SST Plus <span class="font-semibold text-slate-500">| Red Nacional</span></h1>
                 <p class="text-movida-teal text-[9px] font-bold uppercase tracking-wider truncate">Profesionales de SST de Venezuela</p>
@@ -1146,7 +1045,7 @@
         </div>
     </header>
 
-    <div id="toast-notification" role="status" aria-live="polite" aria-atomic="true" class="fixed top-20 left-1/2 transform -translate-x-1/2 z-[1000] bg-movida-navy/95 backdrop-blur-sm text-white px-5 py-2.5 rounded-full shadow-lg opacity-0 pointer-events-none transition-opacity duration-300 text-xs font-bold flex items-center gap-2 whitespace-nowrap">
+    <div id="toast-notification" class="fixed top-20 left-1/2 transform -translate-x-1/2 z-[1000] bg-movida-navy/95 backdrop-blur-sm text-white px-5 py-2.5 rounded-full shadow-lg opacity-0 pointer-events-none transition-opacity duration-300 text-xs font-bold flex items-center gap-2 whitespace-nowrap">
         <i id="toast-icon" class="fa-solid fa-info-circle"></i> <span id="toast-text">Notificación</span>
     </div>
 
@@ -1154,9 +1053,9 @@
     <main id="map-view" class="view-active absolute inset-0 z-10">
         <!-- Píldoras de Filtro Rápido -->
         <div class="absolute top-[80px] left-0 w-full z-[400] px-3 py-2 overflow-x-auto hide-scroll flex gap-2">
-            <button onclick="setFiltroPildora('todos', this)" class="filter-pill active bg-movida-navy text-white border border-movida-navy px-4 py-1.5 rounded-full text-xs font-bold shadow-sm" aria-pressed="true">Todos</button>
-            <button onclick="setFiltroPildora('mujeres', this)" class="filter-pill bg-white text-slate-500 border border-slate-200 px-4 py-1.5 rounded-full text-xs font-bold shadow-sm" aria-pressed="false">Mujeres</button>
-            <button onclick="setFiltroPildora('buscando', this)" class="filter-pill bg-white text-slate-500 border border-slate-200 px-4 py-1.5 rounded-full text-xs font-bold shadow-sm" aria-pressed="false">Buscando oportunidades</button>
+            <button onclick="setFiltroPildora('todos', this)" class="filter-pill active bg-movida-navy text-white border border-movida-navy px-4 py-1.5 rounded-full text-xs font-bold shadow-sm">Todos</button>
+            <button onclick="setFiltroPildora('mujeres', this)" class="filter-pill bg-white text-slate-500 border border-slate-200 px-4 py-1.5 rounded-full text-xs font-bold shadow-sm">Mujeres</button>
+            <button onclick="setFiltroPildora('buscando', this)" class="filter-pill bg-white text-slate-500 border border-slate-200 px-4 py-1.5 rounded-full text-xs font-bold shadow-sm">Buscando oportunidades</button>
             <button onclick="abrirFiltrosAvanzados()" class="filter-pill bg-movida-teal text-white border border-movida-teal px-4 py-1.5 rounded-full text-xs font-bold shadow-sm flex items-center gap-1 shrink-0">
                 <i class="fa-solid fa-sliders"></i> Filtros y Búsqueda
             </button>
@@ -1164,10 +1063,10 @@
         
         <!-- Botones Flotantes (GPS y Heatmap) -->
         <div class="absolute top-[135px] right-3 z-[400] flex flex-col gap-3">
-            <button id="btn-locate" type="button" aria-label="Centrar mapa en mi ubicación" onclick="localizarUsuario()" class="w-11 h-11 bg-white rounded-full shadow-glass text-movida-navy border border-slate-100 flex items-center justify-center text-lg active:scale-95 transition-transform">
+            <button id="btn-locate" onclick="localizarUsuario()" class="w-11 h-11 bg-white rounded-full shadow-glass text-movida-navy border border-slate-100 flex items-center justify-center text-lg active:scale-95 transition-transform">
                 <i class="fa-solid fa-crosshairs"></i>
             </button>
-            <button id="btn-heatmap" type="button" aria-label="Activar mapa de calor" aria-pressed="false" onclick="toggleHeatmap()" class="w-11 h-11 bg-white rounded-full shadow-glass text-movida-teal border border-slate-100 flex items-center justify-center text-lg active:scale-95 transition-transform">
+            <button id="btn-heatmap" onclick="toggleHeatmap()" class="w-11 h-11 bg-white rounded-full shadow-glass text-movida-teal border border-slate-100 flex items-center justify-center text-lg active:scale-95 transition-transform">
                 <i class="fa-solid fa-fire"></i>
             </button>
         </div>
@@ -1189,10 +1088,10 @@
     <div id="ui-backdrop" onclick="cerrarTodosLosPaneles()" class="fixed inset-0 z-[10000] bg-movida-navy/40 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300"></div>
     
     <!-- PANEL DE FILTROS AVANZADOS Y BUSCADOR -->
-    <div id="advanced-filters-sheet" role="dialog" aria-modal="true" aria-labelledby="advanced-filters-title" class="fixed inset-x-0 bottom-0 z-[10001] bg-white rounded-t-3xl shadow-[0_-10px_40px_rgba(0,0,0,0.1)] transform translate-y-full transition-transform duration-300 px-6 py-6 flex flex-col max-h-[85vh] overflow-y-auto pb-[calc(env(safe-area-inset-bottom)+24px)]">
+    <div id="advanced-filters-sheet" class="fixed inset-x-0 bottom-0 z-[10001] bg-white rounded-t-3xl shadow-[0_-10px_40px_rgba(0,0,0,0.1)] transform translate-y-full transition-transform duration-300 px-6 py-6 flex flex-col max-h-[85vh] overflow-y-auto pb-[calc(env(safe-area-inset-bottom)+24px)]">
         <div class="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-5 shrink-0"></div>
         <div class="flex justify-between items-center mb-4 shrink-0">
-            <h3 id="advanced-filters-title" class="text-movida-navy font-black text-lg"><i class="fa-solid fa-filter text-movida-teal mr-2"></i> Filtros y Búsqueda</h3>
+            <h3 class="text-movida-navy font-black text-lg"><i class="fa-solid fa-filter text-movida-teal mr-2"></i> Filtros y Búsqueda</h3>
             <button onclick="cerrarTodosLosPaneles()" class="w-8 h-8 bg-slate-100 text-slate-500 rounded-full flex items-center justify-center active:scale-95"><i class="fa-solid fa-times"></i></button>
         </div>
         
@@ -1210,30 +1109,30 @@
             <div>
                 <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">Nivel Académico</label>
                 <div class="flex flex-wrap gap-2" id="chip-group-academico">
-                    <button onclick="selectChip('academico', 'todos')" class="chip-academico bg-movida-navy text-white px-4 py-2 rounded-xl text-xs font-bold border border-movida-navy transition-colors" aria-pressed="true">Todos</button>
-                    <button onclick="selectChip('academico', 'Doctorado')" class="chip-academico bg-slate-50 text-slate-500 px-4 py-2 rounded-xl text-xs font-bold border border-slate-200 transition-colors" aria-pressed="false">Doctorado</button>
-                    <button onclick="selectChip('academico', 'Postgrado')" class="chip-academico bg-slate-50 text-slate-500 px-4 py-2 rounded-xl text-xs font-bold border border-slate-200 transition-colors" aria-pressed="false">Postgrado</button>
-                    <button onclick="selectChip('academico', 'Profesional')" class="chip-academico bg-slate-50 text-slate-500 px-4 py-2 rounded-xl text-xs font-bold border border-slate-200 transition-colors" aria-pressed="false">Profesional</button>
-                    <button onclick="selectChip('academico', 'T.S.U.')" class="chip-academico bg-slate-50 text-slate-500 px-4 py-2 rounded-xl text-xs font-bold border border-slate-200 transition-colors" aria-pressed="false">T.S.U.</button>
+                    <button onclick="selectChip('academico', 'todos')" class="chip-academico bg-movida-navy text-white px-4 py-2 rounded-xl text-xs font-bold border border-movida-navy transition-colors">Todos</button>
+                    <button onclick="selectChip('academico', 'Doctorado')" class="chip-academico bg-slate-50 text-slate-500 px-4 py-2 rounded-xl text-xs font-bold border border-slate-200 transition-colors">Doctorado</button>
+                    <button onclick="selectChip('academico', 'Postgrado')" class="chip-academico bg-slate-50 text-slate-500 px-4 py-2 rounded-xl text-xs font-bold border border-slate-200 transition-colors">Postgrado</button>
+                    <button onclick="selectChip('academico', 'Profesional')" class="chip-academico bg-slate-50 text-slate-500 px-4 py-2 rounded-xl text-xs font-bold border border-slate-200 transition-colors">Profesional</button>
+                    <button onclick="selectChip('academico', 'T.S.U.')" class="chip-academico bg-slate-50 text-slate-500 px-4 py-2 rounded-xl text-xs font-bold border border-slate-200 transition-colors">T.S.U.</button>
                 </div>
             </div>
 
             <div>
-                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">Situación laboral</label>
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">Estatus Laboral</label>
                 <div class="flex flex-wrap gap-2" id="chip-group-laboral">
-                    <button onclick="selectChip('laboral', 'todos')" class="chip-laboral bg-movida-navy text-white px-4 py-2 rounded-xl text-xs font-bold border border-movida-navy transition-colors" aria-pressed="true">Todos</button>
-                    <button onclick="selectChip('laboral', 'Dependiente')" class="chip-laboral bg-slate-50 text-slate-500 px-4 py-2 rounded-xl text-xs font-bold border border-slate-200 transition-colors" aria-pressed="false">Dependiente</button>
-                    <button onclick="selectChip('laboral', 'Independiente')" class="chip-laboral bg-slate-50 text-slate-500 px-4 py-2 rounded-xl text-xs font-bold border border-slate-200 transition-colors" aria-pressed="false">Independiente</button>
-                    <button onclick="selectChip('laboral', 'Buscando')" class="chip-laboral bg-slate-50 text-slate-500 px-4 py-2 rounded-xl text-xs font-bold border border-slate-200 transition-colors" aria-pressed="false">Buscando</button>
+                    <button onclick="selectChip('laboral', 'todos')" class="chip-laboral bg-movida-navy text-white px-4 py-2 rounded-xl text-xs font-bold border border-movida-navy transition-colors">Todos</button>
+                    <button onclick="selectChip('laboral', 'Dependiente')" class="chip-laboral bg-slate-50 text-slate-500 px-4 py-2 rounded-xl text-xs font-bold border border-slate-200 transition-colors">Dependiente</button>
+                    <button onclick="selectChip('laboral', 'Independiente')" class="chip-laboral bg-slate-50 text-slate-500 px-4 py-2 rounded-xl text-xs font-bold border border-slate-200 transition-colors">Independiente</button>
+                    <button onclick="selectChip('laboral', 'Buscando')" class="chip-laboral bg-slate-50 text-slate-500 px-4 py-2 rounded-xl text-xs font-bold border border-slate-200 transition-colors">Buscando</button>
                 </div>
             </div>
 
             <div>
                 <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">Género</label>
                 <div class="flex flex-wrap gap-2" id="chip-group-genero">
-                    <button onclick="selectChip('genero', 'todos')" class="chip-genero bg-movida-navy text-white px-4 py-2 rounded-xl text-xs font-bold border border-movida-navy transition-colors" aria-pressed="true">Todos</button>
-                    <button onclick="selectChip('genero', 'Femenino')" class="chip-genero bg-slate-50 text-slate-500 px-4 py-2 rounded-xl text-xs font-bold border border-slate-200 transition-colors" aria-pressed="false">Femenino</button>
-                    <button onclick="selectChip('genero', 'Masculino')" class="chip-genero bg-slate-50 text-slate-500 px-4 py-2 rounded-xl text-xs font-bold border border-slate-200 transition-colors" aria-pressed="false">Masculino</button>
+                    <button onclick="selectChip('genero', 'todos')" class="chip-genero bg-movida-navy text-white px-4 py-2 rounded-xl text-xs font-bold border border-movida-navy transition-colors">Ambos</button>
+                    <button onclick="selectChip('genero', 'Femenino')" class="chip-genero bg-slate-50 text-slate-500 px-4 py-2 rounded-xl text-xs font-bold border border-slate-200 transition-colors">Femenino</button>
+                    <button onclick="selectChip('genero', 'Masculino')" class="chip-genero bg-slate-50 text-slate-500 px-4 py-2 rounded-xl text-xs font-bold border border-slate-200 transition-colors">Masculino</button>
                 </div>
             </div>
 
@@ -1262,7 +1161,7 @@
     </div>
 
     <!-- TARJETA VIP DE PROFESIONAL (BOTTOM SHEET) -->
-    <div id="profile-sheet" role="dialog" aria-modal="true" aria-label="Perfil profesional" class="fixed inset-x-0 bottom-0 z-[10002] bg-white rounded-t-3xl shadow-[0_-10px_40px_rgba(0,0,0,0.1)] transform translate-y-full transition-transform duration-400 pb-[calc(env(safe-area-inset-bottom)+24px)] flex flex-col max-h-[90vh]">
+    <div id="profile-sheet" class="fixed inset-x-0 bottom-0 z-[10002] bg-white rounded-t-3xl shadow-[0_-10px_40px_rgba(0,0,0,0.1)] transform translate-y-full transition-transform duration-400 pb-[calc(env(safe-area-inset-bottom)+24px)] flex flex-col max-h-[90vh]">
         <div id="profile-sheet-content"></div>
     </div>
 
@@ -1388,21 +1287,21 @@
                         <a href="mailto:info@movidasst.com" class="inline-flex items-center gap-1.5 mt-2 text-movida-teal hover:underline font-medium"><i class="fa-solid fa-envelope"></i> info@movidasst.com</a>
                     </div>
                     <div class="grid grid-cols-2 gap-3 mb-5">
-                        <a href="https://whatsapp.com/channel/0029Va0mlH5Jf05mrcCz8r3e" target="_blank" rel="noopener noreferrer" class="flex flex-col items-center justify-center gap-1 bg-[#25D366]/10 text-[#128C7E] border border-[#25D366]/30 p-3 rounded-xl active:scale-95 transition-transform">
+                        <a href="https://whatsapp.com/channel/0029Va0mlH5Jf05mrcCz8r3e" target="_blank" class="flex flex-col items-center justify-center gap-1 bg-[#25D366]/10 text-[#128C7E] border border-[#25D366]/30 p-3 rounded-xl active:scale-95 transition-transform">
                             <i class="fa-brands fa-whatsapp text-2xl mb-1"></i>
                             <span class="text-[10px] font-black uppercase tracking-wide">Canal WhatsApp</span>
                         </a>
-                        <a href="https://t.me/canalmovidasst" target="_blank" rel="noopener noreferrer" class="flex flex-col items-center justify-center gap-1 bg-[#0088cc]/10 text-[#0088cc] border border-[#0088cc]/30 p-3 rounded-xl active:scale-95 transition-transform">
+                        <a href="https://t.me/canalmovidasst" target="_blank" class="flex flex-col items-center justify-center gap-1 bg-[#0088cc]/10 text-[#0088cc] border border-[#0088cc]/30 p-3 rounded-xl active:scale-95 transition-transform">
                             <i class="fa-brands fa-telegram text-2xl mb-1"></i>
                             <span class="text-[10px] font-black uppercase tracking-wide">Canal Telegram</span>
                         </a>
                     </div>
                     <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Conecta con nosotros</p>
                     <div class="flex justify-center items-center gap-4">
-                        <a href="https://wa.me/56968615650" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp Contacto" class="flex items-center justify-center w-11 h-11 rounded-full bg-[#25D366] text-white shadow-md active:scale-95"><i class="fa-brands fa-whatsapp text-xl"></i></a>
-                        <a href="https://www.instagram.com/movidasst/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" class="flex items-center justify-center w-11 h-11 rounded-full bg-gradient-to-tr from-[#f9ce34] via-[#ee2a7b] to-[#6228d7] text-white shadow-md active:scale-95"><i class="fa-brands fa-instagram text-xl"></i></a>
-                        <a href="https://www.linkedin.com/company/movidasst/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" class="flex items-center justify-center w-11 h-11 rounded-full bg-[#0A66C2] text-white shadow-md active:scale-95"><i class="fa-brands fa-linkedin-in text-xl"></i></a>
-                        <a href="https://www.movidasst.com" target="_blank" rel="noopener noreferrer" aria-label="Web" class="flex items-center justify-center w-11 h-11 rounded-full bg-movida-navy text-white shadow-md active:scale-95"><i class="fa-solid fa-globe text-xl"></i></a>
+                        <a href="https://wa.me/56968615650" target="_blank" aria-label="WhatsApp Contacto" class="flex items-center justify-center w-11 h-11 rounded-full bg-[#25D366] text-white shadow-md active:scale-95"><i class="fa-brands fa-whatsapp text-xl"></i></a>
+                        <a href="https://www.instagram.com/movidasst/" target="_blank" aria-label="Instagram" class="flex items-center justify-center w-11 h-11 rounded-full bg-gradient-to-tr from-[#f9ce34] via-[#ee2a7b] to-[#6228d7] text-white shadow-md active:scale-95"><i class="fa-brands fa-instagram text-xl"></i></a>
+                        <a href="https://www.linkedin.com/company/movidasst/" target="_blank" aria-label="LinkedIn" class="flex items-center justify-center w-11 h-11 rounded-full bg-[#0A66C2] text-white shadow-md active:scale-95"><i class="fa-brands fa-linkedin-in text-xl"></i></a>
+                        <a href="https://www.movidasst.com" target="_blank" aria-label="Web" class="flex items-center justify-center w-11 h-11 rounded-full bg-movida-navy text-white shadow-md active:scale-95"><i class="fa-solid fa-globe text-xl"></i></a>
                     </div>
                 </div>
             </footer>
@@ -1415,8 +1314,8 @@
             
             <!-- GRUPO DE ESTUDIO (ALTO IMPACTO) -->
             <div class="relative group">
-                <div class="absolute -inset-1 bg-gradient-to-r from-movida-yellow via-movida-teal to-movida-green rounded-xl blur opacity-75"></div>
-                <a href="https://estudia.movidasst.com" target="_blank" rel="noopener noreferrer" class="relative flex items-center justify-between w-full bg-movida-navy text-white font-black py-4 px-5 rounded-xl shadow-[0_10px_20px_rgba(0,32,91,0.3)] active:scale-95 transition-all overflow-hidden border border-movida-navy/50">
+                <div class="absolute -inset-1 bg-gradient-to-r from-movida-yellow via-movida-teal to-movida-green rounded-xl blur opacity-75 animate-pulse"></div>
+                <a href="https://estudia.movidasst.com" target="_blank" class="relative flex items-center justify-between w-full bg-movida-navy text-white font-black py-4 px-5 rounded-xl shadow-[0_10px_20px_rgba(0,32,91,0.3)] active:scale-95 transition-all overflow-hidden border border-movida-navy/50">
                     <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl transform translate-x-10 -translate-y-10"></div>
                     <div class="flex items-center gap-3.5 relative z-10">
                         <div class="bg-gradient-to-br from-movida-yellow to-amber-600 w-11 h-11 rounded-full flex items-center justify-center shrink-0 shadow-inner border border-amber-300/50">
@@ -1447,7 +1346,7 @@
                 <p class="text-xs text-slate-600 mb-4 leading-relaxed font-medium relative z-10">
                     Descubre nuestros programas de formación, cursos y diplomados diseñados para potenciar tus habilidades en Seguridad y Salud en el Trabajo.
                 </p>
-                <a href="https://movidasst.com" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center gap-2 w-full bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 font-bold py-3 rounded-xl shadow-sm active:scale-95 transition-transform text-xs relative z-10">
+                <a href="https://movidasst.com" target="_blank" class="flex items-center justify-center gap-2 w-full bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 font-bold py-3 rounded-xl shadow-sm active:scale-95 transition-transform text-xs relative z-10">
                     <i class="fa-solid fa-globe text-movida-teal text-base"></i> Ir a la Academia
                 </a>
             </div>
@@ -1462,7 +1361,7 @@
                 </p>
                 <p class="text-sm text-slate-600 mb-5 leading-relaxed font-medium relative z-10">
                     Nuestro directorio nacional te permite encontrar talento estratégico por estado y municipio, filtrando por sus principales datos académicos y situación laboral.<br><br>
-                    <span class="flex items-center gap-1.5 text-movida-navy font-bold"><i class="fa-solid fa-mobile-screen-button text-movida-teal"></i> Diseñada para móviles:</span> Esta aplicación facilita la consulta desde teléfonos, tabletas y computadoras.
+                    <span class="flex items-center gap-1.5 text-movida-navy font-bold"><i class="fa-solid fa-mobile-screen-button text-movida-teal"></i> Diseñada para teléfonos móviles:</span> Esta plataforma facilita la consulta desde celulares y computadoras.
                 </p>
                 
                 <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 mb-5 relative z-10 shadow-inner">
@@ -1504,20 +1403,20 @@
                 
                 <section id="view-home" class="w-full transition-opacity duration-300 ease-in-out transform">
                     <header class="text-center mb-8">
-                        <h1 class="text-2xl font-extrabold text-movida-blue tracking-tight leading-tight">Credenciales Movida SST Plus</h1>
+                        <h1 class="text-2xl font-extrabold text-movida-blue tracking-tight leading-tight">Hub Movida SST Plus</h1>
                         <p class="text-xs font-bold text-movida-teal uppercase tracking-widest mt-1">Gestión de Credenciales</p>
                     </header>
 
-                    <div role="tablist" aria-label="Opciones de credenciales" class="flex flex-col sm:flex-row justify-center items-center gap-2 mb-8 bg-slate-100 p-1.5 rounded-xl w-full sm:w-fit mx-auto shadow-inner border border-slate-200">
-                        <button id="btn-tab-portal" role="tab" aria-selected="true" aria-controls="tab-portal" class="px-6 py-3 sm:py-2.5 rounded-lg text-sm font-bold transition-all shadow-sm bg-white text-movida-teal w-full sm:w-auto text-center flex items-center justify-center gap-2 border border-slate-200/50">
+                    <div class="flex flex-col sm:flex-row justify-center items-center gap-2 mb-8 bg-slate-100 p-1.5 rounded-xl w-full sm:w-fit mx-auto shadow-inner border border-slate-200">
+                        <button id="btn-tab-portal" class="px-6 py-3 sm:py-2.5 rounded-lg text-sm font-bold transition-all shadow-sm bg-white text-movida-teal w-full sm:w-auto text-center flex items-center justify-center gap-2 border border-slate-200/50">
                             <i class="fa-solid fa-id-badge"></i> Mi credencial
                         </button>
-                        <button id="btn-tab-validator" role="tab" aria-selected="false" aria-controls="tab-validator" class="px-6 py-3 sm:py-2.5 rounded-lg text-sm font-bold transition-all text-slate-500 hover:text-slate-800 w-full sm:w-auto text-center flex items-center justify-center gap-2 border border-transparent">
+                        <button id="btn-tab-validator" class="px-6 py-3 sm:py-2.5 rounded-lg text-sm font-bold transition-all text-slate-500 hover:text-slate-800 w-full sm:w-auto text-center flex items-center justify-center gap-2 border border-transparent">
                             <i class="fa-solid fa-shield-halved"></i> Validador
                         </button>
                     </div>
 
-                    <div id="tab-portal" role="tabpanel" aria-labelledby="btn-tab-portal" class="max-w-md mx-auto w-full transition-all duration-300">
+                    <div id="tab-portal" class="max-w-md mx-auto w-full transition-all duration-300">
                         <div class="bg-slate-50 border border-slate-200 rounded-2xl p-6 lg:p-8 shadow-sm hover:shadow-md transition-shadow">
                             <div class="text-center mb-6">
                                 <h2 class="text-xl font-bold text-slate-800">Acceso a Integrantes</h2>
@@ -1537,13 +1436,13 @@
                             </div>
                             
                             <button id="btn-portal-submit" class="mt-6 w-full bg-movida-teal text-white font-bold py-3.5 px-6 rounded-xl hover:bg-teal-700 focus:ring-4 focus:ring-teal-200 transition-all duration-200 shadow-lg shadow-teal-600/20 active:scale-[0.98] flex items-center justify-center gap-2 relative disabled:opacity-70 h-[52px]">
-                                <span class="btn-text transition-opacity flex items-center gap-2"><i class="fa-solid fa-right-to-bracket"></i> Ingresar</span>
+                                <span class="btn-text transition-opacity flex items-center gap-2"><i class="fa-solid fa-right-to-bracket"></i> Ingresar Seguro</span>
                             </button>
                             <p id="portal-error" class="text-rose-600 text-center text-sm mt-3 font-medium min-h-[1rem]"></p>
                         </div>
                     </div>
 
-                    <div id="tab-validator" role="tabpanel" aria-labelledby="btn-tab-validator" class="max-w-md mx-auto w-full hidden transition-all duration-300">
+                    <div id="tab-validator" class="max-w-md mx-auto w-full hidden transition-all duration-300">
                         <div class="bg-slate-50 border border-slate-200 rounded-2xl p-6 lg:p-8 shadow-sm hover:shadow-md transition-shadow">
                             <div class="text-center mb-6">
                                 <h2 class="text-xl font-bold text-slate-800">Verificador Oficial</h2>
@@ -1658,7 +1557,7 @@
                                 <div class="member-data-heading-icon"><i class="fa-solid fa-user-pen"></i></div>
                                 <div>
                                     <h3>Actualizar mis datos</h3>
-                                    <p>Actualiza tus datos de contacto, ubicación y formación. Los cambios se reflejarán en tu perfil, el mapa nacional, la credencial y las métricas.</p>
+                                    <p>Actualiza tus datos de contacto, LinkedIn, ubicación y formación. Los cambios se reflejarán en tu perfil, el mapa nacional, la credencial y las métricas.</p>
                                 </div>
                             </div>
 
@@ -1718,6 +1617,12 @@
                                     <p id="member-whatsapp-help" class="member-data-help"><i class="fa-solid fa-circle-info"></i> 12 dígitos, sin cero inicial y comenzando por 584.</p>
                                 </div>
 
+                                <div class="member-data-field member-data-wide">
+                                    <label for="member-linkedin">Perfil de LinkedIn</label>
+                                    <input id="member-linkedin" name="linkedin" type="url" inputmode="url" autocomplete="url" maxlength="300" placeholder="https://www.linkedin.com/in/tu-perfil" aria-describedby="member-linkedin-help">
+                                    <p id="member-linkedin-help" class="member-data-help"><i class="fa-brands fa-linkedin"></i> Opcional. Pega el enlace completo de tu perfil personal de LinkedIn.</p>
+                                </div>
+
                                 <div class="member-data-field">
                                     <label for="member-degree">Grado de instrucción</label>
                                     <div class="member-data-select-wrap">
@@ -1754,7 +1659,7 @@
                             <p id="member-data-status" class="member-data-status" role="status" aria-live="polite"></p>
                             <div class="member-data-note">
                                 <i class="fa-solid fa-shield-halved"></i>
-                                <span>Puedes actualizar edad, ubicación, correo, WhatsApp y formación académica. Tu nombre, cédula y código de integrante permanecen protegidos.</span>
+                                <span>Puedes actualizar edad, ubicación, correo, WhatsApp, LinkedIn y formación académica. Tu nombre, cédula y código de integrante permanecen protegidos.</span>
                             </div>
                         </form>
 
@@ -1816,7 +1721,7 @@
                             <button id="btn-val-share" class="bg-movida-green hover:bg-[#5f9c38] text-white font-bold h-12 rounded-xl shadow-md flex items-center justify-center gap-2 text-sm transition-transform active:scale-95">
                                 <i class="fa-brands fa-whatsapp text-lg"></i> Compartir
                             </button>
-                            <a id="btn-val-chat" href="#" target="_blank" rel="noopener noreferrer" class="bg-movida-blue hover:bg-blue-900 text-white font-bold h-12 rounded-xl shadow-md flex items-center justify-center gap-2 text-sm transition-transform active:scale-95">
+                            <a id="btn-val-chat" href="#" target="_blank" class="bg-movida-blue hover:bg-blue-900 text-white font-bold h-12 rounded-xl shadow-md flex items-center justify-center gap-2 text-sm transition-transform active:scale-95">
                                 <i class="fa-regular fa-comment-dots text-lg"></i> Contactar
                             </a>
                         </div>
@@ -1827,9 +1732,9 @@
     </main>
 
     <!-- MODAL PARA RECORTAR FOTOS -->
-    <div id="cropper-modal" role="dialog" aria-modal="true" aria-labelledby="cropper-title" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-[100000] transition-opacity duration-300 opacity-0 invisible" style="display: none;">
+    <div id="cropper-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-[100000] transition-opacity duration-300 opacity-0 invisible" style="display: none;">
         <div class="bg-white rounded-3xl shadow-2xl p-6 w-full max-w-sm transition-transform duration-300 transform scale-95 border border-slate-200">
-            <h3 id="cropper-title" class="text-lg font-black mb-4 text-center text-slate-800">Ajustar fotografía</h3>
+            <h3 class="text-lg font-black mb-4 text-center text-slate-800">Ajustar Fotografía</h3>
             <div id="cropper-container" class="mb-6 bg-slate-100 rounded-2xl overflow-hidden border border-slate-200 relative aspect-square flex items-center justify-center">
                 <img id="image-to-crop" src="" style="max-width: 100%;">
             </div>
@@ -1843,20 +1748,20 @@
     </div>
 
     <!-- NAVEGACIÓN INFERIOR DE 4 BOTONES -->
-    <nav id="bottom-nav" aria-label="Navegación principal" class="fixed bottom-0 left-0 right-0 w-full bg-white/95 backdrop-blur-lg border-t border-slate-200 pt-3 pb-[calc(env(safe-area-inset-bottom)+16px)] px-2 flex justify-around items-center shadow-[0_-10px_30px_rgba(0,0,0,0.08)] z-[9999]">
-        <button onclick="switchTab('map-view')" id="btn-map-view" aria-current="page" aria-label="Abrir mapa" class="nav-item active flex flex-col items-center p-2 w-[25%] transition-colors">
+    <nav id="bottom-nav" class="fixed bottom-0 left-0 right-0 w-full bg-white/95 backdrop-blur-lg border-t border-slate-200 pt-3 pb-[calc(env(safe-area-inset-bottom)+16px)] px-2 flex justify-around items-center shadow-[0_-10px_30px_rgba(0,0,0,0.08)] z-[9999]">
+        <button onclick="switchTab('map-view')" id="btn-map-view" class="nav-item active flex flex-col items-center p-2 w-[25%] transition-colors">
             <div class="icon-container w-10 h-10 flex items-center justify-center rounded-full transition-all duration-300"><i class="fa-solid fa-map text-xl"></i></div>
             <span class="text-[10px] uppercase tracking-wider mt-1 font-medium">Mapa</span>
         </button>
-        <button onclick="switchTab('dashboard-view')" id="btn-dashboard-view" aria-label="Abrir métricas" class="nav-item text-slate-400 flex flex-col items-center p-2 w-[25%] transition-colors">
+        <button onclick="switchTab('dashboard-view')" id="btn-dashboard-view" class="nav-item text-slate-400 flex flex-col items-center p-2 w-[25%] transition-colors">
             <div class="icon-container w-10 h-10 flex items-center justify-center rounded-full transition-all duration-300"><i class="fa-solid fa-chart-pie text-xl"></i></div>
             <span class="text-[10px] uppercase tracking-wider mt-1 font-medium">Métricas</span>
         </button>
-        <button onclick="switchTab('info-view')" id="btn-info-view" aria-label="Abrir información" class="nav-item text-slate-400 flex flex-col items-center p-2 w-[25%] transition-colors">
+        <button onclick="switchTab('info-view')" id="btn-info-view" class="nav-item text-slate-400 flex flex-col items-center p-2 w-[25%] transition-colors">
             <div class="icon-container w-10 h-10 flex items-center justify-center rounded-full transition-all duration-300"><i class="fa-solid fa-circle-info text-xl"></i></div>
             <span class="text-[10px] uppercase tracking-wider mt-1 font-medium">Info</span>
         </button>
-        <button onclick="switchTab('credencial-view')" id="btn-credencial-view" aria-label="Abrir credencial" class="nav-item text-slate-400 flex flex-col items-center p-2 w-[25%] transition-colors">
+        <button onclick="switchTab('credencial-view')" id="btn-credencial-view" class="nav-item text-slate-400 flex flex-col items-center p-2 w-[25%] transition-colors">
             <div class="icon-container w-10 h-10 flex items-center justify-center rounded-full transition-all duration-300"><i class="fa-solid fa-id-badge text-xl"></i></div>
             <span class="text-[10px] uppercase tracking-wider mt-1 font-medium">Credencial</span>
         </button>
@@ -1919,50 +1824,6 @@
             return str.toLowerCase().split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
         }
 
-        function escapeHTML(value) {
-            return String(value ?? '')
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;')
-                .replace(/'/g, '&#039;');
-        }
-
-        function safeHttpUrl(value) {
-            const raw = String(value || '').trim();
-            if (!raw) return '';
-            try {
-                const url = new URL(raw, window.location.origin);
-                return ['http:', 'https:'].includes(url.protocol) ? url.href : '';
-            } catch (_) {
-                return '';
-            }
-        }
-
-        function encodeItemForAttribute(item) {
-            return encodeURIComponent(JSON.stringify(item)).replace(/'/g, '%27');
-        }
-
-        function hashTexto(value) {
-            const text = String(value || 'movida-sst');
-            let hash = 2166136261;
-            for (let i = 0; i < text.length; i++) {
-                hash ^= text.charCodeAt(i);
-                hash = Math.imul(hash, 16777619);
-            }
-            return hash >>> 0;
-        }
-
-        function desplazamientoEstable(item) {
-            const clave = item?.cedula || item?.codigo_integrante || item?._nombre_completo || `${item?.estado || ''}-${item?.municipio || ''}`;
-            const h1 = hashTexto(clave);
-            const h2 = hashTexto(`${clave}-lng`);
-            return {
-                lat: ((h1 % 2001) / 2000 - 0.5) * 0.02,
-                lng: ((h2 % 2001) / 2000 - 0.5) * 0.02
-            };
-        }
-
         function ocultarSplash() {
             if (typeof window.__movidaHideSplash === 'function') {
                 window.__movidaHideSplash();
@@ -1991,8 +1852,8 @@
                         <i class="fa-solid fa-triangle-exclamation"></i>
                     </div>
                     <div class="min-w-0">
-                        <p class="font-black text-rose-700 text-sm">${escapeHTML(titulo)}</p>
-                        <p class="text-xs text-slate-600 mt-1 break-words">${escapeHTML(detalle || 'Revise la consola del navegador para conocer el detalle técnico.') }</p>
+                        <p class="font-black text-rose-700 text-sm">${titulo}</p>
+                        <p class="text-xs text-slate-600 mt-1 break-words">${detalle || 'Revise la consola del navegador para conocer el detalle técnico.'}</p>
                     </div>
                     <button type="button" class="ml-auto text-slate-400" onclick="this.closest('#startup-error-panel').remove()">
                         <i class="fa-solid fa-xmark"></i>
@@ -2037,6 +1898,16 @@
                 .normalize('NFD')
                 .replace(/[\u0300-\u036f]/g, '');
         }
+
+        function escapeHTML(value) {
+            return String(value ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
 
         function normalizarGenero(valor) {
             const v = normalizarTextoMetrica(valor);
@@ -2309,13 +2180,11 @@
         function selectChip(grupo, valor) {
             if(navigator.vibrate) navigator.vibrate(20);
             document.querySelectorAll(`.chip-${grupo}`).forEach(btn => {
-                btn.setAttribute('aria-pressed', 'false');
                 btn.classList.remove('bg-movida-navy', 'text-white', 'border-movida-navy');
                 btn.classList.add('bg-slate-50', 'text-slate-500', 'border-slate-200');
             });
             const selectedBtn = Array.from(document.querySelectorAll(`.chip-${grupo}`)).find(btn => btn.innerText.toLowerCase() === valor.toLowerCase() || (valor==='todos' && (btn.innerText==='Todos' || btn.innerText==='Ambos')));
             if(selectedBtn) {
-                selectedBtn.setAttribute('aria-pressed', 'true');
                 selectedBtn.classList.remove('bg-slate-50', 'text-slate-500', 'border-slate-200');
                 selectedBtn.classList.add('bg-movida-navy', 'text-white', 'border-movida-navy');
             }
@@ -2326,12 +2195,10 @@
             if(navigator.vibrate) navigator.vibrate(30);
             document.querySelectorAll('.filter-pill').forEach(btn => {
                 if(!btn.innerHTML.includes('Filtros')){
-                    btn.setAttribute('aria-pressed', 'false');
                     btn.classList.remove('active', 'bg-movida-navy', 'text-white');
                     btn.classList.add('bg-white', 'text-slate-500');
                 }
             });
-            btnEl.setAttribute('aria-pressed', 'true');
             btnEl.classList.remove('bg-white', 'text-slate-500');
             btnEl.classList.add('active', 'bg-movida-navy', 'text-white');
             
@@ -2345,32 +2212,26 @@
             const container = document.getElementById('resultados-nombre');
             const term = texto.trim().toLowerCase();
             if (term.length < 2) { container.classList.add('hidden'); return; }
-            const filtrados = globalData.filter(item => (item._nombre_completo || '').toLowerCase().includes(term)).slice(0, 5);
-
+            const filtrados = globalData.filter(item => (item._nombre_completo || "").toLowerCase().includes(term)).slice(0, 5);
+            
             if (filtrados.length === 0) {
-                container.innerHTML = '<div class="p-4 text-xs text-slate-500 font-medium text-center">No se encontraron profesionales.</div>';
-                container.classList.remove('hidden');
-                return;
+                container.innerHTML = '<div class="p-4 text-xs text-slate-500 font-medium text-center">No se encontraron profesionales...</div>';
+                container.classList.remove('hidden'); return;
             }
-
-            const html = filtrados.map(item => {
-                const itemStr = encodeItemForAttribute(item);
-                const iconGen = item.genero === 'Femenino' ? 'fa-venus text-movida-green' : 'fa-mars text-movida-teal';
-                const nombre = escapeHTML(item._nombre_completo || 'Profesional SST');
-                const estado = escapeHTML(item.estado || 'Ubicación no especificada');
-                const profesion = escapeHTML((item._profesion_clean || '').toLowerCase());
-                return `
-                <button type="button" class="w-full p-3 border-b border-slate-100 hover:bg-slate-50 active:bg-slate-100 cursor-pointer flex items-center gap-3 transition-colors text-left" onclick="seleccionarProfesionalBuscado('${itemStr}')">
-                    <span class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center shrink-0 border border-slate-200 shadow-sm"><i class="fa-solid ${iconGen} text-[10px]"></i></span>
-                    <span class="truncate">
-                        <span class="block text-xs font-bold text-movida-navy truncate leading-tight">${nombre}</span>
-                        <span class="block text-[10px] font-medium text-slate-500 truncate mt-0.5">${estado}${profesion ? ` • ${profesion}` : ''}</span>
-                    </span>
-                </button>`;
-            }).join('');
-
-            container.innerHTML = html;
-            container.classList.remove('hidden');
+            let html = '';
+            filtrados.forEach(item => {
+                const itemStr = encodeURIComponent(JSON.stringify(item));
+                let iconGen = item.genero === 'Femenino' ? 'fa-venus text-movida-green' : 'fa-mars text-movida-teal';
+                html += `
+                <div class="p-3 border-b border-slate-100 hover:bg-slate-50 active:bg-slate-100 cursor-pointer flex items-center gap-3 transition-colors" onclick="seleccionarProfesionalBuscado('${itemStr}')">
+                    <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center shrink-0 border border-slate-200 shadow-sm"><i class="fa-solid ${iconGen} text-[10px]"></i></div>
+                    <div class="truncate">
+                        <p class="text-xs font-bold text-movida-navy truncate leading-tight">${item._nombre_completo}</p>
+                        <p class="text-[9px] font-medium text-slate-500 truncate mt-0.5">${item.estado} • ${(item._profesion_clean || '').toLowerCase()}</p>
+                    </div>
+                </div>`;
+            });
+            container.innerHTML = html; container.classList.remove('hidden');
         }
 
         function seleccionarProfesionalBuscado(itemStr) {
@@ -2420,7 +2281,7 @@
             } else {
                 let municipiosDelEstado = new Set();
                 globalData.forEach(item => { if (item.estado && item.estado.trim() === estadoSelect.value && item.municipio) municipiosDelEstado.add(item.municipio.trim().toLowerCase()); });
-                Array.from(municipiosDelEstado).sort().forEach(mun => { let opt = document.createElement('option'); opt.value = toTitleCase(mun); opt.textContent = toTitleCase(mun); muniSelect.appendChild(opt); });
+                Array.from(municipiosDelEstado).sort().forEach(mun => { let opt = document.createElement('option'); opt.value = toTitleCase(mun); opt.innerHTML = toTitleCase(mun); muniSelect.appendChild(opt); });
                 muniSelect.disabled = false; muniSelect.classList.remove('text-slate-400', 'cursor-not-allowed'); muniSelect.classList.add('text-movida-navy');
             }
         }
@@ -2428,8 +2289,6 @@
         function toggleHeatmap() {
             stateFiltros.modoHeatmap = !stateFiltros.modoHeatmap;
             const btn = document.getElementById('btn-heatmap');
-            btn.setAttribute('aria-pressed', String(stateFiltros.modoHeatmap));
-            btn.setAttribute('aria-label', stateFiltros.modoHeatmap ? 'Desactivar mapa de calor' : 'Activar mapa de calor');
             if(stateFiltros.modoHeatmap) {
                 btn.classList.add('bg-movida-navy', 'text-white'); btn.classList.remove('bg-white', 'text-movida-teal'); mostrarNotificacion('Mapa de Calor activado', 'fa-fire');
             } else {
@@ -2440,91 +2299,67 @@
 
         function abrirPerfil(itemStr) {
             const item = JSON.parse(decodeURIComponent(itemStr));
-            let imgUrl = '';
-            const fotoRaw = String(item.foto_url || item.foto || item.Foto || item.FOTO || '').trim();
+            let imgUrl = ''; let fotoRaw = item.foto_url || item.foto || item.Foto || item.FOTO || '';
+            
+            // Bypass universal (Sirve tanto para Google Drive viejo como para Supabase nuevo)
+            if(fotoRaw.includes('id=')) imgUrl = `https://lh3.googleusercontent.com/d/${fotoRaw.split('id=')[1].split('&')[0]}`;
+            else if(fotoRaw.includes('/d/')) imgUrl = `https://lh3.googleusercontent.com/d/${fotoRaw.split('/d/')[1].split('/')[0]}`;
+            else imgUrl = fotoRaw; // Si no es Drive, es Supabase, la lee directo.
+            
+            let colorGen = item.genero === 'Femenino' ? '#70ad47' : '#007b85';
+            let initial = item._nombre_completo.charAt(0).toUpperCase();
+            let email = item.correo || item.Correo || item.CORREO || '';
 
-            if (fotoRaw.includes('id=')) imgUrl = `https://lh3.googleusercontent.com/d/${fotoRaw.split('id=')[1].split('&')[0]}`;
-            else if (fotoRaw.includes('/d/')) imgUrl = `https://lh3.googleusercontent.com/d/${fotoRaw.split('/d/')[1].split('/')[0]}`;
-            else imgUrl = fotoRaw;
-
-            imgUrl = safeHttpUrl(imgUrl);
-            const colorGen = item.genero === 'Femenino' ? '#70ad47' : '#007b85';
-            const nombreCompleto = String(item._nombre_completo || 'Profesional SST');
-            const initial = escapeHTML(nombreCompleto.charAt(0).toUpperCase() || 'S');
-            const nombreSeguro = escapeHTML(nombreCompleto);
-            const profesionSegura = escapeHTML(item._profesion_clean || 'Profesional de SST');
-            const nivelSeguro = escapeHTML(item._nivel_acad || 'Formación no especificada');
-            const estadoSeguro = escapeHTML(item.estado || 'Estado no especificado');
-            const municipioSeguro = escapeHTML(item.municipio || 'Municipio no especificado');
-            const laboralTexto = item._laboral_clean === 'Buscando' ? 'Buscando oportunidades' : (item._laboral_clean || 'Situación laboral no especificada');
-            const laboralSeguro = escapeHTML(laboralTexto);
-            const email = String(item.correo || item.Correo || item.CORREO || '').trim().toLowerCase();
-            const emailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? email : '';
-            const imgSeguro = escapeHTML(imgUrl);
-
-            let phone = item.wasap || item.Wasap || item.WASAP || item.whatsapp || item.WhatsApp || item.telefono || item.Telefono || item.celular || item.Celular || '';
-            let linkLd = String(item.linkedin || item.Linkedin || item.LINKEDIN || item.LinkedIn || '').trim();
-            let botones = '';
-
-            if (emailValido) {
-                botones += `<a href="mailto:${escapeHTML(emailValido)}" class="flex-1 flex items-center justify-center gap-1.5 bg-movida-navy hover:bg-movida-teal text-white font-bold py-3 rounded-xl shadow-md transition-colors active:scale-95 text-[11px] sm:text-xs profile-contact-btn profile-contact-email"><i class="fa-solid fa-envelope text-base"></i> Correo</a>`;
-            }
-
-            if (item._laboral_clean === 'Buscando' && phone) {
-                let num = String(phone).replace(/\D/g, '');
-                if (num.startsWith('0')) num = '58' + num.substring(1);
-                else if (!num.startsWith('58') && num.length === 10) num = '58' + num;
-                if (/^584\d{9}$/.test(num)) {
-                    botones += `<a href="https://wa.me/${num}" target="_blank" rel="noopener noreferrer" class="flex-1 flex items-center justify-center gap-1.5 bg-[#25D366] text-white font-bold py-3 rounded-xl shadow-md transition-colors active:scale-95 text-[11px] sm:text-xs profile-contact-btn profile-contact-whatsapp"><i class="fa-brands fa-whatsapp text-base"></i> WhatsApp</a>`;
-                }
-            }
-
-            if (linkLd) {
-                if (!/^https?:\/\//i.test(linkLd)) linkLd = `https://${linkLd}`;
-                const linkedinSeguro = safeHttpUrl(linkLd);
-                if (linkedinSeguro) {
-                    botones += `<a href="${escapeHTML(linkedinSeguro)}" target="_blank" rel="noopener noreferrer" class="flex-1 flex items-center justify-center gap-1.5 bg-[#0A66C2] text-white font-bold py-3 rounded-xl shadow-md transition-colors active:scale-95 text-[11px] sm:text-xs profile-contact-btn profile-contact-linkedin"><i class="fa-brands fa-linkedin-in text-base"></i> LinkedIn</a>`;
-                }
-            }
-
-            if (!botones.includes('LinkedIn')) {
-                botones += `<div class="flex-1 flex items-center justify-center gap-1.5 bg-slate-50 text-slate-400 font-bold py-3 rounded-xl border border-slate-200 text-[11px] sm:text-xs shadow-sm cursor-not-allowed profile-contact-btn profile-contact-disabled" aria-label="LinkedIn no disponible"><i class="fa-brands fa-linkedin-in text-base text-slate-300"></i> LinkedIn</div>`;
-            }
-
-            const html = `
+            let html = `
                 <div class="px-6 pt-4 pb-2 relative participant-profile">
                     <div class="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-4"></div>
-                    <button type="button" aria-label="Cerrar perfil" onclick="cerrarTodosLosPaneles()" class="absolute top-4 right-6 w-11 h-11 bg-slate-100 text-slate-500 rounded-full flex items-center justify-center active:scale-95 profile-close-btn"><i class="fa-solid fa-times"></i></button>
+                    <button onclick="cerrarTodosLosPaneles()" class="absolute top-4 right-6 w-8 h-8 bg-slate-100 text-slate-500 rounded-full flex items-center justify-center active:scale-95 profile-close-btn"><i class="fa-solid fa-times"></i></button>
                     <div class="h-1.5 w-full flex rounded-full overflow-hidden mb-4"><div class="w-1/3 bg-[#FFCC00]"></div><div class="w-1/3 bg-[#00247D]"></div><div class="w-1/3 bg-[#CF142B]"></div></div>
                     <div class="flex items-center gap-4 mb-4">
                         <div class="relative w-16 h-16 rounded-2xl p-[2px] bg-gradient-to-tr from-[#FFCC00] via-[#00247D] to-[#CF142B] shadow-md shrink-0 participant-avatar">
                             <div class="w-full h-full bg-slate-100 rounded-[14px] flex items-center justify-center overflow-hidden border border-white">
-                                ${imgUrl ? `<img src="${imgSeguro}" alt="Fotografía de ${nombreSeguro}" loading="lazy" decoding="async" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" class="w-full h-full object-cover">` : ''}
+                                ${imgUrl ? `<img src="${imgUrl}" loading="lazy" decoding="async" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" class="w-full h-full object-cover">` : ''}
                                 <div class="${imgUrl ? 'hidden' : 'flex'} w-full h-full items-center justify-center text-white font-bold text-xl" style="background-color:${colorGen}">${initial}</div>
                             </div>
                         </div>
-                        <div class="truncate pr-12">
-                            <h2 class="text-lg font-black text-movida-navy truncate leading-tight flex items-center gap-1.5">${nombreSeguro} <span class="text-[10px]" aria-hidden="true">🇻🇪</span></h2>
-                            <p class="text-xs font-bold text-slate-500 truncate mt-0.5">${profesionSegura}</p>
-                            <p class="text-[10px] font-black text-movida-teal uppercase tracking-wide mt-0.5">${nivelSeguro}</p>
+                        <div class="truncate pr-4">
+                            <h2 class="text-lg font-black text-movida-navy truncate leading-tight flex items-center gap-1.5">${item._nombre_completo} <span class="text-[10px]">🇻🇪</span></h2>
+                            <p class="text-xs font-bold text-slate-500 truncate mt-0.5">${item._profesion_clean}</p>
+                            <p class="text-[10px] font-black text-movida-teal uppercase tracking-wide mt-0.5">${item._nivel_acad}</p>
                         </div>
                     </div>
                     <div class="space-y-2 mb-5">
-                        <p class="text-xs text-slate-600 font-medium flex items-center"><i class="fa-solid fa-location-dot text-slate-400 w-5 text-center mr-2 text-sm" aria-hidden="true"></i> ${estadoSeguro}, ${municipioSeguro}</p>
-                        <p class="text-xs text-slate-600 font-medium flex items-center"><i class="fa-solid fa-briefcase text-slate-400 w-5 text-center mr-2 text-sm" aria-hidden="true"></i> ${laboralSeguro}</p>
+                        <p class="text-xs text-slate-600 font-medium flex items-center"><i class="fa-solid fa-location-dot text-slate-400 w-5 text-center mr-2 text-sm"></i> ${item.estado}, ${item.municipio}</p>
+                        <p class="text-xs text-slate-600 font-medium flex items-center"><i class="fa-solid fa-briefcase text-slate-400 w-5 text-center mr-2 text-sm"></i> ${item._laboral_clean === 'Buscando' ? 'Buscando Oportunidades' : item._laboral_clean}</p>
                     </div>
-                    <div class="w-full flex gap-2 profile-contact-grid">${botones}</div>
+                    <div class="w-full flex gap-2 profile-contact-grid">
+                        ${(() => {
+                            let phone = item.wasap || item.Wasap || item.WASAP || item.whatsapp || item.WhatsApp || item.telefono || item.Telefono || item.celular || item.Celular || '';
+                            let linkLd = item.linkedin || item.Linkedin || item.LINKEDIN || item.LinkedIn || '';
+                            let btns = '';
+                            if (email) btns += `<a href="mailto:${email}" class="flex-1 flex items-center justify-center gap-1.5 bg-movida-navy hover:bg-movida-teal text-white font-bold py-3 rounded-xl shadow-md transition-colors active:scale-95 text-[11px] sm:text-xs profile-contact-btn profile-contact-email"><i class="fa-solid fa-envelope text-base"></i> Correo</a>`;
+                            if (item._laboral_clean === 'Buscando' && phone) {
+                                let num = phone.toString().replace(/\D/g, ''); 
+                                if (num.startsWith('0')) num = '58' + num.substring(1); else if (!num.startsWith('58') && num.length === 10) num = '58' + num;
+                                btns += `<a href="https://wa.me/${num}" target="_blank" class="flex-1 flex items-center justify-center gap-1.5 bg-[#25D366] text-white font-bold py-3 rounded-xl shadow-md transition-colors active:scale-95 text-[11px] sm:text-xs profile-contact-btn profile-contact-whatsapp"><i class="fa-brands fa-whatsapp text-base"></i> WhatsApp</a>`;
+                            }
+                            if (linkLd && linkLd.trim() !== '') {
+                                let href = linkLd.trim().startsWith('http') ? linkLd.trim() : 'https://' + linkLd.trim();
+                                btns += `<a href="${href}" target="_blank" class="flex-1 flex items-center justify-center gap-1.5 bg-[#0A66C2] text-white font-bold py-3 rounded-xl shadow-md transition-colors active:scale-95 text-[11px] sm:text-xs profile-contact-btn profile-contact-linkedin"><i class="fa-brands fa-linkedin-in text-base"></i> LinkedIn</a>`;
+                            } else {
+                                btns += `<div class="flex-1 flex items-center justify-center gap-1.5 bg-slate-50 text-slate-400 font-bold py-3 rounded-xl border border-slate-200 text-[11px] sm:text-xs shadow-sm cursor-not-allowed profile-contact-btn profile-contact-disabled"><i class="fa-brands fa-linkedin-in text-base text-slate-300"></i> LinkedIn</div>`;
+                            }
+                            return btns;
+                        })()}
+                    </div>
                 </div>`;
-
+            
             document.getElementById('profile-sheet-content').innerHTML = html;
             document.getElementById('ui-backdrop').classList.remove('hidden');
-            setTimeout(() => {
-                document.getElementById('ui-backdrop').classList.remove('opacity-0');
-                document.getElementById('profile-sheet').classList.remove('translate-y-full');
-            }, 10);
-
-            const baseCoords = geodata.municipios[`${item.estado}_${item.municipio}`] || geodata.estados[item.estado];
-            if (baseCoords) map.setView([baseCoords.lat - 0.5, baseCoords.lng], 8, { animate: true, duration: 0.8 });
+            setTimeout(() => { document.getElementById('ui-backdrop').classList.remove('opacity-0'); document.getElementById('profile-sheet').classList.remove('translate-y-full'); }, 10);
+            
+            let baseCoords = geodata.municipios[`${item.estado}_${item.municipio}`] || geodata.estados[item.estado];
+            if(baseCoords) map.setView([baseCoords.lat - 0.5, baseCoords.lng], 8, {animate: true, duration: 0.8}); 
         }
 
         // Unifica el criterio de conteo entre el mapa y las métricas.
@@ -2571,9 +2406,7 @@
                 countVisibles++;
                 let est = item.estado.trim(); let mun = (item.municipio || "").trim();
                 let baseCoords = geodata.municipios[`${est}_${mun}`] || geodata.estados[est] || { lat: 8.0, lng: -66.0 };
-                const offset = desplazamientoEstable(item);
-                const lat = baseCoords.lat + offset.lat;
-                const lng = baseCoords.lng + offset.lng;
+                let lat = baseCoords.lat + (Math.random() * 0.02 - 0.01); let lng = baseCoords.lng + (Math.random() * 0.02 - 0.01);
 
                 if (stateFiltros.modoHeatmap) heatPoints.push([lat, lng, 1]);
                 else {
@@ -3052,6 +2885,7 @@
                 municipalityOptions: document.getElementById('member-municipality-options'),
                 email: document.getElementById('member-email'),
                 whatsapp: document.getElementById('member-whatsapp'),
+                linkedin: document.getElementById('member-linkedin'),
                 degree: document.getElementById('member-degree'),
                 career: document.getElementById('member-career'),
                 postgraduate: document.getElementById('member-postgraduate'),
@@ -3085,21 +2919,8 @@
             const switchHubTab = (tab) => {
                 const activeCls = "px-6 py-3 sm:py-2.5 rounded-lg text-sm font-bold transition-all shadow-sm bg-white text-movida-teal w-full sm:w-auto text-center flex items-center justify-center gap-2 border border-slate-200/50";
                 const inactiveCls = "px-6 py-3 sm:py-2.5 rounded-lg text-sm font-bold transition-all text-slate-500 hover:text-slate-800 w-full sm:w-auto text-center flex items-center justify-center gap-2 border border-transparent";
-                if(tab === 'portal') {
-                    tabs.btnPortal.className = activeCls;
-                    tabs.btnValidador.className = inactiveCls;
-                    tabs.btnPortal.setAttribute('aria-selected', 'true');
-                    tabs.btnValidador.setAttribute('aria-selected', 'false');
-                    tabs.contentValidador.classList.add('hidden');
-                    tabs.contentPortal.classList.remove('hidden');
-                } else {
-                    tabs.btnValidador.className = activeCls;
-                    tabs.btnPortal.className = inactiveCls;
-                    tabs.btnValidador.setAttribute('aria-selected', 'true');
-                    tabs.btnPortal.setAttribute('aria-selected', 'false');
-                    tabs.contentPortal.classList.add('hidden');
-                    tabs.contentValidador.classList.remove('hidden');
-                }
+                if(tab === 'portal') { tabs.btnPortal.className = activeCls; tabs.btnValidador.className = inactiveCls; tabs.contentValidador.classList.add('hidden'); tabs.contentPortal.classList.remove('hidden'); } 
+                else { tabs.btnValidador.className = activeCls; tabs.btnPortal.className = inactiveCls; tabs.contentPortal.classList.add('hidden'); tabs.contentValidador.classList.remove('hidden'); }
             };
 
             const transformDriveUrl = (url) => {
@@ -3139,6 +2960,23 @@
                 const bloque1 = digitos.slice(5, 8);
                 const bloque2 = digitos.slice(8, 12);
                 return `+${pais}${operadora ? ` ${operadora}` : ''}${bloque1 ? ` ${bloque1}` : ''}${bloque2 ? ` ${bloque2}` : ''}`;
+            };
+
+            const normalizarLinkedIn = (valor) => {
+                let enlace = String(valor || '').trim();
+                if (!enlace) return '';
+                if (!/^https?:\/\//i.test(enlace)) enlace = `https://${enlace}`;
+
+                try {
+                    const url = new URL(enlace);
+                    const host = url.hostname.toLowerCase().replace(/^www\./, '');
+                    if (host !== 'linkedin.com' && host !== 'lnkd.in') return null;
+                    url.protocol = 'https:';
+                    url.hash = '';
+                    return url.href;
+                } catch (_) {
+                    return null;
+                }
             };
 
             const establecerValorSelectSeguro = (select, valor) => {
@@ -3187,11 +3025,21 @@
                 editor.state.value = (data.estado || '').toString().trim();
                 editor.municipality.value = (data.municipio || '').toString().trim();
                 editor.email.value = (data.correo || data.Correo || data.CORREO || '').toString().trim();
+                editor.linkedin.value = (data.linkedin || data.Linkedin || data.LINKEDIN || data.LinkedIn || '').toString().trim();
+                editor.linkedin.setCustomValidity('');
 
                 const wasapActual = data.wasap || data.Wasap || data.WASAP || data.whatsapp || data.WhatsApp || '';
                 const wasapNormalizado = normalizarWasapVenezuela(wasapActual);
                 editor.whatsapp.value = formatearWasapVenezuela(wasapNormalizado);
                 editor.whatsapp.setCustomValidity('');
+                editor.linkedin.setCustomValidity('');
+                if (linkedinIngresado && linkedin === null) {
+                    editor.linkedin.setCustomValidity('Ingresa un enlace válido de LinkedIn, por ejemplo: https://www.linkedin.com/in/tu-perfil');
+                    setEditorStatus('El enlace debe pertenecer a LinkedIn.', 'error');
+                    editor.linkedin.focus();
+                    editor.linkedin.reportValidity();
+                    return;
+                }
 
                 establecerValorSelectSeguro(editor.degree, data.grado || data.Grado || '');
                 editor.career.value = (data.carrera || data.Carrera || '').toString().trim();
@@ -3315,6 +3163,8 @@
                 const municipio = toTitleCase(editor.municipality.value.trim());
                 const correo = editor.email.value.trim().toLowerCase();
                 const wasap = obtenerDigitosWasap(editor.whatsapp.value);
+                const linkedinIngresado = editor.linkedin.value.trim();
+                const linkedin = normalizarLinkedIn(linkedinIngresado);
                 const grado = editor.degree.value.trim();
                 const carrera = editor.career.value.trim();
                 const postgrado = editor.postgraduate.value.trim();
@@ -3369,6 +3219,7 @@
                         municipio,
                         correo,
                         wasap,
+                        linkedin: linkedin || null,
                         grado,
                         carrera,
                         postgrado: postgrado || null,
@@ -3387,7 +3238,7 @@
 
                     const actualizado = sincronizarRegistroEnInterfaz(data);
                     renderCredential(actualizado);
-                    setEditorStatus('Datos de contacto y formación actualizados. Mapa, credencial y métricas sincronizados.', 'success');
+                    setEditorStatus('Datos de contacto, LinkedIn y formación actualizados. Mapa, credencial y métricas sincronizados.', 'success');
                     mostrarNotificacion('Datos actualizados correctamente', 'fa-circle-check');
                 } catch (error) {
                     console.error('Error actualizando datos del integrante:', error);
@@ -3643,7 +3494,7 @@
             modal.btnSave.addEventListener('click', uploadCropped);
             modal.btnCancel.addEventListener('click', closeCropper);
             portal.btnDownload.addEventListener('click', downloadCred);
-            portal.btnWaGroup.addEventListener('click', () => window.open("https://whatsapp.com/channel/0029Va0mlH5Jf05mrcCz8r3e", '_blank', 'noopener,noreferrer'));
+            portal.btnWaGroup.addEventListener('click', () => window.open("https://whatsapp.com/channel/0029Va0mlH5Jf05mrcCz8r3e", '_blank'));
             portal.dni.addEventListener('keypress', (e) => { if(e.key === 'Enter') loginPortal(); });
             portal.code.addEventListener('keypress', (e) => { if(e.key === 'Enter') loginPortal(); });
 
@@ -3670,12 +3521,10 @@
                 
                 if(id === tabId) { 
                     el.className = `view-active absolute inset-0 ${zIndex} overflow-y-auto pb-[120px] pt-[85px] px-2`; 
-                    btn.setAttribute('aria-current', 'page');
                     btn.classList.add('active', 'text-movida-teal'); 
                     btn.classList.remove('text-slate-400'); 
                 } else { 
                     el.className = `view-hidden absolute inset-0 ${zIndex} overflow-y-auto pb-[120px] pt-[85px] px-2`; 
-                    btn.removeAttribute('aria-current');
                     btn.classList.remove('active', 'text-movida-teal'); 
                     btn.classList.add('text-slate-400'); 
                 }
