@@ -949,6 +949,94 @@
             font-weight: 700;
         }
         .member-data-help i { color: #007b85; margin-top: .08rem; }
+
+        .member-whatsapp-privacy {
+            grid-column: 1 / -1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            padding: .95rem 1rem;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 1rem;
+            background: linear-gradient(135deg, #f8fafc 0%, #eefbf9 100%);
+        }
+        .member-whatsapp-privacy-copy {
+            min-width: 0;
+            flex: 1 1 auto;
+        }
+        .member-whatsapp-privacy-title {
+            display: flex;
+            align-items: center;
+            gap: .45rem;
+            margin: 0;
+            color: #00205b;
+            font-size: .78rem;
+            line-height: 1.2;
+            font-weight: 900;
+        }
+        .member-whatsapp-privacy-title i {
+            color: #007b85;
+        }
+        .member-whatsapp-privacy-text {
+            margin: .3rem 0 0;
+            color: #64748b;
+            font-size: .69rem;
+            line-height: 1.4;
+            font-weight: 700;
+        }
+        .member-privacy-switch {
+            position: relative;
+            flex: 0 0 auto;
+            width: 3.25rem;
+            height: 1.85rem;
+            cursor: pointer;
+        }
+        .member-privacy-switch input {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            opacity: 0;
+            pointer-events: none;
+        }
+        .member-privacy-track {
+            position: absolute;
+            inset: 0;
+            border-radius: 999px;
+            background: #94a3b8;
+            box-shadow: inset 0 1px 3px rgba(15, 23, 42, .22);
+            transition: background .2s ease, box-shadow .2s ease;
+        }
+        .member-privacy-track::after {
+            content: '';
+            position: absolute;
+            width: 1.35rem;
+            height: 1.35rem;
+            left: .25rem;
+            top: .25rem;
+            border-radius: 50%;
+            background: #ffffff;
+            box-shadow: 0 2px 7px rgba(15, 23, 42, .28);
+            transition: transform .2s ease;
+        }
+        .member-privacy-switch input:checked + .member-privacy-track {
+            background: #007b85;
+            box-shadow: 0 0 0 4px rgba(0, 123, 133, .12);
+        }
+        .member-privacy-switch input:checked + .member-privacy-track::after {
+            transform: translateX(1.4rem);
+        }
+        .member-privacy-switch input:focus-visible + .member-privacy-track {
+            outline: 3px solid rgba(0, 123, 133, .28);
+            outline-offset: 3px;
+        }
+
+        @media (max-width: 420px) {
+            .member-whatsapp-privacy {
+                align-items: flex-start;
+            }
+        }
+
         .member-data-field input:focus,
         .member-data-field select:focus {
             border-color: #007b85;
@@ -1219,7 +1307,7 @@
         <!-- Píldoras de Filtro Rápido -->
         <div class="absolute top-[80px] left-0 w-full z-[400] px-3 py-2 overflow-x-auto hide-scroll flex gap-2">
             <button onclick="setFiltroPildora('todos', this)" class="filter-pill active bg-movida-navy text-white border border-movida-navy px-4 py-1.5 rounded-full text-xs font-bold shadow-sm">Todos</button>
-            <button onclick="setFiltroPildora('mujeres', this)" class="filter-pill bg-white text-slate-500 border border-slate-200 px-4 py-1.5 rounded-full text-xs font-bold shadow-sm">Mujeres</button>
+            <button onclick="setFiltroPildora('asesores', this)" class="filter-pill bg-white text-slate-500 border border-slate-200 px-4 py-1.5 rounded-full text-xs font-bold shadow-sm">Asesores SST</button>
             <button onclick="setFiltroPildora('buscando', this)" class="filter-pill bg-white text-slate-500 border border-slate-200 px-4 py-1.5 rounded-full text-xs font-bold shadow-sm">Buscando oportunidades</button>
             <button onclick="abrirFiltrosAvanzados()" class="filter-pill bg-movida-teal text-white border border-movida-teal px-4 py-1.5 rounded-full text-xs font-bold shadow-sm flex items-center gap-1 shrink-0">
                 <i class="fa-solid fa-sliders"></i> Filtros y Búsqueda
@@ -1787,7 +1875,7 @@
                                 <div class="member-data-heading-icon"><i class="fa-solid fa-user-pen"></i></div>
                                 <div>
                                     <h3>Actualizar mis datos</h3>
-                                    <p>Actualiza tus datos de contacto, LinkedIn, ubicación y formación. Los cambios se reflejarán en tu perfil, el mapa nacional, la credencial y las métricas.</p>
+                                    <p>Actualiza tus datos de contacto, privacidad de WhatsApp, LinkedIn, ubicación y formación. Los cambios se reflejarán en tu perfil, el mapa nacional, la credencial y las métricas.</p>
                                 </div>
                             </div>
 
@@ -1847,6 +1935,23 @@
                                     <p id="member-whatsapp-help" class="member-data-help"><i class="fa-solid fa-circle-info"></i> 12 dígitos, sin cero inicial y comenzando por 584.</p>
                                 </div>
 
+                                <div class="member-whatsapp-privacy">
+                                    <div class="member-whatsapp-privacy-copy">
+                                        <p class="member-whatsapp-privacy-title">
+                                            <i class="fa-brands fa-whatsapp"></i>
+                                            Mostrar mi WhatsApp públicamente
+                                        </p>
+                                        <p id="member-show-whatsapp-status" class="member-whatsapp-privacy-text">
+                                            Decide si otros visitantes podrán ver el botón para contactarte.
+                                        </p>
+                                    </div>
+
+                                    <label class="member-privacy-switch" for="member-show-whatsapp" title="Mostrar u ocultar mi WhatsApp">
+                                        <input id="member-show-whatsapp" name="mostrar_wasap" type="checkbox" role="switch" aria-describedby="member-show-whatsapp-status">
+                                        <span class="member-privacy-track" aria-hidden="true"></span>
+                                    </label>
+                                </div>
+
                                 <div class="member-data-field member-data-wide">
                                     <label for="member-linkedin">Perfil de LinkedIn</label>
                                     <input id="member-linkedin" name="linkedin" type="url" inputmode="url" autocomplete="url" maxlength="300" placeholder="https://www.linkedin.com/in/tu-perfil" aria-describedby="member-linkedin-help">
@@ -1889,7 +1994,7 @@
                             <p id="member-data-status" class="member-data-status" role="status" aria-live="polite"></p>
                             <div class="member-data-note">
                                 <i class="fa-solid fa-shield-halved"></i>
-                                <span>Puedes actualizar edad, ubicación, correo, WhatsApp, LinkedIn y formación académica. Tu nombre y cédula permanecen protegidos. El código se cambia únicamente en la sección privada siguiente.</span>
+                                <span>Puedes actualizar edad, ubicación, correo, WhatsApp, su visibilidad pública, LinkedIn y formación académica. Aunque ocultes tu WhatsApp, el número seguirá guardado de forma privada. Tu nombre y cédula permanecen protegidos.</span>
                             </div>
                         </form>
 
@@ -2645,7 +2750,7 @@
             btnEl.classList.add('active', 'bg-movida-navy', 'text-white');
             
             if(tipo === 'todos') { selectChip('genero', 'todos'); selectChip('laboral', 'todos'); }
-            else if(tipo === 'mujeres') { selectChip('genero', 'Femenino'); selectChip('laboral', 'todos'); }
+            else if(tipo === 'asesores') { selectChip('laboral', 'Independiente'); selectChip('genero', 'todos'); }
             else if(tipo === 'buscando') { selectChip('laboral', 'Buscando'); selectChip('genero', 'todos'); }
             aplicarFiltrosGlobales();
         }
@@ -2780,7 +2885,7 @@
                             let linkLd = item.linkedin || item.Linkedin || item.LINKEDIN || item.LinkedIn || '';
                             let btns = '';
                             if (email) btns += `<a href="mailto:${email}" class="flex-1 flex items-center justify-center gap-1.5 bg-movida-navy hover:bg-movida-teal text-white font-bold py-3 rounded-xl shadow-md transition-colors active:scale-95 text-[11px] sm:text-xs profile-contact-btn profile-contact-email"><i class="fa-solid fa-envelope text-base"></i> Correo</a>`;
-                            if (item._laboral_clean === 'Buscando' && phone) {
+                            if (phone) {
                                 let num = phone.toString().replace(/\D/g, ''); 
                                 if (num.startsWith('0')) num = '58' + num.substring(1); else if (!num.startsWith('58') && num.length === 10) num = '58' + num;
                                 btns += `<a href="https://wa.me/${num}" target="_blank" class="flex-1 flex items-center justify-center gap-1.5 bg-[#25D366] text-white font-bold py-3 rounded-xl shadow-md transition-colors active:scale-95 text-[11px] sm:text-xs profile-contact-btn profile-contact-whatsapp"><i class="fa-brands fa-whatsapp text-base"></i> WhatsApp</a>`;
@@ -3337,6 +3442,8 @@
                 municipalityOptions: document.getElementById('member-municipality-options'),
                 email: document.getElementById('member-email'),
                 whatsapp: document.getElementById('member-whatsapp'),
+                whatsappVisibility: document.getElementById('member-show-whatsapp'),
+                whatsappVisibilityStatus: document.getElementById('member-show-whatsapp-status'),
                 linkedin: document.getElementById('member-linkedin'),
                 degree: document.getElementById('member-degree'),
                 career: document.getElementById('member-career'),
@@ -3573,6 +3680,18 @@
                 });
             };
 
+            const actualizarTextoPrivacidadWasap = () => {
+                if (!editor.whatsappVisibilityStatus || !editor.whatsappVisibility) return;
+
+                if (editor.whatsappVisibility.checked) {
+                    editor.whatsappVisibilityStatus.textContent =
+                        'Visible: los visitantes podrán usar el botón de WhatsApp para contactarte.';
+                } else {
+                    editor.whatsappVisibilityStatus.textContent =
+                        'Oculto: tu número no aparecerá en el directorio ni en la verificación pública.';
+                }
+            };
+
             const cargarFormularioDatos = (data) => {
                 if (!editor.form || !data) return;
                 editor.age.value = data.edad ?? '';
@@ -3587,6 +3706,29 @@
                 editor.whatsapp.value = formatearWasapVenezuela(wasapNormalizado);
                 editor.whatsapp.setCustomValidity('');
                 editor.linkedin.setCustomValidity('');
+
+                if (editor.whatsappVisibility) {
+                    const preferencia =
+                        data.mostrar_wasap ??
+                        data.mostrarWasap ??
+                        data.MOSTRAR_WASAP;
+
+                    const preferenciaDefinida =
+                        preferencia === true ||
+                        String(preferencia).toLowerCase() === 'true';
+
+                    const preferenciaAusente =
+                        preferencia === null ||
+                        typeof preferencia === 'undefined' ||
+                        preferencia === '';
+
+                    editor.whatsappVisibility.checked =
+                        preferenciaAusente
+                            ? normalizarLaboral(data.laboral || '') === 'Buscando'
+                            : preferenciaDefinida;
+
+                    actualizarTextoPrivacidadWasap();
+                }
 
                 establecerValorSelectSeguro(editor.degree, data.grado || data.Grado || '');
                 editor.career.value = (data.carrera || data.Carrera || '').toString().trim();
@@ -4249,6 +4391,7 @@
                 const municipio = toTitleCase(editor.municipality.value.trim());
                 const correo = editor.email.value.trim().toLowerCase();
                 const wasap = obtenerDigitosWasap(editor.whatsapp.value);
+                const mostrarWasap = Boolean(editor.whatsappVisibility?.checked);
                 const linkedinIngresado = editor.linkedin.value.trim();
                 const linkedin = normalizarLinkedIn(linkedinIngresado);
                 const grado = editor.degree.value.trim();
@@ -4315,6 +4458,7 @@
                         municipio,
                         correo,
                         wasap,
+                        mostrar_wasap: mostrarWasap,
                         linkedin: linkedin || null,
                         grado,
                         carrera,
@@ -5232,6 +5376,14 @@
                 actualizarSugerenciasMunicipioEditor(editor.state.value);
                 setEditorStatus('');
             });
+            if (editor.whatsappVisibility) {
+                editor.whatsappVisibility.addEventListener('change', () => {
+                    actualizarTextoPrivacidadWasap();
+                    setEditorStatus('');
+                });
+                actualizarTextoPrivacidadWasap();
+            }
+
             if (editor.whatsapp) {
                 editor.whatsapp.addEventListener('input', function () {
                     const digitos = obtenerDigitosWasap(this.value).slice(0, 12);
