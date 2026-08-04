@@ -1626,6 +1626,16 @@
                             <button id="btn-portal-submit" class="mt-6 w-full bg-movida-teal text-white font-bold py-3.5 px-6 rounded-xl hover:bg-teal-700 focus:ring-4 focus:ring-teal-200 transition-all duration-200 shadow-lg shadow-teal-600/20 active:scale-[0.98] flex items-center justify-center gap-2 relative disabled:opacity-70 h-[52px]">
                                 <span class="btn-text transition-opacity flex items-center gap-2"><i class="fa-solid fa-right-to-bracket"></i> Ingresar Seguro</span>
                             </button>
+
+                            <button
+                                type="button"
+                                id="btn-forgot-code"
+                                class="mt-3 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm font-bold text-movida-blue transition-all hover:border-movida-teal hover:bg-teal-50 hover:text-movida-teal focus:outline-none focus-visible:ring-4 focus-visible:ring-movida-teal/15"
+                            >
+                                <i class="fa-solid fa-envelope-open-text mr-1.5"></i>
+                                ¿Olvidaste tu código?
+                            </button>
+
                             <p id="portal-error" class="text-rose-600 text-center text-sm mt-3 font-medium min-h-[1rem]"></p>
                         </div>
                     </div>
@@ -2049,6 +2059,105 @@
     </main>
 
     <!-- MODAL PARA RECORTAR FOTOS -->
+    <!-- MODAL RECUPERACIÓN DE CÓDIGO -->
+    <div
+        id="recovery-modal"
+        class="fixed inset-0 z-[100001] hidden items-center justify-center bg-slate-950/65 p-4 backdrop-blur-sm"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="recovery-title"
+    >
+        <div class="w-full max-w-md overflow-hidden rounded-3xl border border-white/20 bg-white shadow-2xl">
+            <div class="bg-gradient-to-br from-movida-blue to-movida-teal px-6 py-6 text-white">
+                <div class="flex items-start justify-between gap-4">
+                    <div>
+                        <p class="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-100">
+                            Acceso a integrantes
+                        </p>
+
+                        <h2 id="recovery-title" class="mt-1 text-xl font-black">
+                            Recuperar mi código
+                        </h2>
+
+                        <p class="mt-2 text-xs leading-relaxed text-cyan-50">
+                            Enviaremos el código al correo registrado en tu perfil.
+                        </p>
+                    </div>
+
+                    <button
+                        type="button"
+                        id="btn-close-recovery"
+                        class="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-white/15 text-white transition hover:bg-white/25"
+                        aria-label="Cerrar recuperación"
+                    >
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            </div>
+
+            <form id="recovery-form" class="space-y-4 p-6">
+                <div>
+                    <label
+                        for="recovery-dni"
+                        class="mb-1.5 block text-xs font-black uppercase tracking-wider text-slate-500"
+                    >
+                        Cédula o DNI
+                    </label>
+
+                    <input
+                        type="text"
+                        id="recovery-dni"
+                        inputmode="numeric"
+                        autocomplete="off"
+                        maxlength="12"
+                        placeholder="Ej: 12345678"
+                        class="w-full rounded-xl border border-slate-300 bg-white p-3.5 font-mono text-slate-700 outline-none transition-all focus:border-movida-teal focus:ring-4 focus:ring-movida-teal/10"
+                    >
+                </div>
+
+                <!-- Campo antirrobots: debe permanecer vacío -->
+                <div
+                    class="absolute -left-[10000px] top-auto h-px w-px overflow-hidden"
+                    aria-hidden="true"
+                >
+                    <label for="recovery-website">
+                        Sitio web
+                    </label>
+
+                    <input
+                        type="text"
+                        id="recovery-website"
+                        tabindex="-1"
+                        autocomplete="off"
+                    >
+                </div>
+
+                <button
+                    type="submit"
+                    id="btn-send-recovery"
+                    class="relative flex h-[52px] w-full items-center justify-center gap-2 rounded-xl bg-movida-teal px-5 py-3.5 font-bold text-white shadow-lg shadow-teal-600/20 transition-all hover:bg-teal-700 focus:ring-4 focus:ring-teal-200 disabled:opacity-65"
+                >
+                    <span class="btn-text flex items-center gap-2">
+                        <i class="fa-solid fa-paper-plane"></i>
+                        Enviar código a mi correo
+                    </span>
+                </button>
+
+                <div
+                    id="recovery-status"
+                    class="hidden rounded-xl border px-4 py-3 text-sm leading-relaxed"
+                    role="status"
+                    aria-live="polite"
+                ></div>
+
+                <p class="text-center text-[10px] leading-relaxed text-slate-400">
+                    Por seguridad, la pantalla no indicará si una cédula existe.
+                    Revisa también las carpetas de spam o promociones.
+                </p>
+            </form>
+        </div>
+    </div>
+
     <div id="cropper-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-[100000] transition-opacity duration-300 opacity-0 invisible" style="display: none;">
         <div class="bg-white rounded-3xl shadow-2xl p-6 w-full max-w-sm transition-transform duration-300 transform scale-95 border border-slate-200">
             <h3 class="text-lg font-black mb-4 text-center text-slate-800">Ajustar Fotografía</h3>
@@ -2100,6 +2209,13 @@
          * Apps Script actualiza foto_url en Supabase.
          */
         const PHOTO_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxxxzaq_XLuRJm8Xd2agfbG4FAvvAN-1V1mF0dPfaSbMAb_GGzL3BuYFnQJ-aazx2sL/exec';
+
+        /*
+         * Sustituir después de implementar el Apps Script
+         * exclusivo de recuperación de acceso.
+         */
+        const RECOVERY_SCRIPT_URL =
+            'https://script.google.com/macros/s/AKfycbxiK3t5kxGLd1EODOy7ANAAw0P2DM2cWLFg_POWXxl5mynyJ88GAtzuiy8NoLC_N7aimw/exec';
         let supabaseClient = null;
 
         let map; let markersCluster; let heatmapLayer = null;
@@ -3203,6 +3319,16 @@
 
             const views = { home: document.getElementById('view-home'), portalResult: document.getElementById('view-portal-result'), valResult: document.getElementById('view-validator-result') };
             const portal = { dni: document.getElementById('portal-dni'), code: document.getElementById('portal-code'), codeToggle: document.getElementById('portal-code-toggle'), btnSubmit: document.getElementById('btn-portal-submit'), error: document.getElementById('portal-error'), photo: document.getElementById('cred-photo'), name: document.getElementById('cred-name'), lastname: document.getElementById('cred-lastname'), dniDisplay: document.getElementById('cred-dni'), grado: document.getElementById('cred-grado'), carrera: document.getElementById('cred-carrera'), estado: document.getElementById('cred-estado'), codeDisplay: document.getElementById('cred-code'), qr: document.getElementById('cred-qr'), uploadPhoto: document.getElementById('photo-upload'), uploadCamera: document.getElementById('camera-upload'), uploadStatus: document.getElementById('portal-upload-status'), btnDownload: document.getElementById('btn-download'), downloadStatus: document.getElementById('portal-download-status'), btnWaGroup: document.getElementById('btn-whatsapp-group') };
+            const recovery = {
+                openButton: document.getElementById('btn-forgot-code'),
+                modal: document.getElementById('recovery-modal'),
+                closeButton: document.getElementById('btn-close-recovery'),
+                form: document.getElementById('recovery-form'),
+                dni: document.getElementById('recovery-dni'),
+                website: document.getElementById('recovery-website'),
+                submitButton: document.getElementById('btn-send-recovery'),
+                status: document.getElementById('recovery-status')
+            };
             const editor = {
                 form: document.getElementById('member-data-editor'),
                 age: document.getElementById('member-age'),
@@ -3583,6 +3709,206 @@
                 return code
                     ? `Error ${code}: ${message}`
                     : message;
+            };
+
+            const setRecoveryStatus = (
+                message = '',
+                type = ''
+            ) => {
+                if (!recovery.status) return;
+
+                if (!message) {
+                    recovery.status.textContent = '';
+                    recovery.status.className =
+                        'hidden rounded-xl border px-4 py-3 text-sm leading-relaxed';
+                    return;
+                }
+
+                recovery.status.textContent =
+                    message;
+
+                const classes = {
+                    success:
+                        'block rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm leading-relaxed text-emerald-800',
+                    error:
+                        'block rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm leading-relaxed text-rose-700',
+                    info:
+                        'block rounded-xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm leading-relaxed text-sky-800'
+                };
+
+                recovery.status.className =
+                    classes[type] ||
+                    classes.info;
+            };
+
+            const openRecoveryModal = () => {
+                if (!recovery.modal) return;
+
+                const dni =
+                    String(
+                        portal.dni?.value || ''
+                    )
+                        .replace(/\D/g, '')
+                        .slice(0, 12);
+
+                recovery.dni.value =
+                    dni;
+
+                recovery.website.value =
+                    '';
+
+                setRecoveryStatus();
+
+                recovery.modal.classList.remove(
+                    'hidden'
+                );
+
+                recovery.modal.classList.add(
+                    'flex'
+                );
+
+                document.body.style.overflow =
+                    'hidden';
+
+                setTimeout(
+                    () => recovery.dni.focus(),
+                    50
+                );
+            };
+
+            const closeRecoveryModal = () => {
+                if (!recovery.modal) return;
+
+                recovery.modal.classList.add(
+                    'hidden'
+                );
+
+                recovery.modal.classList.remove(
+                    'flex'
+                );
+
+                document.body.style.overflow =
+                    '';
+            };
+
+            const enviarRecuperacion = async (
+                event
+            ) => {
+                event.preventDefault();
+
+                const cedula =
+                    String(
+                        recovery.dni.value || ''
+                    )
+                        .replace(/\D/g, '');
+
+                if (!/^\d{6,12}$/.test(cedula)) {
+                    setRecoveryStatus(
+                        'La cédula debe contener entre 6 y 12 dígitos.',
+                        'error'
+                    );
+
+                    recovery.dni.focus();
+                    return;
+                }
+
+                if (
+                    !RECOVERY_SCRIPT_URL ||
+                    RECOVERY_SCRIPT_URL.includes(
+                        'PEGAR_AQUI'
+                    )
+                ) {
+                    setRecoveryStatus(
+                        'El servicio de recuperación todavía no ha sido configurado.',
+                        'error'
+                    );
+
+                    return;
+                }
+
+                manageBtnState(
+                    recovery.submitButton,
+                    true
+                );
+
+                setRecoveryStatus(
+                    'Procesando la solicitud...',
+                    'info'
+                );
+
+                try {
+                    const body =
+                        new URLSearchParams();
+
+                    body.set(
+                        'action',
+                        'recover_member_access'
+                    );
+
+                    body.set(
+                        'cedula',
+                        cedula
+                    );
+
+                    body.set(
+                        'website',
+                        recovery.website.value || ''
+                    );
+
+                    const response =
+                        await fetch(
+                            RECOVERY_SCRIPT_URL,
+                            {
+                                method:
+                                    'POST',
+                                headers: {
+                                    'Content-Type':
+                                        'application/x-www-form-urlencoded;charset=UTF-8'
+                                },
+                                body:
+                                    body.toString()
+                            }
+                        );
+
+                    const result =
+                        await response.json();
+
+                    if (
+                        !response.ok ||
+                        result.result !== 'success'
+                    ) {
+                        throw new Error(
+                            result.message ||
+                            'No fue posible procesar la solicitud.'
+                        );
+                    }
+
+                    setRecoveryStatus(
+                        'Si la cédula está registrada y tiene un correo válido, recibirás tus datos de acceso. Revisa también spam y promociones.',
+                        'success'
+                    );
+
+                    recovery.submitButton.disabled =
+                        true;
+
+                } catch (error) {
+                    console.error(
+                        'Error recuperando el acceso:',
+                        error
+                    );
+
+                    setRecoveryStatus(
+                        error?.message ||
+                        'No fue posible procesar la solicitud en este momento.',
+                        'error'
+                    );
+
+                } finally {
+                    manageBtnState(
+                        recovery.submitButton,
+                        false
+                    );
+                }
             };
 
             // LOGIN PRIVADO MEDIANTE FUNCIÓN SEGURA
@@ -4799,6 +5125,58 @@
             });
 
             portal.btnSubmit.addEventListener('click', loginPortal);
+
+            recovery.openButton?.addEventListener(
+                'click',
+                openRecoveryModal
+            );
+
+            recovery.closeButton?.addEventListener(
+                'click',
+                closeRecoveryModal
+            );
+
+            recovery.form?.addEventListener(
+                'submit',
+                enviarRecuperacion
+            );
+
+            recovery.dni?.addEventListener(
+                'input',
+                () => {
+                    recovery.dni.value =
+                        recovery.dni.value
+                            .replace(/\D/g, '')
+                            .slice(0, 12);
+                }
+            );
+
+            recovery.modal?.addEventListener(
+                'click',
+                event => {
+                    if (
+                        event.target ===
+                        recovery.modal
+                    ) {
+                        closeRecoveryModal();
+                    }
+                }
+            );
+
+            document.addEventListener(
+                'keydown',
+                event => {
+                    if (
+                        event.key === 'Escape' &&
+                        recovery.modal &&
+                        !recovery.modal.classList.contains(
+                            'hidden'
+                        )
+                    ) {
+                        closeRecoveryModal();
+                    }
+                }
+            );
             if (editor.form) editor.form.addEventListener('submit', guardarDatosPerfil);
             if (codeChange.form) codeChange.form.addEventListener('submit', cambiarCodigoIntegrante);
 
