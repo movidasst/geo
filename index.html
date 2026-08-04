@@ -1875,7 +1875,7 @@
                                 <div class="member-data-heading-icon"><i class="fa-solid fa-user-pen"></i></div>
                                 <div>
                                     <h3>Actualizar mis datos</h3>
-                                    <p>Actualiza tus datos de contacto, privacidad de WhatsApp, LinkedIn, ubicación y formación. Los cambios se reflejarán en tu perfil, el mapa nacional, la credencial y las métricas.</p>
+                                    <p>Actualiza tu situación laboral, datos de contacto, privacidad de WhatsApp, LinkedIn, ubicación y formación. Los cambios se reflejarán en tu perfil, el mapa nacional, la credencial y las métricas.</p>
                                 </div>
                             </div>
 
@@ -1922,6 +1922,22 @@
                                     <label for="member-municipality">Municipio</label>
                                     <input id="member-municipality" name="municipio" type="text" list="member-municipality-options" maxlength="80" autocomplete="address-level2" placeholder="Escribe o selecciona" required>
                                     <datalist id="member-municipality-options"></datalist>
+                                </div>
+
+                                <div class="member-data-field">
+                                    <label for="member-employment">Situación laboral</label>
+                                    <div class="member-data-select-wrap">
+                                        <select id="member-employment" name="laboral" required aria-describedby="member-employment-help">
+                                            <option value="">Selecciona tu situación laboral</option>
+                                            <option value="Dependiente">Dependiente</option>
+                                            <option value="Independiente">Independiente / Asesor SST</option>
+                                            <option value="Desempleado">Desempleado / Buscando oportunidades</option>
+                                        </select>
+                                    </div>
+                                    <p id="member-employment-help" class="member-data-help">
+                                        <i class="fa-solid fa-circle-info"></i>
+                                        Independiente activa tu aparición en el filtro “Asesores SST”. Esta selección no cambia automáticamente la privacidad de tu WhatsApp.
+                                    </p>
                                 </div>
 
                                 <div class="member-data-field">
@@ -1994,7 +2010,7 @@
                             <p id="member-data-status" class="member-data-status" role="status" aria-live="polite"></p>
                             <div class="member-data-note">
                                 <i class="fa-solid fa-shield-halved"></i>
-                                <span>Puedes actualizar edad, ubicación, correo, WhatsApp, su visibilidad pública, LinkedIn y formación académica. Aunque ocultes tu WhatsApp, el número seguirá guardado de forma privada. Tu nombre y cédula permanecen protegidos.</span>
+                                <span>Puedes actualizar edad, ubicación, situación laboral, correo, WhatsApp, su visibilidad pública, LinkedIn y formación académica. Aunque ocultes tu WhatsApp, el número seguirá guardado de forma privada. Tu nombre y cédula permanecen protegidos.</span>
                             </div>
                         </form>
 
@@ -3518,6 +3534,7 @@
                 state: document.getElementById('member-state'),
                 municipality: document.getElementById('member-municipality'),
                 municipalityOptions: document.getElementById('member-municipality-options'),
+                employment: document.getElementById('member-employment'),
                 email: document.getElementById('member-email'),
                 whatsapp: document.getElementById('member-whatsapp'),
                 whatsappVisibility: document.getElementById('member-show-whatsapp'),
@@ -3775,6 +3792,24 @@
                 editor.age.value = data.edad ?? '';
                 editor.state.value = (data.estado || '').toString().trim();
                 editor.municipality.value = (data.municipio || '').toString().trim();
+
+                if (editor.employment) {
+                    const laboralNormalizado =
+                        normalizarLaboral(
+                            data.laboral ||
+                            data.Laboral ||
+                            data.LABORAL ||
+                            ''
+                        );
+
+                    establecerValorSelectSeguro(
+                        editor.employment,
+                        laboralNormalizado === 'Buscando'
+                            ? 'Desempleado'
+                            : laboralNormalizado
+                    );
+                }
+
                 editor.email.value = (data.correo || data.Correo || data.CORREO || '').toString().trim();
                 editor.linkedin.value = (data.linkedin || data.Linkedin || data.LINKEDIN || data.LinkedIn || '').toString().trim();
                 editor.linkedin.setCustomValidity('');
@@ -4467,6 +4502,7 @@
                 const edad = Number.parseInt(editor.age.value, 10);
                 const estado = editor.state.value.trim();
                 const municipio = toTitleCase(editor.municipality.value.trim());
+                const laboral = editor.employment?.value.trim() || '';
                 const correo = editor.email.value.trim().toLowerCase();
                 const wasap = obtenerDigitosWasap(editor.whatsapp.value);
                 const mostrarWasap = Boolean(editor.whatsappVisibility?.checked);
@@ -4490,6 +4526,17 @@
                 if (municipio.length < 2) {
                     setEditorStatus('Ingresa el municipio de residencia.', 'error');
                     editor.municipality.focus();
+                    return;
+                }
+                if (
+                    ![
+                        'Dependiente',
+                        'Independiente',
+                        'Desempleado'
+                    ].includes(laboral)
+                ) {
+                    setEditorStatus('Selecciona tu situación laboral actual.', 'error');
+                    editor.employment?.focus();
                     return;
                 }
                 if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) {
@@ -4534,6 +4581,7 @@
                         edad,
                         estado,
                         municipio,
+                        laboral,
                         correo,
                         wasap,
                         mostrar_wasap: mostrarWasap,
