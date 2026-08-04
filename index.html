@@ -2092,15 +2092,14 @@
 
     <script>
         // MOTOR SUPABASE JS V2 — versión reparada
-        const SUPABASE_URL = 'https://daugxkqywrdcbbqvyabe.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRhdWd4a3F5d3JkY2JicXZ5YWJlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU1NzU1MDQsImV4cCI6MjEwMTE1MTUwNH0.lCEX-pKcGdIKVd7cTegAHJ-dZ8HDrkUxUy9vBUwLE44';
+        const SUPABASE_URL = 'https://lfdmbkzghnwvsapxypvt.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_bRnkA6PA8-v073nrw9zxiQ_8rVGiOn1';
 
         /*
          * La fotografía se guarda en Google Drive.
          * Apps Script actualiza foto_url en Supabase.
          */
-        const PHOTO_SCRIPT_URL =
-            'https://script.google.com/macros/s/AKfycbxjVsqI9Lsn3GuALojpwolYD7MK5JUZaTP1RNPn86I1Je1z8KvdG-E7Jr52PQJvtVbp/exec';
+        const PHOTO_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxjVsqI9Lsn3GuALojpwolYD7MK5JUZaTP1RNPn86I1Je1z8KvdG-E7Jr52PQJvtVbp/exec';
         let supabaseClient = null;
 
         let map; let markersCluster; let heatmapLayer = null;
@@ -2444,7 +2443,10 @@
             try {
                 if (!supabaseClient) throw new Error('El cliente de Supabase no está inicializado.');
 
-                // Supabase suele limitar las consultas a 1.000 filas. Se cargan todas por páginas.
+                /*
+                 * La tabla integrantes está cerrada.
+                 * El mapa consume únicamente la función pública autorizada.
+                 */
                 const PAGE_SIZE = 1000;
                 const data = [];
                 let desde = 0;
@@ -2452,8 +2454,7 @@
                 while (true) {
                     const { data: pagina, error } = await conTimeout(
                         supabaseClient
-                            .from('integrantes')
-                            .select('*')
+                            .rpc('directorio_publico')
                             .range(desde, desde + PAGE_SIZE - 1),
                         12000,
                         'Supabase tardó más de 12 segundos en responder.'
@@ -2463,6 +2464,7 @@
                     if (!pagina || pagina.length === 0) break;
 
                     data.push(...pagina);
+
                     if (pagina.length < PAGE_SIZE) break;
                     desde += PAGE_SIZE;
                 }
@@ -2490,12 +2492,12 @@
                 procesarDatosParaDashboard(globalData);
 
                 if (data.length === 0) {
-                    mostrarNotificacion('La tabla integrantes no devolvió registros', 'fa-database');
+                    mostrarNotificacion('El directorio público no devolvió registros', 'fa-database');
                 }
             } catch (error) {
                 const detalle = error?.message || String(error);
                 mostrarNotificacion('Error cargando la base de datos', 'fa-triangle-exclamation');
-                mostrarErrorVisible('No se pudo leer Supabase', `${detalle} Revise la URL, la clave pública y las políticas RLS de la tabla integrantes.`);
+                mostrarErrorVisible('No se pudo leer Supabase', `${detalle} Revise la URL, la clave pública y la función directorio_publico().`);
             } finally {
                 ocultarSplash();
             }
@@ -3472,22 +3474,17 @@
             };
 
             const sincronizarRegistroEnInterfaz = (registroActualizado) => {
-                const indice = globalData.findIndex(item => String(item.cedula) === String(registroActualizado.cedula));
-                const anterior = indice >= 0 ? globalData[indice] : {};
-                const combinado = normalizarRegistroLocal({ ...anterior, ...registroActualizado });
-
-                if (indice >= 0) globalData[indice] = combinado;
-                else globalData.push(combinado);
+                const combinado = {
+                    ...(currentMemberData || {}),
+                    ...(registroActualizado || {})
+                };
 
                 currentMemberData = combinado;
-                aplicarFiltrosGlobales();
-                procesarDatosParaDashboard(globalData);
-
-                if (chartsDrawn && globalGenData && typeof window.Chart !== 'undefined') {
-                    dibujarGraficos(globalGenData, globalLabData, globalEdadData);
-                }
-
                 return combinado;
+            };
+
+            const refrescarDirectorioPublico = async () => {
+                await fetchYProcesarDatos();
             };
 
             const establecerVisibilidadCodigo = (mostrar) => {
@@ -3523,31 +3520,114 @@
 
             establecerVisibilidadCodigo(false);
 
-            // LOGIN PORTAL CONECTADO A SUPABASE
-            const loginPortal = async () => {
-                const dni = portal.dni.value.trim(); const code = portal.code.value.trim().toUpperCase(); portal.error.textContent = '';
-                if (!dni || !code) { portal.error.textContent = 'Ingrese Cédula y Código.'; return; }
-                manageBtnState(portal.btnSubmit, true);
-                
-                try {
-                    const { data, error } = await supabaseClient.from('integrantes').select('*').eq('cedula', dni).maybeSingle();
-                    
-                    if (error || !data) { 
-                        portal.error.textContent = 'Datos no encontrados en el sistema.'; 
-                    } else if (data.codigo_integrante !== code) { 
-                        portal.error.textContent = 'El Código de Registro no coincide.'; 
-                    } else { 
-                        currentMemberDNI = data.cedula; 
-                        currentMemberCode = data.codigo_integrante; 
-                        currentMemberData = data;
-                        renderCredential(data); 
-                        changeView(views.portalResult); 
+            const obtenerRegistroRpc = (data, operationName) => {
+                if (data == null) return null;
+
+                if (Array.isArray(data)) {
+                    if (data.length === 0) return null;
+
+                    if (data.length > 1) {
+                        throw new Error(
+                            `${operationName} devolvió más de un registro.`
+                        );
                     }
-                } catch (e) {
-                    console.error('Error al abrir el acceso de integrantes:', e);
-                    portal.error.textContent = 'No se pudo abrir la credencial. Intente nuevamente.';
-                } finally { 
-                    manageBtnState(portal.btnSubmit, false); 
+
+                    return data[0];
+                }
+
+                return data;
+            };
+
+            const mensajeErrorSupabase = (error) => {
+                const code =
+                    error && error.code
+                        ? String(error.code)
+                        : '';
+
+                const message =
+                    error && error.message
+                        ? String(error.message)
+                        : 'Error desconocido.';
+
+                if (code === 'PGRST202') {
+                    return (
+                        'La función de acceso todavía no está disponible en la API. ' +
+                        'Ejecuta el SQL de corrección y vuelve a intentar.'
+                    );
+                }
+
+                if (code === '42501') {
+                    return (
+                        'Supabase rechazó el permiso para ejecutar el acceso. ' +
+                        'Ejecuta el SQL de corrección.'
+                    );
+                }
+
+                return code
+                    ? `Error ${code}: ${message}`
+                    : message;
+            };
+
+            // LOGIN PRIVADO MEDIANTE FUNCIÓN SEGURA
+            const loginPortal = async () => {
+                const dni =
+                    portal.dni.value
+                        .replace(/\D/g, '')
+                        .trim();
+
+                const code =
+                    portal.code.value
+                        .trim()
+                        .toUpperCase();
+
+                portal.error.textContent = '';
+
+                if (!dni || !code) {
+                    portal.error.textContent =
+                        'Ingrese Cédula y Código.';
+                    return;
+                }
+
+                manageBtnState(portal.btnSubmit, true);
+
+                try {
+                    const { data: rpcData, error } = await supabaseClient
+                        .rpc('acceso_integrante', {
+                            p_cedula: dni,
+                            p_codigo: code
+                        });
+
+                    if (error) throw error;
+
+                    const data =
+                        obtenerRegistroRpc(
+                            rpcData,
+                            'El acceso de integrantes'
+                        );
+
+                    if (!data) {
+                        portal.error.textContent =
+                            'La cédula o el código no coinciden.';
+                        return;
+                    }
+
+                    currentMemberDNI = data.cedula;
+                    currentMemberCode = code;
+                    currentMemberData = data;
+
+                    renderCredential(data);
+                    changeView(views.portalResult);
+
+                } catch (error) {
+                    console.error(
+                        'Error al abrir el acceso de integrantes:',
+                        error
+                    );
+
+                    portal.error.textContent =
+                        mensajeErrorSupabase(error);
+                } finally {
+                    manageBtnState(portal.btnSubmit, false);
                 }
             };
 
@@ -3777,20 +3857,37 @@
                         postgrado: postgrado || null,
                         doctorado: doctorado || null
                     };
-                    const { data, error } = await supabaseClient
-                        .from('integrantes')
-                        .update(cambiosPermitidos)
-                        .eq('cedula', currentMemberDNI)
-                        .eq('codigo_integrante', currentMemberCode)
-                        .select('*')
-                        .maybeSingle();
+                    const { data: rpcData, error } = await supabaseClient
+                        .rpc('actualizar_integrante', {
+                            p_cedula: currentMemberDNI,
+                            p_codigo: currentMemberCode,
+                            p_datos: cambiosPermitidos
+                        });
 
                     if (error) throw error;
-                    if (!data) throw new Error('Supabase no confirmó la actualización. Revisa la política RLS de UPDATE.');
 
-                    const actualizado = sincronizarRegistroEnInterfaz(data);
+                    const data =
+                        obtenerRegistroRpc(
+                            rpcData,
+                            'La actualización del perfil'
+                        );
+
+                    if (!data) {
+                        throw new Error(
+                            'La sesión no pudo validarse. Ingresa nuevamente.'
+                        );
+                    }
+
+                    const actualizado =
+                        sincronizarRegistroEnInterfaz(data);
+
                     renderCredential(actualizado);
-                    setEditorStatus('Datos de contacto, LinkedIn y formación actualizados. Mapa, credencial y métricas sincronizados.', 'success');
+                    await refrescarDirectorioPublico();
+
+                    setEditorStatus(
+                        'Datos actualizados. Mapa, credencial y métricas sincronizados.',
+                        'success'
+                    );
                     mostrarNotificacion('Datos actualizados correctamente', 'fa-circle-check');
                 } catch (error) {
                     console.error('Error actualizando datos del integrante:', error);
@@ -3851,18 +3948,24 @@
                 try {
                     const codigoAnterior = currentMemberCode;
 
-                    const { data, error } = await supabaseClient
-                        .from('integrantes')
-                        .update({ codigo_integrante: nuevoCodigo })
-                        .eq('cedula', currentMemberDNI)
-                        .eq('codigo_integrante', codigoAnterior)
-                        .select('*')
-                        .maybeSingle();
+                    const { data: rpcData, error } = await supabaseClient
+                        .rpc('cambiar_codigo_integrante', {
+                            p_cedula: currentMemberDNI,
+                            p_codigo_actual: codigoAnterior,
+                            p_codigo_nuevo: nuevoCodigo
+                        });
 
                     if (error) throw error;
+
+                    const data =
+                        obtenerRegistroRpc(
+                            rpcData,
+                            'El cambio de código'
+                        );
+
                     if (!data) {
                         throw new Error(
-                            'Supabase no confirmó el cambio. Revisa la política RLS de UPDATE.'
+                            'El código actual no pudo validarse.'
                         );
                     }
 
@@ -4068,9 +4171,8 @@
                             currentMemberData =
                                 actualizado;
 
-                            renderCredential(
-                                actualizado
-                            );
+                            renderCredential(actualizado);
+                            await refrescarDirectorioPublico();
 
                             portal.uploadStatus.innerHTML =
                                 '<span style="color:#166534;font-weight:900">' +
@@ -4312,9 +4414,12 @@
                 }
             };
 
-            // BUSCADOR VALIDADOR CONECTADO A SUPABASE
+            // BUSCADOR VALIDADOR MEDIANTE FUNCIÓN SEGURA
             const searchValidator = async (query) => {
-                const cedulaConsulta = (query || '').toString().replace(/\D/g, '');
+                const cedulaConsulta =
+                    (query || '')
+                        .toString()
+                        .replace(/\D/g, '');
 
                 validator.idleState.classList.add('hidden');
                 validator.errorState.classList.add('hidden');
@@ -4326,12 +4431,8 @@
 
                 if (
                     !supabaseClient ||
-                    typeof supabaseClient.from !== 'function'
+                    typeof supabaseClient.rpc !== 'function'
                 ) {
-                    /*
-                     * La ausencia temporal de conexión no significa que la
-                     * credencial sea inválida.
-                     */
                     validator.errorState.classList.add('hidden');
                     validator.idleState.classList.remove('hidden');
                     return;
@@ -4340,21 +4441,32 @@
                 manageBtnState(validator.btnSubmit, true);
 
                 try {
-                    const { data, error } = await supabaseClient
-                        .from('integrantes')
-                        .select('*')
-                        .eq('cedula', cedulaConsulta)
-                        .maybeSingle();
+                    const { data: rpcData, error } = await supabaseClient
+                        .rpc('verificar_credencial', {
+                            p_cedula: cedulaConsulta
+                        });
 
-                    if (data && !error) {
+                    if (error) throw error;
+
+                    const data =
+                        obtenerRegistroRpc(
+                            rpcData,
+                            'El verificador'
+                        );
+
+                    if (data) {
                         currentValidatorData = data;
                         renderValidator(data);
                         changeView(views.valResult);
                     } else {
                         validator.errorState.classList.remove('hidden');
                     }
-                } catch (e) {
-                    console.error('Error en la verificación pública:', e);
+                } catch (error) {
+                    console.error(
+                        'Error en la verificación pública:',
+                        error
+                    );
+
                     validator.errorState.classList.remove('hidden');
                 } finally {
                     manageBtnState(validator.btnSubmit, false);
@@ -4552,7 +4664,7 @@
                 const supabaseDisponible = await esperarHasta(
                     () => Boolean(
                         supabaseClient &&
-                        typeof supabaseClient.from === 'function'
+                        typeof supabaseClient.rpc === 'function'
                     ),
                     10000,
                     100
