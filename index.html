@@ -1265,6 +1265,642 @@
             }
         }
 
+
+        /* =========================================================
+           REGISTRO COMO ACCIÓN PRINCIPAL
+           Mantiene los IDs internos para no afectar la navegación.
+           ========================================================= */
+
+        #btn-info-view.registration-nav-item {
+            position: relative;
+            overflow: visible;
+        }
+
+        #btn-info-view.registration-nav-item .icon-container {
+            position: relative;
+            color: var(--movida-navy-deep) !important;
+            background: linear-gradient(145deg, #ffd85a, var(--movida-yellow)) !important;
+            border: 1px solid rgba(154, 101, 0, .24);
+            box-shadow:
+                0 7px 16px rgba(244, 180, 0, .30),
+                inset 0 1px 0 rgba(255, 255, 255, .72);
+        }
+
+        #btn-info-view.registration-nav-item:not(.active) .icon-container::before {
+            content: '';
+            position: absolute;
+            inset: -5px;
+            border: 2px solid rgba(244, 180, 0, .45);
+            border-radius: 999px;
+            pointer-events: none;
+            animation: registration-ring 2.4s ease-out infinite;
+        }
+
+        #btn-info-view.registration-nav-item > span:last-child {
+            color: var(--movida-navy) !important;
+            font-weight: 900 !important;
+            letter-spacing: .06em !important;
+        }
+
+        #btn-info-view.registration-nav-item.active .icon-container {
+            color: #fff !important;
+            background: linear-gradient(
+                135deg,
+                var(--movida-teal-dark),
+                var(--movida-teal)
+            ) !important;
+            border-color: transparent;
+            box-shadow: 0 8px 18px rgba(0, 124, 131, .28) !important;
+        }
+
+        .registration-nav-badge {
+            position: absolute;
+            top: -3px;
+            left: 50%;
+            z-index: 3;
+            transform: translateX(10px);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 16px;
+            padding: 2px 5px;
+            border: 2px solid #fff;
+            border-radius: 999px;
+            color: #fff;
+            background: #d12f48;
+            box-shadow: 0 3px 8px rgba(145, 21, 43, .26);
+            font-size: 6.5px;
+            line-height: 1;
+            font-weight: 900;
+            letter-spacing: .05em;
+            white-space: nowrap;
+            pointer-events: none;
+        }
+
+        #btn-info-view.registration-nav-item.active .registration-nav-badge {
+            background: var(--movida-yellow);
+            color: var(--movida-navy-deep);
+            border-color: #fff;
+        }
+
+        @keyframes registration-ring {
+            0% {
+                opacity: .8;
+                transform: scale(.88);
+            }
+            70%,
+            100% {
+                opacity: 0;
+                transform: scale(1.22);
+            }
+        }
+
+        #info-view .registration-entry-hero {
+            position: relative;
+            display: block;
+            min-height: 0;
+            padding: 1.15rem 1.1rem 1rem !important;
+            overflow: hidden;
+            color: #fff !important;
+            text-decoration: none;
+            border: 1px solid rgba(0, 124, 131, .42) !important;
+            border-radius: 1.35rem;
+            background:
+                radial-gradient(
+                    circle at 92% 12%,
+                    rgba(255, 216, 90, .30),
+                    transparent 29%
+                ),
+                linear-gradient(
+                    140deg,
+                    var(--movida-navy-deep) 0%,
+                    var(--movida-navy) 55%,
+                    var(--movida-teal-dark) 100%
+                ) !important;
+            box-shadow:
+                0 16px 34px rgba(4, 31, 63, .22),
+                0 0 0 4px rgba(0, 124, 131, .07) !important;
+            transition:
+                transform .18s ease,
+                box-shadow .18s ease;
+        }
+
+        #info-view .registration-entry-hero:active {
+            transform: scale(.985);
+            box-shadow:
+                0 10px 24px rgba(4, 31, 63, .20),
+                0 0 0 4px rgba(0, 124, 131, .08) !important;
+        }
+
+        #info-view .registration-entry-hero::before {
+            content: '';
+            position: absolute;
+            width: 10rem;
+            height: 10rem;
+            right: -4.5rem;
+            bottom: -5.5rem;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, .08);
+            pointer-events: none;
+        }
+
+        #info-view .registration-entry-hero::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            border: 1px solid rgba(255, 255, 255, .10);
+            pointer-events: none;
+        }
+
+        .registration-entry-topline {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: .75rem;
+            margin-bottom: .8rem;
+        }
+
+        .registration-entry-kicker {
+            display: inline-flex;
+            align-items: center;
+            gap: .4rem;
+            min-height: 24px;
+            padding: .28rem .55rem;
+            color: var(--movida-navy-deep);
+            background: linear-gradient(135deg, #ffe27a, var(--movida-yellow));
+            border: 1px solid rgba(255, 255, 255, .52);
+            border-radius: 999px;
+            box-shadow: 0 4px 12px rgba(4, 31, 63, .17);
+            font-size: .58rem;
+            line-height: 1;
+            font-weight: 900;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+        }
+
+        .registration-entry-arrow {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 auto;
+            width: 2.3rem;
+            height: 2.3rem;
+            color: var(--movida-navy-deep);
+            background: #fff;
+            border-radius: 999px;
+            box-shadow: 0 6px 14px rgba(4, 31, 63, .22);
+        }
+
+        #info-view .registration-entry-title {
+            position: relative;
+            z-index: 1;
+            max-width: 20rem;
+            margin: 0;
+            color: #fff !important;
+            font-size: clamp(1.18rem, 5.1vw, 1.48rem);
+            line-height: 1.08;
+            font-weight: 950;
+            letter-spacing: -.025em;
+        }
+
+        #info-view .registration-entry-copy {
+            position: relative;
+            z-index: 1;
+            max-width: 25rem;
+            margin: .55rem 0 0;
+            color: #dceff0 !important;
+            font-size: .76rem;
+            line-height: 1.5;
+            font-weight: 650;
+        }
+
+        .registration-entry-benefits {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: .38rem;
+            margin-top: .85rem;
+        }
+
+        .registration-entry-benefit {
+            display: flex;
+            min-width: 0;
+            align-items: center;
+            gap: .3rem;
+            padding: .48rem .42rem;
+            color: #fff;
+            background: rgba(255, 255, 255, .09);
+            border: 1px solid rgba(255, 255, 255, .13);
+            border-radius: .72rem;
+            font-size: .58rem;
+            line-height: 1.2;
+            font-weight: 800;
+        }
+
+        .registration-entry-benefit i {
+            flex: 0 0 auto;
+            color: #ffd85a !important;
+        }
+
+        .registration-entry-action {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: .5rem;
+            min-height: 46px;
+            margin-top: .85rem;
+            padding: .72rem .85rem;
+            color: var(--movida-navy-deep);
+            background: linear-gradient(135deg, #ffe27a, var(--movida-yellow));
+            border: 1px solid rgba(255, 255, 255, .62);
+            border-radius: .9rem;
+            box-shadow: 0 7px 16px rgba(4, 31, 63, .20);
+            font-size: .78rem;
+            line-height: 1.2;
+            font-weight: 950;
+        }
+
+        #info-view .registration-entry-helper {
+            position: relative;
+            z-index: 1;
+            margin: .55rem 0 0;
+            color: rgba(255, 255, 255, .78) !important;
+            text-align: center;
+            font-size: .62rem;
+            line-height: 1.35;
+            font-weight: 700;
+        }
+
+        #info-view .study-secondary-card {
+            min-height: 0;
+            padding: .9rem 1rem !important;
+            border-radius: 1rem;
+            box-shadow: 0 7px 16px rgba(4, 31, 63, .12) !important;
+        }
+
+        @media (max-width: 355px) {
+            .registration-entry-benefits {
+                grid-template-columns: 1fr;
+            }
+
+            .registration-entry-benefit {
+                justify-content: flex-start;
+                padding-inline: .65rem;
+            }
+
+            .registration-nav-badge {
+                transform: translateX(7px);
+                font-size: 6px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            #btn-info-view.registration-nav-item:not(.active) .icon-container::before {
+                animation: none;
+                opacity: .55;
+            }
+
+            #info-view .registration-entry-hero {
+                transition: none;
+            }
+        }
+
+
+        /* =========================================================
+           REGISTRO — MEJORA UX/UI
+           Esta regla tiene mayor especificidad que la regla general
+           de enlaces de registro, evitando el fondo completamente
+           amarillo.
+           ========================================================= */
+
+        #info-view a.registration-entry-hero[href*="registro.movidasst.com"] {
+            position: relative;
+            isolation: isolate;
+            display: block;
+            min-height: 0;
+            padding: 1.15rem 1.05rem 1rem !important;
+            overflow: hidden;
+            color: #ffffff !important;
+            text-decoration: none;
+            border: 1px solid rgba(0, 207, 192, .28) !important;
+            border-radius: 1.35rem;
+            background:
+                radial-gradient(
+                    circle at 88% 8%,
+                    rgba(0, 207, 192, .20) 0,
+                    rgba(0, 207, 192, 0) 34%
+                ),
+                radial-gradient(
+                    circle at 5% 100%,
+                    rgba(244, 180, 0, .12) 0,
+                    rgba(244, 180, 0, 0) 38%
+                ),
+                linear-gradient(
+                    145deg,
+                    #041f3f 0%,
+                    #082f5b 52%,
+                    #006a70 100%
+                ) !important;
+            box-shadow:
+                0 18px 40px rgba(4, 31, 63, .22),
+                0 0 0 4px rgba(0, 124, 131, .06) !important;
+            transition:
+                transform .18s ease,
+                box-shadow .18s ease,
+                border-color .18s ease;
+        }
+
+        #info-view a.registration-entry-hero[href*="registro.movidasst.com"]:hover {
+            border-color: rgba(0, 207, 192, .48) !important;
+            box-shadow:
+                0 22px 46px rgba(4, 31, 63, .26),
+                0 0 0 5px rgba(0, 124, 131, .08) !important;
+        }
+
+        #info-view a.registration-entry-hero[href*="registro.movidasst.com"]:focus-visible {
+            outline: 4px solid rgba(244, 180, 0, .52);
+            outline-offset: 4px;
+        }
+
+        #info-view a.registration-entry-hero[href*="registro.movidasst.com"]:active {
+            transform: translateY(1px) scale(.991);
+        }
+
+        #info-view a.registration-entry-hero[href*="registro.movidasst.com"]::before {
+            content: '';
+            position: absolute;
+            z-index: -1;
+            width: 12rem;
+            height: 12rem;
+            right: -5.5rem;
+            top: -5.8rem;
+            border-radius: 50%;
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(255, 255, 255, .10),
+                    rgba(255, 255, 255, .015)
+                );
+            border: 1px solid rgba(255, 255, 255, .08);
+            pointer-events: none;
+        }
+
+        #info-view a.registration-entry-hero[href*="registro.movidasst.com"]::after {
+            content: '';
+            position: absolute;
+            z-index: -1;
+            width: 8rem;
+            height: 8rem;
+            left: -4.2rem;
+            bottom: -4.8rem;
+            border-radius: 50%;
+            background: rgba(244, 180, 0, .08);
+            filter: blur(2px);
+            pointer-events: none;
+        }
+
+        #info-view .registration-entry-topline {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: .8rem;
+            margin-bottom: .8rem;
+        }
+
+        #info-view .registration-entry-kicker {
+            display: inline-flex;
+            align-items: center;
+            gap: .42rem;
+            min-height: 28px;
+            padding: .38rem .65rem;
+            color: #041f3f !important;
+            background:
+                linear-gradient(
+                    135deg,
+                    #ffe47d,
+                    #f4b400
+                ) !important;
+            border: 1px solid rgba(255, 255, 255, .52);
+            border-radius: 999px;
+            box-shadow: 0 5px 14px rgba(4, 31, 63, .18);
+            font-size: .62rem;
+            line-height: 1;
+            font-weight: 950;
+            letter-spacing: .07em;
+            text-transform: uppercase;
+        }
+
+        #info-view .registration-entry-kicker i {
+            color: #041f3f !important;
+        }
+
+        #info-view .registration-entry-arrow {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 auto;
+            width: 2.55rem;
+            height: 2.55rem;
+            color: #041f3f !important;
+            background: #ffffff !important;
+            border: 1px solid rgba(255, 255, 255, .66);
+            border-radius: 999px;
+            box-shadow:
+                0 8px 18px rgba(4, 31, 63, .22),
+                inset 0 1px 0 rgba(255, 255, 255, .9);
+        }
+
+        #info-view .registration-entry-arrow i {
+            color: #041f3f !important;
+        }
+
+        #info-view .registration-entry-content {
+            position: relative;
+            z-index: 2;
+            max-width: 29rem;
+        }
+
+        #info-view .registration-entry-eyebrow {
+            margin: 0 0 .28rem;
+            color: #67e1d6 !important;
+            font-size: .62rem;
+            line-height: 1.2;
+            font-weight: 900;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+        }
+
+        #info-view .registration-entry-title {
+            max-width: 24rem;
+            margin: 0;
+            color: #ffffff !important;
+            font-size: clamp(1.28rem, 5.5vw, 1.68rem);
+            line-height: 1.06;
+            font-weight: 950;
+            letter-spacing: -.035em;
+            text-wrap: balance;
+        }
+
+        #info-view .registration-entry-copy {
+            max-width: 28rem;
+            margin: .58rem 0 0;
+            color: #d8ecef !important;
+            font-size: .78rem;
+            line-height: 1.52;
+            font-weight: 650;
+        }
+
+        #info-view .registration-entry-benefits {
+            position: relative;
+            z-index: 2;
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: .46rem;
+            margin-top: .95rem;
+        }
+
+        #info-view .registration-entry-benefit {
+            display: flex;
+            min-width: 0;
+            align-items: center;
+            gap: .5rem;
+            min-height: 52px;
+            padding: .52rem .58rem;
+            color: #eaf7f7 !important;
+            background: rgba(255, 255, 255, .075) !important;
+            border: 1px solid rgba(255, 255, 255, .12);
+            border-radius: .82rem;
+            backdrop-filter: blur(10px);
+            font-size: .61rem;
+            line-height: 1.22;
+            font-weight: 820;
+        }
+
+        #info-view .registration-entry-benefit-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 auto;
+            width: 1.65rem;
+            height: 1.65rem;
+            color: #041f3f !important;
+            background: #ffd85a !important;
+            border-radius: .56rem;
+            box-shadow: 0 3px 8px rgba(4, 31, 63, .18);
+        }
+
+        #info-view .registration-entry-benefit-icon i {
+            color: #041f3f !important;
+            font-size: .72rem;
+        }
+
+        #info-view .registration-entry-action {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: .65rem;
+            min-height: 50px;
+            margin-top: .9rem;
+            padding: .78rem .9rem;
+            color: #041f3f !important;
+            background:
+                linear-gradient(
+                    135deg,
+                    #ffe47d 0%,
+                    #f4b400 100%
+                ) !important;
+            border: 1px solid rgba(255, 255, 255, .58);
+            border-radius: .92rem;
+            box-shadow:
+                0 8px 18px rgba(4, 31, 63, .23),
+                inset 0 1px 0 rgba(255, 255, 255, .44);
+            font-size: .8rem;
+            line-height: 1.2;
+            font-weight: 950;
+        }
+
+        #info-view .registration-entry-action i {
+            color: #041f3f !important;
+        }
+
+        #info-view .registration-entry-helper {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            gap: .38rem;
+            margin: .62rem auto 0;
+            max-width: 27rem;
+            color: rgba(235, 247, 248, .82) !important;
+            text-align: center;
+            font-size: .62rem;
+            line-height: 1.4;
+            font-weight: 680;
+        }
+
+        #info-view .registration-entry-helper i {
+            flex: 0 0 auto;
+            margin-top: .08rem;
+            color: #67e1d6 !important;
+        }
+
+        /* La tarjeta secundaria no compite con el registro. */
+        #info-view .study-secondary-card {
+            border-color: rgba(0, 124, 131, .20) !important;
+            background:
+                linear-gradient(
+                    135deg,
+                    #082f5b,
+                    #0b4267
+                ) !important;
+            box-shadow: 0 8px 20px rgba(4, 31, 63, .14) !important;
+        }
+
+        @media (max-width: 520px) {
+            #info-view .registration-entry-benefits {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            #info-view .registration-entry-benefit:last-child {
+                grid-column: 1 / -1;
+            }
+        }
+
+        @media (max-width: 360px) {
+            #info-view a.registration-entry-hero[href*="registro.movidasst.com"] {
+                padding-inline: .88rem !important;
+            }
+
+            #info-view .registration-entry-title {
+                font-size: 1.22rem;
+            }
+
+            #info-view .registration-entry-benefits {
+                grid-template-columns: 1fr;
+            }
+
+            #info-view .registration-entry-benefit:last-child {
+                grid-column: auto;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            #info-view a.registration-entry-hero[href*="registro.movidasst.com"] {
+                transition: none;
+            }
+        }
+
     </style>
 </head>
 <body class="text-slate-600 antialiased selection:bg-movida-teal selection:text-white">
@@ -1561,33 +2197,111 @@
         </div>
     </main>
 
-    <!-- VISTA INFORMACIÓN -->
+    <!-- VISTA REGISTRO E INFORMACIÓN -->
     <main id="info-view" class="view-hidden absolute inset-0 z-20 overflow-y-auto pb-[120px] pt-[85px] px-2">
         <div class="p-4 space-y-5 max-w-lg mx-auto">
             
-            <!-- GRUPO DE ESTUDIO (ALTO IMPACTO) -->
-            <div class="relative group">
-                <div class="absolute -inset-1 bg-gradient-to-r from-movida-yellow via-movida-teal to-movida-green rounded-xl blur opacity-75 animate-pulse"></div>
-                <a href="https://estudia.movidasst.com" target="_blank" class="relative flex items-center justify-between w-full bg-movida-navy text-white font-black py-4 px-5 rounded-xl shadow-[0_10px_20px_rgba(0,32,91,0.3)] active:scale-95 transition-all overflow-hidden border border-movida-navy/50">
-                    <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl transform translate-x-10 -translate-y-10"></div>
-                    <div class="flex items-center gap-3.5 relative z-10">
-                        <div class="bg-gradient-to-br from-movida-yellow to-amber-600 w-11 h-11 rounded-full flex items-center justify-center shrink-0 shadow-inner border border-amber-300/50">
-                            <i class="fa-solid fa-book-open-reader text-movida-navy text-xl"></i>
-                        </div>
-                        <div class="text-left">
-                            <span class="block text-[9px] text-movida-yellow uppercase tracking-widest font-extrabold mb-0.5 flex items-center gap-1"><i class="fa-solid fa-bolt text-[10px]"></i> Actualización Profesional</span>
-                            <span class="block text-[15px] leading-tight text-white tracking-tight">Grupo de Estudio SST</span>
-                        </div>
-                    </div>
-                    <div class="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center shrink-0 relative z-10 backdrop-blur-sm border border-white/20">
-                        <i class="fa-solid fa-arrow-right text-white text-sm"></i>
-                    </div>
-                </a>
-            </div>
+            <!-- REGISTRO: ACCIÓN PRINCIPAL Y PRIMER ELEMENTO VISIBLE -->
+            <a
+                href="https://registro.movidasst.com/"
+                class="registration-entry-hero"
+                aria-label="Registrarme en el Directorio Nacional de La Movida SST"
+            >
+                <div class="registration-entry-topline">
+                    <span class="registration-entry-kicker">
+                        <i class="fa-solid fa-user-plus"></i>
+                        Nuevos integrantes
+                    </span>
 
-            <!-- BOTÓN ÚNETE (SIN target="_blank") -->
-            <a href="https://registro.movidasst.com/" class="flex items-center justify-center gap-2 w-full bg-movida-yellow hover:bg-yellow-400 text-movida-navy font-black py-4 rounded-xl shadow-md active:scale-95 transition-transform">
-                <i class="fa-solid fa-rocket"></i> Únete a nuestro Directorio Nacional
+                    <span class="registration-entry-arrow" aria-hidden="true">
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </span>
+                </div>
+
+                <div class="registration-entry-content">
+                    <p class="registration-entry-eyebrow">
+                        Registro abierto
+                    </p>
+
+                    <h2 class="registration-entry-title">
+                        Regístrate en el Directorio Nacional
+                    </h2>
+
+                    <p class="registration-entry-copy">
+                        Crea tu perfil profesional y forma parte de la red nacional de profesionales de Seguridad y Salud en el Trabajo.
+                    </p>
+                </div>
+
+                <div class="registration-entry-benefits" aria-label="Beneficios del registro">
+                    <span class="registration-entry-benefit">
+                        <span class="registration-entry-benefit-icon">
+                            <i class="fa-solid fa-location-dot"></i>
+                        </span>
+                        <span>
+                            Aparece en el mapa
+                        </span>
+                    </span>
+
+                    <span class="registration-entry-benefit">
+                        <span class="registration-entry-benefit-icon">
+                            <i class="fa-solid fa-id-card"></i>
+                        </span>
+                        <span>
+                            Obtén tu credencial
+                        </span>
+                    </span>
+
+                    <span class="registration-entry-benefit">
+                        <span class="registration-entry-benefit-icon">
+                            <i class="fa-solid fa-briefcase"></i>
+                        </span>
+                        <span>
+                            Fortalece tu visibilidad
+                        </span>
+                    </span>
+                </div>
+
+                <span class="registration-entry-action">
+                    <span>
+                        Comenzar mi registro
+                    </span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </span>
+
+                <p class="registration-entry-helper">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    Podrás actualizar tus datos y decidir si deseas mostrar tu WhatsApp.
+                </p>
+            </a>
+
+            <!-- GRUPO DE ESTUDIO: ACCIÓN SECUNDARIA -->
+            <a
+                href="https://estudia.movidasst.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="study-secondary-card relative flex items-center justify-between w-full bg-movida-navy text-white font-black active:scale-95 transition-all overflow-hidden border border-movida-navy/50"
+            >
+                <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl transform translate-x-10 -translate-y-10"></div>
+
+                <div class="flex items-center gap-3.5 relative z-10">
+                    <div class="bg-gradient-to-br from-movida-yellow to-amber-500 w-10 h-10 rounded-full flex items-center justify-center shrink-0 shadow-inner border border-amber-300/50">
+                        <i class="fa-solid fa-book-open-reader text-movida-navy text-lg"></i>
+                    </div>
+
+                    <div class="text-left">
+                        <span class="block text-[9px] text-movida-yellow uppercase tracking-widest font-extrabold mb-0.5">
+                            Actualización profesional
+                        </span>
+
+                        <span class="block text-[14px] leading-tight text-white tracking-tight">
+                            Grupo de Estudio SST
+                        </span>
+                    </div>
+                </div>
+
+                <div class="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center shrink-0 relative z-10 backdrop-blur-sm border border-white/20">
+                    <i class="fa-solid fa-arrow-up-right-from-square text-white text-xs"></i>
+                </div>
             </a>
             
             <!-- TARJETA ACADEMIA -->
@@ -2304,9 +3018,17 @@
             <div class="icon-container w-10 h-10 flex items-center justify-center rounded-full transition-all duration-300"><i class="fa-solid fa-chart-pie text-xl"></i></div>
             <span class="text-[10px] uppercase tracking-wider mt-1 font-medium">Métricas</span>
         </button>
-        <button onclick="switchTab('info-view')" id="btn-info-view" class="nav-item text-slate-400 flex flex-col items-center p-2 w-[25%] transition-colors">
-            <div class="icon-container w-10 h-10 flex items-center justify-center rounded-full transition-all duration-300"><i class="fa-solid fa-circle-info text-xl"></i></div>
-            <span class="text-[10px] uppercase tracking-wider mt-1 font-medium">Info</span>
+        <button
+            onclick="switchTab('info-view')"
+            id="btn-info-view"
+            class="nav-item registration-nav-item text-slate-400 flex flex-col items-center p-2 w-[25%] transition-colors"
+            aria-label="Abrir registro de nuevos integrantes"
+        >
+            <span class="registration-nav-badge" aria-hidden="true">ÚNETE</span>
+            <div class="icon-container w-10 h-10 flex items-center justify-center rounded-full transition-all duration-300">
+                <i class="fa-solid fa-user-plus text-xl"></i>
+            </div>
+            <span class="text-[10px] uppercase tracking-wider mt-1 font-medium">Registro</span>
         </button>
         <button onclick="switchTab('credencial-view')" id="btn-credencial-view" class="nav-item text-slate-400 flex flex-col items-center p-2 w-[25%] transition-colors">
             <div class="icon-container w-10 h-10 flex items-center justify-center rounded-full transition-all duration-300"><i class="fa-solid fa-id-badge text-xl"></i></div>
