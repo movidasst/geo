@@ -2857,6 +2857,74 @@
             let initial = item._nombre_completo.charAt(0).toUpperCase();
             let email = item.correo || item.Correo || item.CORREO || '';
 
+            const limpiarDetalleAcademico = valor => {
+                const texto = String(valor || '').trim();
+                const normalizado = normalizarTextoMetrica(texto);
+
+                if (
+                    !normalizado ||
+                    [
+                        'ninguno',
+                        'ninguno / no aplica',
+                        'no aplica',
+                        'n/a',
+                        'na',
+                        'sin especificar',
+                        'no informado'
+                    ].includes(normalizado)
+                ) {
+                    return '';
+                }
+
+                return texto;
+            };
+
+            const postgradoDetalle = limpiarDetalleAcademico(
+                item.postgrado ||
+                item.Postgrado ||
+                item.POSTGRADO
+            );
+
+            const doctoradoDetalle = limpiarDetalleAcademico(
+                item.doctorado ||
+                item.Doctorado ||
+                item.DOCTORADO
+            );
+
+            const formacionAvanzadaHTML = [
+                postgradoDetalle
+                    ? `
+                        <div class="flex items-start gap-2.5 rounded-xl border border-teal-100 bg-teal-50/70 px-3 py-2.5">
+                            <i class="fa-solid fa-award mt-0.5 w-4 shrink-0 text-center text-movida-teal"></i>
+                            <div class="min-w-0">
+                                <span class="block text-[9px] font-black uppercase tracking-[0.12em] text-movida-teal">
+                                    Postgrado
+                                </span>
+                                <span class="mt-0.5 block text-[11px] font-bold leading-snug text-slate-700">
+                                    ${escapeHTML(postgradoDetalle)}
+                                </span>
+                            </div>
+                        </div>
+                    `
+                    : '',
+
+                doctoradoDetalle
+                    ? `
+                        <div class="flex items-start gap-2.5 rounded-xl border border-amber-100 bg-amber-50/80 px-3 py-2.5">
+                            <i class="fa-solid fa-microscope mt-0.5 w-4 shrink-0 text-center text-amber-600"></i>
+                            <div class="min-w-0">
+                                <span class="block text-[9px] font-black uppercase tracking-[0.12em] text-amber-700">
+                                    Doctorado / postdoctorado
+                                </span>
+                                <span class="mt-0.5 block text-[11px] font-bold leading-snug text-slate-700">
+                                    ${escapeHTML(doctoradoDetalle)}
+                                </span>
+                            </div>
+                        </div>
+                    `
+                    : ''
+            ].filter(Boolean).join('');
+
             let html = `
                 <div class="px-6 pt-4 pb-2 relative participant-profile">
                     <div class="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-4"></div>
@@ -2875,10 +2943,20 @@
                             <p class="text-[10px] font-black text-movida-teal uppercase tracking-wide mt-0.5">${item._nivel_acad}</p>
                         </div>
                     </div>
-                    <div class="space-y-2 mb-5">
-                        <p class="text-xs text-slate-600 font-medium flex items-center"><i class="fa-solid fa-location-dot text-slate-400 w-5 text-center mr-2 text-sm"></i> ${item.estado}, ${item.municipio}</p>
-                        <p class="text-xs text-slate-600 font-medium flex items-center"><i class="fa-solid fa-briefcase text-slate-400 w-5 text-center mr-2 text-sm"></i> ${item._laboral_clean === 'Buscando' ? 'Buscando Oportunidades' : item._laboral_clean}</p>
+                    <div class="space-y-2 mb-4">
+                        <p class="text-xs text-slate-600 font-medium flex items-center"><i class="fa-solid fa-location-dot text-slate-400 w-5 text-center mr-2 text-sm"></i> ${escapeHTML(item.estado || '')}, ${escapeHTML(item.municipio || '')}</p>
+                        <p class="text-xs text-slate-600 font-medium flex items-center"><i class="fa-solid fa-briefcase text-slate-400 w-5 text-center mr-2 text-sm"></i> ${item._laboral_clean === 'Buscando' ? 'Buscando Oportunidades' : escapeHTML(item._laboral_clean || '')}</p>
                     </div>
+
+                    ${formacionAvanzadaHTML
+                        ? `
+                            <div class="mb-5 grid grid-cols-1 gap-2">
+                                ${formacionAvanzadaHTML}
+                            </div>
+                        `
+                        : ''
+                    }
+
                     <div class="w-full flex gap-2 profile-contact-grid">
                         ${(() => {
                             let phone = item.wasap || item.Wasap || item.WASAP || item.whatsapp || item.WhatsApp || item.telefono || item.Telefono || item.celular || item.Celular || '';
