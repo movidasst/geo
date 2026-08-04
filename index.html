@@ -3228,7 +3228,24 @@
                 btnSave: document.getElementById('btn-change-member-code'),
                 status: document.getElementById('member-code-status')
             };
-            const validator = { input: document.getElementById('val-input'), btnSubmit: document.getElementById('btn-val-submit'), idleState: document.getElementById('val-idle'), errorState: document.getElementById('val-error'), photo: document.getElementById('val-photo'), photoPlaceholder: document.getElementById('val-photo-placeholder'), nombres: document.getElementById('val-nombres'), apellidos: document.getElementById('val-apellidos'), cedula: document.getElementById('val-cedula'), grado: document.getElementById('val-grado'), carrera: document.getElementById('val-carrera'), ubicacion: document.getElementById('val-ubicacion'), btnShare: document.getElementById('btn-val-share'), btnChat: document.getElementById('btn-val-chat') };
+            const validator = {
+                input: document.getElementById('val-input'),
+                btnSubmit: document.getElementById('btn-val-submit'),
+                idleState: document.getElementById('val-idle'),
+                errorState: document.getElementById('val-error'),
+                errorTitle: document.querySelector('#val-error h3'),
+                errorText: document.querySelector('#val-error p'),
+                photo: document.getElementById('val-photo'),
+                photoPlaceholder: document.getElementById('val-photo-placeholder'),
+                nombres: document.getElementById('val-nombres'),
+                apellidos: document.getElementById('val-apellidos'),
+                cedula: document.getElementById('val-cedula'),
+                grado: document.getElementById('val-grado'),
+                carrera: document.getElementById('val-carrera'),
+                ubicacion: document.getElementById('val-ubicacion'),
+                btnShare: document.getElementById('btn-val-share'),
+                btnChat: document.getElementById('btn-val-chat')
+            };
             const modal = { container: document.getElementById('cropper-modal'), img: document.getElementById('image-to-crop'), btnCancel: document.getElementById('btn-crop-cancel'), btnSave: document.getElementById('btn-crop-save') };
 
             const manageBtnState = (btn, isLoading) => {
@@ -3631,6 +3648,125 @@
                 }
             };
 
+            const construirUrlVerificacion = (cedula) => {
+                const cedulaLimpia =
+                    String(cedula || '')
+                        .replace(/\D/g, '');
+
+                let baseUrl = DOMINIO_OFICIAL;
+
+                if (
+                    window.location.protocol === 'https:' ||
+                    window.location.protocol === 'http:'
+                ) {
+                    baseUrl =
+                        window.location.origin +
+                        window.location.pathname;
+                }
+
+                const url =
+                    new URL(
+                        baseUrl,
+                        DOMINIO_OFICIAL
+                    );
+
+                url.search = '';
+                url.hash = '';
+                url.searchParams.set(
+                    'verificar',
+                    cedulaLimpia
+                );
+
+                return url.toString();
+            };
+
+            const obtenerCedulaVerificacionDesdeUrl = () => {
+                const actual =
+                    new URL(window.location.href);
+
+                const hashParams =
+                    new URLSearchParams(
+                        actual.hash.replace(/^#/, '')
+                    );
+
+                const candidatos = [
+                    actual.searchParams.get('verificar'),
+                    actual.searchParams.get('cedula'),
+                    actual.searchParams.get('dni'),
+                    hashParams.get('verificar'),
+                    hashParams.get('cedula'),
+                    hashParams.get('dni')
+                ];
+
+                for (const candidato of candidatos) {
+                    const cedula =
+                        String(candidato || '')
+                            .replace(/\D/g, '');
+
+                    if (/^\d{6,12}$/.test(cedula)) {
+                        return cedula;
+                    }
+                }
+
+                /*
+                 * Algunos QR antiguos utilizaban token.
+                 * Sólo se acepta como cédula si contiene 6–12 dígitos.
+                 * Un token de 5 caracteres no se usa porque corresponde
+                 * al código privado y no debe exponerse públicamente.
+                 */
+                const token =
+                    String(
+                        actual.searchParams.get('token') ||
+                        hashParams.get('token') ||
+                        ''
+                    )
+                        .replace(/\D/g, '');
+
+                return /^\d{6,12}$/.test(token)
+                    ? token
+                    : '';
+            };
+
+            const establecerErrorVerificador = (
+                titulo,
+                mensaje
+            ) => {
+                if (validator.errorTitle) {
+                    validator.errorTitle.textContent =
+                        titulo;
+                }
+
+                if (validator.errorText) {
+                    validator.errorText.textContent =
+                        mensaje;
+                }
+
+                validator.errorState.classList.remove(
+                    'hidden'
+                );
+            };
+
+            const limpiarErrorVerificador = () => {
+                validator.errorState.classList.add(
+                    'hidden'
+                );
+
+                if (validator.errorTitle) {
+                    validator.errorTitle.textContent =
+                        'No Encontrado';
+                }
+
+                if (validator.errorText) {
+                    validator.errorText.textContent =
+                        'La credencial no es válida o no existe en la base de datos oficial.';
+                }
+            };
+
+            const esperar = (milisegundos) =>
+                new Promise(resolve =>
+                    setTimeout(resolve, milisegundos)
+                );
+
             const renderCredential = (data) => {
                 const fullName = (data.nombres || "N/A").toString().trim();
                 let nPart = fullName;
@@ -3705,8 +3841,10 @@
                         .replace(/\D/g, '');
 
                 const qrUrl = cedulaVerificacion
-                    ? `https://directorio.movidasst.com/?verificar=${encodeURIComponent(cedulaVerificacion)}`
-                    : "https://directorio.movidasst.com/";
+                    ? construirUrlVerificacion(
+                        cedulaVerificacion
+                    )
+                    : DOMINIO_OFICIAL;
 
                 portal.qr.innerHTML =
                     `<img src="https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(qrUrl)}&color=00205b&bgcolor=ffffff&margin=6" alt="QR de verificación por cédula" style="display:block;width:100%;height:100%;object-fit:contain;" crossorigin="anonymous">`;
@@ -4415,61 +4553,159 @@
             };
 
             // BUSCADOR VALIDADOR MEDIANTE FUNCIÓN SEGURA
-            const searchValidator = async (query) => {
+            const searchValidator = async (
+                query,
+                opciones = {}
+            ) => {
                 const cedulaConsulta =
-                    (query || '')
-                        .toString()
+                    String(query || '')
                         .replace(/\D/g, '');
 
-                validator.idleState.classList.add('hidden');
-                validator.errorState.classList.add('hidden');
+                const {
+                    reintentos = 2,
+                    automatico = false
+                } = opciones;
 
-                if (!/^\d{5,12}$/.test(cedulaConsulta)) {
-                    validator.errorState.classList.remove('hidden');
-                    return;
+                validator.idleState.classList.add(
+                    'hidden'
+                );
+
+                limpiarErrorVerificador();
+
+                if (!/^\d{6,12}$/.test(cedulaConsulta)) {
+                    establecerErrorVerificador(
+                        'Cédula inválida',
+                        'La cédula de verificación debe contener entre 6 y 12 dígitos.'
+                    );
+
+                    return false;
                 }
 
                 if (
                     !supabaseClient ||
                     typeof supabaseClient.rpc !== 'function'
                 ) {
-                    validator.errorState.classList.add('hidden');
-                    validator.idleState.classList.remove('hidden');
-                    return;
+                    establecerErrorVerificador(
+                        'Servicio no disponible',
+                        'No fue posible iniciar la conexión con la base oficial. Recarga la página e intenta nuevamente.'
+                    );
+
+                    return false;
                 }
 
-                manageBtnState(validator.btnSubmit, true);
+                manageBtnState(
+                    validator.btnSubmit,
+                    true
+                );
 
                 try {
-                    const { data: rpcData, error } = await supabaseClient
-                        .rpc('verificar_credencial', {
-                            p_cedula: cedulaConsulta
-                        });
+                    let ultimoError = null;
 
-                    if (error) throw error;
+                    for (
+                        let intento = 0;
+                        intento <= reintentos;
+                        intento += 1
+                    ) {
+                        const {
+                            data: rpcData,
+                            error
+                        } = await supabaseClient
+                            .rpc(
+                                'verificar_credencial',
+                                {
+                                    p_cedula:
+                                        cedulaConsulta
+                                }
+                            );
 
-                    const data =
-                        obtenerRegistroRpc(
-                            rpcData,
-                            'El verificador'
+                        if (!error) {
+                            const data =
+                                obtenerRegistroRpc(
+                                    rpcData,
+                                    'El verificador'
+                                );
+
+                            if (data) {
+                                currentValidatorData =
+                                    data;
+
+                                renderValidator(data);
+                                changeView(
+                                    views.valResult
+                                );
+
+                                return true;
+                            }
+
+                            establecerErrorVerificador(
+                                'No Encontrado',
+                                'La cédula consultada no existe en la base de datos oficial.'
+                            );
+
+                            return false;
+                        }
+
+                        ultimoError = error;
+
+                        const esReintentable =
+                            error.code === 'PGRST202' ||
+                            error.code === 'PGRST301' ||
+                            /schema cache|fetch|network|timeout/i
+                                .test(
+                                    String(
+                                        error.message || ''
+                                    )
+                                );
+
+                        if (
+                            !esReintentable ||
+                            intento === reintentos
+                        ) {
+                            break;
+                        }
+
+                        await esperar(
+                            450 * (intento + 1)
+                        );
+                    }
+
+                    throw ultimoError ||
+                        new Error(
+                            'No se recibió respuesta del verificador.'
                         );
 
-                    if (data) {
-                        currentValidatorData = data;
-                        renderValidator(data);
-                        changeView(views.valResult);
-                    } else {
-                        validator.errorState.classList.remove('hidden');
-                    }
                 } catch (error) {
                     console.error(
                         'Error en la verificación pública:',
                         error
                     );
 
-                    validator.errorState.classList.remove('hidden');
+                    const codigo =
+                        error && error.code
+                            ? ` (${error.code})`
+                            : '';
+
+                    establecerErrorVerificador(
+                        'Error de verificación',
+                        `No fue posible consultar la base oficial${codigo}. Recarga la página e intenta nuevamente.`
+                    );
+
+                    /*
+                     * En una apertura automática nunca debe confundirse
+                     * un error técnico con una credencial inexistente.
+                     */
+                    if (automatico) {
+                        validator.input.value =
+                            cedulaConsulta;
+                    }
+
+                    return false;
+
                 } finally {
-                    manageBtnState(validator.btnSubmit, false);
+                    manageBtnState(
+                        validator.btnSubmit,
+                        false
+                    );
                 }
             };
 
@@ -4553,7 +4789,12 @@
             validator.btnShare.addEventListener('click', () => {
                 if(!currentValidatorData) return;
                 const cedulaVerificacion = (currentValidatorData.cedula || '').toString().replace(/\D/g, '');
-                const text = `*Credencial Auténtica - Movida SST Plus* 🛡️\n👤 ${currentValidatorData.nombres} ${currentValidatorData.apellidos}\n📍 ${currentValidatorData.estado}\n💼 ${currentValidatorData.carrera}\n🔗 Valida aquí: ${DOMINIO_OFICIAL}?verificar=${cedulaVerificacion}`;
+                const urlVerificacion =
+                    construirUrlVerificacion(
+                        cedulaVerificacion
+                    );
+
+                const text = `*Credencial Auténtica - Movida SST Plus* 🛡️\n👤 ${currentValidatorData.nombres} ${currentValidatorData.apellidos}\n📍 ${currentValidatorData.estado}\n💼 ${currentValidatorData.carrera}\n🔗 Valida aquí: ${urlVerificacion}`;
                 window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
             });
 
@@ -4640,11 +4881,10 @@
             portal.code.addEventListener('keypress', (e) => { if(e.key === 'Enter') loginPortal(); });
 
             const procesarVerificacionAutomatica = async () => {
-                const urlParams = new URLSearchParams(window.location.search);
                 const cedulaVerificacion =
-                    (urlParams.get('verificar') || '').replace(/\D/g, '');
+                    obtenerCedulaVerificacionDesdeUrl();
 
-                if (!/^\d{5,12}$/.test(cedulaVerificacion)) {
+                if (!/^\d{6,12}$/.test(cedulaVerificacion)) {
                     return;
                 }
 
@@ -4682,7 +4922,13 @@
                     return;
                 }
 
-                await searchValidator(cedulaVerificacion);
+                await searchValidator(
+                    cedulaVerificacion,
+                    {
+                        reintentos: 3,
+                        automatico: true
+                    }
+                );
             };
 
             procesarVerificacionAutomatica().catch(error => {
