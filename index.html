@@ -2703,6 +2703,28 @@
                                     <p id="member-whatsapp-help" class="member-data-help"><i class="fa-solid fa-circle-info"></i> 12 dígitos, sin cero inicial y comenzando por 584.</p>
                                 </div>
 
+                                <div class="member-data-field member-data-wide">
+                                    <label for="member-whatsapp-username">Nombre de usuario de WhatsApp</label>
+                                    <input id="member-whatsapp-username" name="whatsapp_username" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="65" pattern="^@?[A-Za-z0-9._]{3,64}$" placeholder="Ej. @davidlinaresbrea" aria-describedby="member-whatsapp-username-help">
+                                    <p id="member-whatsapp-username-help" class="member-data-help"><i class="fa-brands fa-whatsapp"></i> Opcional. Puedes escribirlo con o sin @. Es diferente de tu número y de tu nombre visible.</p>
+                                </div>
+
+                                <div class="member-whatsapp-privacy">
+                                    <div class="member-whatsapp-privacy-copy">
+                                        <p class="member-whatsapp-privacy-title">
+                                            <i class="fa-solid fa-at"></i>
+                                            Mostrar mi usuario de WhatsApp públicamente
+                                        </p>
+                                        <p id="member-show-whatsapp-username-status" class="member-whatsapp-privacy-text">
+                                            Activado por defecto. Desactívalo si no deseas mostrarlo en tu perfil.
+                                        </p>
+                                    </div>
+                                    <label class="member-privacy-switch" for="member-show-whatsapp-username" title="Mostrar u ocultar mi usuario de WhatsApp">
+                                        <input id="member-show-whatsapp-username" name="mostrar_whatsapp_username" type="checkbox" role="switch" checked aria-describedby="member-show-whatsapp-username-status">
+                                        <span class="member-privacy-track" aria-hidden="true"></span>
+                                    </label>
+                                </div>
+
                                 <div class="member-whatsapp-privacy">
                                     <div class="member-whatsapp-privacy-copy">
                                         <p class="member-whatsapp-privacy-title">
@@ -3893,7 +3915,7 @@
                 const PAGE_SIZE = 1000;
                 const data = [];
                 let desde = 0;
-                let rpcDirectorio = 'directorio_publico_actividad';
+                let rpcDirectorio = 'directorio_publico_actividad_v2';
                 let intentoFallbackRealizado = false;
 
                 while (true) {
@@ -3909,9 +3931,9 @@
                      * Fallback seguro: si el HTML se publica antes de ejecutar el SQL
                      * de actividad, el Directorio sigue abriendo con la RPC anterior.
                      */
-                    if (respuesta.error && desde === 0 && !intentoFallbackRealizado && rpcDirectorio === 'directorio_publico_actividad') {
-                        console.warn('La RPC de actividad aún no está disponible; se usa directorio_publico().', respuesta.error);
-                        rpcDirectorio = 'directorio_publico';
+                    if (respuesta.error && desde === 0 && !intentoFallbackRealizado && rpcDirectorio === 'directorio_publico_actividad_v2') {
+                        console.warn('La RPC v2 aún no está disponible; se usa la versión anterior.', respuesta.error);
+                        rpcDirectorio = 'directorio_publico_actividad';
                         intentoFallbackRealizado = true;
                         respuesta = await conTimeout(
                             supabaseClient
@@ -4246,6 +4268,11 @@
                                 ${formacionAvanzadaHTML}
                             </div>
                         `
+                        : ''
+                    }
+
+                    ${item.whatsapp_username
+                        ? `<div class="mb-3 flex w-full items-center justify-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-sm font-black text-emerald-800"><i class="fa-solid fa-at"></i><span>${item.whatsapp_username}</span></div>`
                         : ''
                     }
 
@@ -4812,6 +4839,9 @@
                 employment: document.getElementById('member-employment'),
                 email: document.getElementById('member-email'),
                 whatsapp: document.getElementById('member-whatsapp'),
+                whatsappUsername: document.getElementById('member-whatsapp-username'),
+                whatsappUsernameVisibility: document.getElementById('member-show-whatsapp-username'),
+                whatsappUsernameVisibilityStatus: document.getElementById('member-show-whatsapp-username-status'),
                 whatsappVisibility: document.getElementById('member-show-whatsapp'),
                 whatsappVisibilityStatus: document.getElementById('member-show-whatsapp-status'),
                 linkedin: document.getElementById('member-linkedin'),
@@ -5145,6 +5175,25 @@
                 editor.whatsapp.value = formatearWasapVenezuela(wasapNormalizado);
                 editor.whatsapp.setCustomValidity('');
                 editor.linkedin.setCustomValidity('');
+
+                if (editor.whatsappUsername) {
+                    editor.whatsappUsername.value = (
+                        data.whatsapp_username ||
+                        data.whatsappUsername ||
+                        ''
+                    ).toString().trim();
+                    editor.whatsappUsername.setCustomValidity('');
+                }
+
+                if (editor.whatsappUsernameVisibility) {
+                    const mostrarUsuario =
+                        data.mostrar_whatsapp_username ??
+                        data.mostrarWhatsappUsername ??
+                        true;
+                    editor.whatsappUsernameVisibility.checked =
+                        mostrarUsuario === true ||
+                        String(mostrarUsuario).toLowerCase() === 'true';
+                }
 
                 if (editor.whatsappVisibility) {
                     const preferencia =
@@ -5515,7 +5564,7 @@
 
                 try {
                     const { data: rpcData, error } = await supabaseClient
-                        .rpc('acceso_integrante', {
+                        .rpc('acceso_integrante_v2', {
                             p_cedula: dni,
                             p_codigo: code
                         });
@@ -5832,6 +5881,11 @@
                 const correo = editor.email.value.trim().toLowerCase();
                 const wasap = obtenerDigitosWasap(editor.whatsapp.value);
                 const mostrarWasap = Boolean(editor.whatsappVisibility?.checked);
+                const usuarioIngresado = (editor.whatsappUsername?.value || '').trim().replace(/\s+/g, '');
+                const whatsappUsername = usuarioIngresado
+                    ? (usuarioIngresado.startsWith('@') ? usuarioIngresado : `@${usuarioIngresado}`)
+                    : null;
+                const mostrarWhatsappUsername = Boolean(editor.whatsappUsernameVisibility?.checked);
                 const linkedinIngresado = editor.linkedin.value.trim();
                 const linkedin = normalizarLinkedIn(linkedinIngresado);
                 const grado = editor.degree.value.trim();
@@ -5863,6 +5917,11 @@
                 ) {
                     setEditorStatus('Selecciona tu situación laboral actual.', 'error');
                     editor.employment?.focus();
+                    return;
+                }
+                if (whatsappUsername && !/^@[A-Za-z0-9._]{3,64}$/.test(whatsappUsername)) {
+                    setEditorStatus('El usuario de WhatsApp solo puede contener letras, números, punto o guion bajo.', 'error');
+                    editor.whatsappUsername?.focus();
                     return;
                 }
                 if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) {
@@ -5911,6 +5970,8 @@
                         correo,
                         wasap,
                         mostrar_wasap: mostrarWasap,
+                        whatsapp_username: whatsappUsername,
+                        mostrar_whatsapp_username: mostrarWhatsappUsername,
                         linkedin: linkedin || null,
                         grado,
                         carrera,
@@ -5918,7 +5979,7 @@
                         doctorado: doctorado || null
                     };
                     const { data: rpcData, error } = await supabaseClient
-                        .rpc('actualizar_integrante', {
+                        .rpc('actualizar_integrante_v2', {
                             p_cedula: currentMemberDNI,
                             p_codigo: currentMemberCode,
                             p_datos: cambiosPermitidos
