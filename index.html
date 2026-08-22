@@ -4272,7 +4272,7 @@
                     }
 
                     ${item.whatsapp_username
-                        ? `<div class="mb-3 flex w-full items-center justify-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-sm font-black text-emerald-800"><i class="fa-solid fa-at"></i><span>${item.whatsapp_username}</span></div>`
+                        ? `<button id="profile-whatsapp-username" type="button" data-username="${item.whatsapp_username}" class="mb-3 flex w-full items-center justify-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-sm font-black text-emerald-800 transition-colors active:scale-[.99]" title="Toca para copiar el usuario de WhatsApp" aria-label="Copiar usuario de WhatsApp ${item.whatsapp_username}"><i class="fa-brands fa-whatsapp"></i><span>${item.whatsapp_username}</span><i class="fa-regular fa-copy text-xs opacity-70"></i></button>`
                         : ''
                     }
 
@@ -4299,6 +4299,28 @@
                 </div>`;
             
             document.getElementById('profile-sheet-content').innerHTML = html;
+
+            const usernameButton = document.getElementById('profile-whatsapp-username');
+            if (usernameButton) {
+                usernameButton.addEventListener('click', async () => {
+                    const username = usernameButton.dataset.username || '';
+                    if (!username) return;
+
+                    try {
+                        await navigator.clipboard.writeText(username);
+                        const originalHTML = usernameButton.innerHTML;
+                        usernameButton.innerHTML = '<i class="fa-solid fa-circle-check"></i><span>Usuario copiado</span>';
+                        usernameButton.setAttribute('aria-label', 'Usuario de WhatsApp copiado');
+                        setTimeout(() => {
+                            usernameButton.innerHTML = originalHTML;
+                            usernameButton.setAttribute('aria-label', `Copiar usuario de WhatsApp ${username}`);
+                        }, 1800);
+                    } catch (error) {
+                        console.warn('No se pudo copiar el usuario de WhatsApp:', error);
+                    }
+                });
+            }
+
             document.getElementById('ui-backdrop').classList.remove('hidden');
             setTimeout(() => { document.getElementById('ui-backdrop').classList.remove('opacity-0'); document.getElementById('profile-sheet').classList.remove('translate-y-full'); }, 10);
             
