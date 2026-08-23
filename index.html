@@ -2109,7 +2109,7 @@
                 </div>
             </a>
 
-            <div class="grid grid-cols-3 gap-2 mt-2">
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-2">
                 <div class="glass-card p-3 flex flex-col items-center justify-center text-center">
                     <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wide">Total Red</p>
                     <p class="text-2xl font-extrabold text-movida-navy mt-1" id="dash-total">0</p>
@@ -2121,6 +2121,10 @@
                 <div class="glass-card p-3 flex flex-col items-center justify-center text-center">
                     <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wide">Municipios VE</p>
                     <p class="text-2xl font-extrabold text-movida-green mt-1" id="dash-municipios">0</p>
+                </div>
+                <div class="glass-card p-3 flex flex-col items-center justify-center text-center">
+                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wide">Fuera de VE</p>
+                    <p class="text-2xl font-extrabold text-movida-yellow mt-1" id="dash-internacionales">0</p>
                 </div>
             </div>
 
@@ -2165,10 +2169,11 @@
 
             <div class="glass-card p-5">
                 <h3 class="text-movida-navy font-bold text-sm uppercase tracking-wide mb-4 flex items-center gap-2">
-                    <i class="fa-solid fa-map-location-dot text-movida-teal"></i> Desglose Geográfico
+                    <i class="fa-solid fa-earth-americas text-movida-teal"></i> Red por países
                 </h3>
+                <p class="text-[11px] text-slate-500 leading-relaxed mb-4">Muestra todos los países representados. Venezuela conserva el detalle adicional por estado y municipio.</p>
                 <div id="states-list" class="space-y-3"><p class="text-center text-slate-400 text-sm py-4">Sincronizando...</p></div>
-                <button id="btn-show-more-states" onclick="mostrarTodosLosEstados()" class="hidden w-full mt-4 bg-slate-50 text-movida-navy border border-slate-200 font-bold text-xs py-3 rounded-xl hover:bg-slate-100 transition-colors">Ver todos los estados</button>
+                <button id="btn-show-more-states" onclick="mostrarTodosLosEstados()" class="hidden w-full mt-4 bg-slate-50 text-movida-navy border border-slate-200 font-bold text-xs py-3 rounded-xl hover:bg-slate-100 transition-colors">Ver todos los países</button>
             </div>
 
 
@@ -2434,7 +2439,7 @@
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Documento de identidad</label>
-                                    <input type="text" id="portal-dni" placeholder="Ej: 12345678" inputmode="text" maxlength="32" class="w-full bg-white border border-slate-300 rounded-xl p-3.5 font-mono text-slate-700 outline-none focus:border-movida-teal focus:ring-4 focus:ring-movida-teal/10 transition-all" oninput="this.value = this.value.toUpperCase().replace(/[^A-Z0-9.-]/g, '')">
+                                    <input type="text" id="portal-dni" placeholder="Ej: 12345678" inputmode="numeric" maxlength="32" pattern="[0-9]+" class="w-full bg-white border border-slate-300 rounded-xl p-3.5 font-mono text-slate-700 outline-none focus:border-movida-teal focus:ring-4 focus:ring-movida-teal/10 transition-all" oninput="this.value = this.value.replace(/\D/g, '')">
                                 </div>
                                 <div>
                                     <label for="portal-code" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Código de Registro</label>
@@ -2494,7 +2499,7 @@
                                 <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">País y documento de verificación</label>
                                 <select id="val-country" class="mb-2 w-full bg-white border border-slate-300 rounded-xl p-3 text-slate-700"><option value="VE">🇻🇪 Venezuela</option></select>
                                 <div class="relative flex gap-2">
-                                    <input type="text" id="val-input" placeholder="Documento de identidad" inputmode="text" maxlength="36" autocomplete="off" class="w-full bg-white border border-slate-300 rounded-xl p-3.5 font-mono font-bold text-movida-blue outline-none focus:border-movida-teal focus:ring-4 focus:ring-movida-teal/10 transition-all">
+                                    <input type="text" id="val-input" placeholder="Documento de identidad (solo números)" inputmode="numeric" maxlength="32" autocomplete="off" class="w-full bg-white border border-slate-300 rounded-xl p-3.5 font-mono font-bold text-movida-blue outline-none focus:border-movida-teal focus:ring-4 focus:ring-movida-teal/10 transition-all">
                                     <button id="btn-val-submit" class="bg-movida-blue text-white w-14 rounded-xl flex items-center justify-center shadow-md hover:bg-blue-900 active:scale-95 transition-transform shrink-0 relative disabled:opacity-70">
                                         <i class="fa-solid fa-magnifying-glass text-lg btn-text"></i>
                                     </button>
@@ -4469,9 +4474,9 @@
         function procesarDatosParaDashboard(data) {
             const registrosValidos = (Array.isArray(data) ? data : []).filter(esRegistroBaseValido);
 
-            const porEstado = {};
             const porMunicipio = new Set();
             const paisesRepresentados = new Set();
+            let integrantesFueraVenezuela = 0;
             datosGeograficosGlobal = {};
 
             const genData = { 'Masculino': 0, 'Femenino': 0, 'Sin especificar': 0 };
@@ -4496,21 +4501,28 @@
             };
 
             registrosValidos.forEach(item => {
-                paisesRepresentados.add(item.pais_iso2 || 'VE');
+                const paisIso2 = String(item.pais_iso2 || 'VE').toUpperCase();
+                const paisNombre = item.pais_nombre || nombrePais(paisIso2);
+                paisesRepresentados.add(paisIso2);
+                if (paisIso2 !== 'VE') integrantesFueraVenezuela++;
                 const estado = (item.estado || '').toString().trim();
                 const municipio = (item.municipio || '').toString().trim();
 
-                if (estado) {
+                if (!datosGeograficosGlobal[paisIso2]) {
+                    datosGeograficosGlobal[paisIso2] = { total: 0, nombre: paisNombre, estados: {} };
+                }
+                datosGeograficosGlobal[paisIso2].total++;
+
+                if (paisIso2 === 'VE' && estado) {
                     const municipioContable = municipio || 'Sin especificar';
-                    porEstado[estado] = (porEstado[estado] || 0) + 1;
                     if (municipio) porMunicipio.add(`${estado}_${municipio}`);
 
-                    if (!datosGeograficosGlobal[estado]) {
-                        datosGeograficosGlobal[estado] = { total: 0, municipios: {} };
+                    if (!datosGeograficosGlobal[paisIso2].estados[estado]) {
+                        datosGeograficosGlobal[paisIso2].estados[estado] = { total: 0, municipios: {} };
                     }
-                    datosGeograficosGlobal[estado].total++;
-                    datosGeograficosGlobal[estado].municipios[municipioContable] =
-                        (datosGeograficosGlobal[estado].municipios[municipioContable] || 0) + 1;
+                    datosGeograficosGlobal[paisIso2].estados[estado].total++;
+                    datosGeograficosGlobal[paisIso2].estados[estado].municipios[municipioContable] =
+                        (datosGeograficosGlobal[paisIso2].estados[estado].municipios[municipioContable] || 0) + 1;
                 }
 
                 const genero = normalizarGenero(item.genero || item.Genero || item.GENERO) || 'Sin especificar';
@@ -4546,6 +4558,7 @@
             document.getElementById('dash-total').innerText = registrosValidos.length;
             document.getElementById('dash-estados').innerText = paisesRepresentados.size;
             document.getElementById('dash-municipios').innerText = porMunicipio.size;
+            document.getElementById('dash-internacionales').innerText = integrantesFueraVenezuela;
 
             dibujarResumenAcademico(statsAcademico);
             dibujarTopCarreras(carreras);
@@ -4619,31 +4632,43 @@
 
         function dibujarListaEstados(datosGeog, limit = null) {
             const listDiv = document.getElementById('states-list'); listDiv.innerHTML = '';
-            const sortedStates = Object.keys(datosGeog).sort((a,b) => datosGeog[b].total - datosGeog[a].total);
-            if(sortedStates.length === 0) return;
-            let statesToShow = limit ? sortedStates.slice(0, limit) : sortedStates;
-            let maxCount = datosGeog[sortedStates[0]].total;
+            const sortedCountries = Object.keys(datosGeog).sort((a,b) => datosGeog[b].total - datosGeog[a].total);
+            if(sortedCountries.length === 0) return listDiv.innerHTML = '<p class="text-sm text-slate-400 text-center">Aún no hay distribución geográfica disponible.</p>';
+            const countriesToShow = limit ? sortedCountries.slice(0, limit) : sortedCountries;
+            const maxCount = datosGeog[sortedCountries[0]].total;
 
-            statesToShow.forEach((estado, idx) => {
-                let dataEst = datosGeog[estado]; let width = (dataEst.total / maxCount) * 100;
-                let sortedMuns = Object.keys(dataEst.municipios).sort((a,b) => dataEst.municipios[b] - dataEst.municipios[a]);
-                let munsHTML = `<div id="mun-acc-${idx}" class="hidden mt-3 pt-3 border-t border-slate-100/60 transition-all">`;
-                munsHTML += '<p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-2.5 flex items-center gap-1.5"><i class="fa-solid fa-location-crosshairs text-movida-teal/70"></i> Municipios</p>';
-                sortedMuns.forEach(mun => { munsHTML += `<div class="flex justify-between items-center mt-1.5 pl-2.5 border-l-[3px] border-movida-teal/30 hover:border-movida-teal transition-colors"><span class="text-[11px] text-slate-600 font-medium truncate pr-2 capitalize">${escapeHTML(mun.toLowerCase())}</span><span class="text-[10px] font-bold text-slate-500 bg-slate-50 px-1.5 py-0.5 rounded border border-slate-200 shadow-sm">${dataEst.municipios[mun]}</span></div>`; });
-                munsHTML += '</div>';
+            countriesToShow.forEach((iso2, idx) => {
+                const country = datosGeog[iso2];
+                const width = (country.total / maxCount) * 100;
+                const esVenezuela = iso2 === 'VE';
+                const estados = esVenezuela ? Object.keys(country.estados || {}).sort((a,b) => country.estados[b].total - country.estados[a].total) : [];
+                let detailHTML = '';
+
+                if (estados.length) {
+                    detailHTML = `<div id="country-detail-${idx}" class="hidden mt-3 pt-3 border-t border-slate-100 space-y-3">`;
+                    detailHTML += '<p class="text-[9px] font-black text-slate-400 uppercase tracking-widest"><i class="fa-solid fa-map-location-dot text-movida-teal mr-1"></i> Estados y municipios de Venezuela</p>';
+                    estados.forEach((estado, stateIdx) => {
+                        const state = country.estados[estado];
+                        const municipios = Object.keys(state.municipios).sort((a,b) => state.municipios[b] - state.municipios[a]);
+                        detailHTML += `<div class="rounded-xl bg-slate-50 border border-slate-100 p-2.5"><button type="button" class="w-full flex justify-between items-center text-left" onclick="event.stopPropagation();document.getElementById('state-detail-${idx}-${stateIdx}').classList.toggle('hidden')"><span class="text-xs font-bold text-slate-700">${escapeHTML(estado)}</span><span class="text-[10px] font-black text-movida-navy">${state.total}</span></button><div id="state-detail-${idx}-${stateIdx}" class="hidden mt-2 pt-2 border-t border-slate-200">`;
+                        municipios.forEach(mun => { detailHTML += `<div class="flex justify-between gap-3 py-1 text-[10px]"><span class="text-slate-600 truncate">${escapeHTML(mun)}</span><strong class="text-slate-500">${state.municipios[mun]}</strong></div>`; });
+                        detailHTML += '</div></div>';
+                    });
+                    detailHTML += '</div>';
+                }
 
                 listDiv.innerHTML += `
-                    <div class="bg-white p-3 rounded-xl border border-slate-100 shadow-sm cursor-pointer hover:border-movida-teal transition-colors active:scale-[0.98]" onclick="document.getElementById('mun-acc-${idx}').classList.toggle('hidden')">
-                        <div class="flex justify-between items-center mb-1">
-                            <span class="font-bold text-slate-700 text-sm flex items-center gap-2">${escapeHTML(estado)} <i class="fa-solid fa-chevron-down text-[10px] text-slate-300"></i></span>
-                            <span class="text-movida-navy font-bold text-sm bg-movida-bg px-2 py-0.5 rounded-md">${dataEst.total}</span>
+                    <div class="bg-white p-3 rounded-xl border border-slate-100 shadow-sm ${estados.length ? 'cursor-pointer hover:border-movida-teal' : ''} transition-colors" ${estados.length ? `onclick="document.getElementById('country-detail-${idx}').classList.toggle('hidden')"` : ''}>
+                        <div class="flex justify-between items-center mb-1.5 gap-3">
+                            <span class="font-bold text-slate-700 text-sm flex items-center gap-2 min-w-0"><span class="text-xl">${banderaPais(iso2)}</span><span class="truncate">${escapeHTML(country.nombre || nombrePais(iso2))}</span>${estados.length ? '<i class="fa-solid fa-chevron-down text-[10px] text-slate-300"></i>' : ''}</span>
+                            <span class="text-movida-navy font-bold text-sm bg-movida-bg px-2 py-0.5 rounded-md">${country.total}</span>
                         </div>
-                        <div class="w-full bg-slate-100 rounded-full h-1.5"><div class="bg-movida-teal h-1.5 rounded-full" style="width: ${width}%"></div></div>
-                        ${munsHTML}
+                        <div class="w-full bg-slate-100 rounded-full h-1.5"><div class="bg-movida-teal h-1.5 rounded-full" style="width:${width}%"></div></div>
+                        ${detailHTML}
                     </div>`;
             });
             const btnShowMore = document.getElementById('btn-show-more-states');
-            if (limit && sortedStates.length > limit) { btnShowMore.classList.remove('hidden'); btnShowMore.innerText = `Ver los ${sortedStates.length - limit} estados restantes`; } else { btnShowMore.classList.add('hidden'); }
+            if (limit && sortedCountries.length > limit) { btnShowMore.classList.remove('hidden'); btnShowMore.innerText = `Ver los ${sortedCountries.length - limit} países restantes`; } else { btnShowMore.classList.add('hidden'); }
         }
 
         function mostrarTodosLosEstados() { dibujarListaEstados(datosGeograficosGlobal, null); }
@@ -5657,7 +5682,7 @@
             const loginPortal = async () => {
                 const dni =
                     portal.dni.value
-                        .trim().toUpperCase();
+                        .replace(/\D/g, '');
                 const paisIso2 = document.getElementById('portal-country')?.value || 'VE';
 
                 const code =
@@ -5766,7 +5791,7 @@
                 ];
 
                 for (const candidato of candidatos) {
-                    const documento = String(candidato || '').trim().toUpperCase().replace(/[^A-Z0-9.-]/g, '');
+                    const documento = String(candidato || '').replace(/\D/g, '');
                     if (documento.length >= 3) return documento;
                 }
 
@@ -6674,10 +6699,10 @@
 
                 limpiarErrorVerificador();
 
-                if (!esPublicId && !/^[A-Z0-9.-]{3,32}$/.test(cedulaConsulta)) {
+                if (!esPublicId && !/^[0-9]{3,32}$/.test(cedulaConsulta)) {
                     establecerErrorVerificador(
                         'Documento inválido',
-                        'Ingresa un documento de identidad válido.'
+                        'Ingresa un documento usando solamente números.'
                     );
 
                     return false;
@@ -6878,20 +6903,20 @@
             });
 
             validator.btnSubmit.addEventListener('click', () => {
-                const q = validator.input.value.trim().toUpperCase().replace(/[^A-Z0-9.-]/g, '');
-                validator.input.value = q.slice(0, 36);
+                const q = validator.input.value.replace(/\D/g, '');
+                validator.input.value = q.slice(0, 32);
                 searchValidator(validator.input.value);
             });
 
             validator.input.addEventListener('keypress', (e) => { if(e.key === 'Enter') validator.btnSubmit.click(); });
             validator.input.addEventListener('input', function() {
-                this.value = this.value.toUpperCase().replace(/[^A-Z0-9.-]/g, '').slice(0, 32);
+                this.value = this.value.replace(/\D/g, '').slice(0, 32);
             });
 
             validator.btnShare.addEventListener('click', () => {
                 if(!currentValidatorData) return;
                 const cedulaVerificacion = (currentValidatorData.documento || currentValidatorData.cedula || '')
-                    .toString().trim().toUpperCase().replace(/[^A-Z0-9.-]/g, '');
+                    .toString().replace(/\D/g, '');
                 const urlVerificacion =
                     construirUrlVerificacion(
                         cedulaVerificacion
