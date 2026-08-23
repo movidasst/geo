@@ -10,7 +10,7 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
-    <title>Directorio de Profesionales de SST en Venezuela | La Movida SST Plus</title>
+    <title>Directorio Internacional de Profesionales de SST | La Movida SST Plus</title>
     <!-- FIX 2026-08-08: Municipio convertido a SELECT dependiente de Estado -->
 
     <script>
@@ -36,15 +36,15 @@
     </script>
     
     <!-- Etiquetas Súper SEO y Open Graph para WhatsApp/Telegram -->
-    <meta property="og:title" content="Directorio de Profesionales de SST en Venezuela | La Movida SST Plus">
-    <meta property="og:description" content="Consulta profesionales de Seguridad y Salud en el Trabajo por estado, municipio, formación académica y situación laboral en el directorio nacional de La Movida SST Plus.">
+    <meta property="og:title" content="Directorio Internacional de Profesionales de SST | La Movida SST Plus">
+    <meta property="og:description" content="Consulta y conecta con profesionales de Seguridad y Salud en el Trabajo de distintos países.">
     <meta property="og:image" content="https://drive.google.com/thumbnail?id=1Qy0e_J7IUXfJVLhLDNUJNuHOmg3_M0fh&sz=w1000">
     <meta property="og:image:width" content="800">
     <meta property="og:image:height" content="800">
     <meta property="og:url" content="https://directorio.movidasst.com/">
     <meta property="og:type" content="website">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="description" content="Consulta profesionales de Seguridad y Salud en el Trabajo por estado, municipio, formación académica y situación laboral en Venezuela.">
+    <meta name="description" content="Directorio internacional de profesionales de Seguridad y Salud en el Trabajo de La Movida SST Plus.">
     <link rel="canonical" href="https://directorio.movidasst.com/">
     <meta property="og:site_name" content="La Movida SST Plus">
     <meta property="og:locale" content="es_VE">
@@ -59,6 +59,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@25.12.2/build/css/intlTelInput.css">
     
     <!-- Librerías de Credencial: html2canvas & Cropper.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
@@ -69,6 +70,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@25.12.2/build/js/intlTelInput.min.js" defer></script>
 
     <script>
         window.tailwind = window.tailwind || {};
@@ -1957,7 +1959,7 @@
             <img src="https://drive.google.com/thumbnail?id=1Qy0e_J7IUXfJVLhLDNUJNuHOmg3_M0fh&sz=w1000" alt="Logo" class="w-11 h-11 rounded-full bg-white object-contain shrink-0">
             <div class="truncate">
                 <h1 class="text-movida-navy font-extrabold text-[13px] leading-tight truncate">La Movida SST Plus <span class="font-semibold text-slate-500">| Red Nacional</span></h1>
-                <p class="text-movida-teal text-[9px] font-bold uppercase tracking-wider truncate">Profesionales de SST de Venezuela</p>
+                <p class="text-movida-teal text-[9px] font-bold uppercase tracking-wider truncate">Red internacional de profesionales SST</p>
             </div>
         </div>
         <div class="flex items-center gap-1.5 shrink-0">
@@ -2056,12 +2058,16 @@
                 </div>
             </div>
 
-            <!-- SELECTORES CASCADA -->
-            <div class="grid grid-cols-2 gap-3">
+            <!-- SELECTORES INTERNACIONALES -->
+            <div>
+                <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wide mb-1.5 ml-1">País</label>
+                <select id="filtro-pais" onchange="actualizarVisibilidadFiltrosTerritoriales()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-3 text-sm font-medium text-movida-navy"><option value="todos">Todos los países</option></select>
+            </div>
+            <div id="filtros-venezuela" class="grid grid-cols-2 gap-3">
                 <div>
                     <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wide mb-1.5 ml-1">Estado</label>
                     <select id="filtro-estado" onchange="actualizarMunicipios()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-3 text-sm font-medium text-movida-navy focus:outline-none focus:border-movida-teal shadow-sm appearance-none">
-                        <option value="todos">Todo el país</option>
+                        <option value="todos">Todos los estados</option>
                         <option value="Amazonas">Amazonas</option><option value="Anzoátegui">Anzoátegui</option><option value="Apure">Apure</option><option value="Aragua">Aragua</option><option value="Barinas">Barinas</option><option value="Bolívar">Bolívar</option><option value="Carabobo">Carabobo</option><option value="Cojedes">Cojedes</option><option value="Delta Amacuro">Delta Amacuro</option><option value="Distrito Capital">Distrito Capital</option><option value="Falcón">Falcón</option><option value="Guárico">Guárico</option><option value="Lara">Lara</option><option value="La Guaira">La Guaira</option><option value="Mérida">Mérida</option><option value="Miranda">Miranda</option><option value="Monagas">Monagas</option><option value="Nueva Esparta">Nueva Esparta</option><option value="Portuguesa">Portuguesa</option><option value="Sucre">Sucre</option><option value="Táchira">Táchira</option><option value="Trujillo">Trujillo</option><option value="Yaracuy">Yaracuy</option><option value="Zulia">Zulia</option>
                     </select>
                 </div>
@@ -2095,7 +2101,7 @@
                     <div>
                         <span class="bg-movida-yellow text-movida-navy text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md mb-2 inline-block">Súmate a la red</span>
                         <h3 class="font-black text-lg leading-tight">¡Únete a La Movida SST Plus!</h3>
-                        <p class="text-xs text-slate-200 mt-1.5 font-medium">Regístrate y aparece en nuestro Directorio nacional.</p>
+                        <p class="text-xs text-slate-200 mt-1.5 font-medium">Regístrate y aparece en nuestro Directorio internacional.</p>
                     </div>
                     <div class="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center shrink-0 shadow-inner">
                         <i class="fa-solid fa-arrow-right text-lg text-white"></i>
@@ -2109,11 +2115,11 @@
                     <p class="text-2xl font-extrabold text-movida-navy mt-1" id="dash-total">0</p>
                 </div>
                 <div class="glass-card p-3 flex flex-col items-center justify-center text-center">
-                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wide">Estados</p>
+                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wide">Países</p>
                     <p class="text-2xl font-extrabold text-movida-teal mt-1" id="dash-estados">0</p>
                 </div>
                 <div class="glass-card p-3 flex flex-col items-center justify-center text-center">
-                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wide">Municipios</p>
+                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wide">Municipios VE</p>
                     <p class="text-2xl font-extrabold text-movida-green mt-1" id="dash-municipios">0</p>
                 </div>
             </div>
@@ -2255,7 +2261,7 @@
                     </p>
 
                     <h2 class="registration-entry-title">
-                        Regístrate en el Directorio Nacional
+                        Regístrate en el Directorio Internacional
                     </h2>
 
                     <p class="registration-entry-copy">
@@ -2355,10 +2361,10 @@
                 <h2 class="text-xl font-black text-movida-navy mb-4 relative z-10">Sobre La Movida SST Plus</h2>
                 
                 <p class="text-sm text-slate-600 mb-4 leading-relaxed font-medium relative z-10">
-                    Esta es una iniciativa de <strong class="text-movida-teal">La Movida SST</strong> creada para visibilizar, ubicar y conectar a los profesionales de Seguridad y Salud en el Trabajo de toda Venezuela.
+                    Esta es una iniciativa de <strong class="text-movida-teal">La Movida SST</strong> creada para visibilizar, ubicar y conectar a profesionales de Seguridad y Salud en el Trabajo de cualquier país.
                 </p>
                 <p class="text-sm text-slate-600 mb-5 leading-relaxed font-medium relative z-10">
-                    Nuestro directorio nacional te permite encontrar talento estratégico por estado y municipio, filtrando por sus principales datos académicos y situación laboral.<br><br>
+                    Nuestro directorio internacional permite encontrar talento por país y, en Venezuela, también por estado y municipio.<br><br>
                     <span class="flex items-center gap-1.5 text-movida-navy font-bold"><i class="fa-solid fa-mobile-screen-button text-movida-teal"></i> Diseñada para teléfonos móviles:</span> Esta plataforma facilita la consulta desde celulares y computadoras.
                 </p>
                 
@@ -2423,8 +2429,12 @@
                             
                             <div class="space-y-4">
                                 <div>
-                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Cédula o DNI</label>
-                                    <input type="text" id="portal-dni" placeholder="Ej: 12345678" inputmode="numeric" class="w-full bg-white border border-slate-300 rounded-xl p-3.5 font-mono text-slate-700 outline-none focus:border-movida-teal focus:ring-4 focus:ring-movida-teal/10 transition-all" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">País</label>
+                                    <select id="portal-country" class="w-full bg-white border border-slate-300 rounded-xl p-3.5 text-slate-700 outline-none focus:border-movida-teal"><option value="VE">🇻🇪 Venezuela</option></select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Documento de identidad</label>
+                                    <input type="text" id="portal-dni" placeholder="Ej: 12345678" inputmode="text" maxlength="32" class="w-full bg-white border border-slate-300 rounded-xl p-3.5 font-mono text-slate-700 outline-none focus:border-movida-teal focus:ring-4 focus:ring-movida-teal/10 transition-all" oninput="this.value = this.value.toUpperCase().replace(/[^A-Z0-9.-]/g, '')">
                                 </div>
                                 <div>
                                     <label for="portal-code" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Código de Registro</label>
@@ -2481,9 +2491,10 @@
                             </div>
                             
                             <div>
-                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Cédula de verificación</label>
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">País y documento de verificación</label>
+                                <select id="val-country" class="mb-2 w-full bg-white border border-slate-300 rounded-xl p-3 text-slate-700"><option value="VE">🇻🇪 Venezuela</option></select>
                                 <div class="relative flex gap-2">
-                                    <input type="text" id="val-input" placeholder="Ej. 12345678" inputmode="numeric" maxlength="12" autocomplete="off" class="w-full bg-white border border-slate-300 rounded-xl p-3.5 font-mono font-bold text-movida-blue outline-none focus:border-movida-teal focus:ring-4 focus:ring-movida-teal/10 transition-all">
+                                    <input type="text" id="val-input" placeholder="Documento de identidad" inputmode="text" maxlength="36" autocomplete="off" class="w-full bg-white border border-slate-300 rounded-xl p-3.5 font-mono font-bold text-movida-blue outline-none focus:border-movida-teal focus:ring-4 focus:ring-movida-teal/10 transition-all">
                                     <button id="btn-val-submit" class="bg-movida-blue text-white w-14 rounded-xl flex items-center justify-center shadow-md hover:bg-blue-900 active:scale-95 transition-transform shrink-0 relative disabled:opacity-70">
                                         <i class="fa-solid fa-magnifying-glass text-lg btn-text"></i>
                                     </button>
@@ -2620,7 +2631,7 @@
                                 <div class="member-data-heading-icon"><i class="fa-solid fa-user-pen"></i></div>
                                 <div>
                                     <h3>Actualizar mis datos</h3>
-                                    <p>Actualiza tu situación laboral, datos de contacto, privacidad de WhatsApp, LinkedIn, ubicación y formación. Los cambios se reflejarán en tu perfil, el mapa nacional, la credencial y las métricas.</p>
+                                    <p>Actualiza tu situación laboral, datos de contacto, país, privacidad de WhatsApp, LinkedIn y formación. Los cambios se reflejarán en tu perfil, el mapa mundial, la credencial y las métricas.</p>
                                 </div>
                             </div>
 
@@ -2631,6 +2642,11 @@
                                 </div>
 
                                 <div class="member-data-field">
+                                    <label for="member-country">País de residencia</label>
+                                    <div class="member-data-select-wrap"><select id="member-country" name="pais_iso2" required><option value="">Selecciona un país</option></select></div>
+                                </div>
+
+                                <div id="member-state-field" class="member-data-field">
                                     <label for="member-state">Estado</label>
                                     <div class="member-data-select-wrap">
                                         <select id="member-state" name="estado" required>
@@ -2663,7 +2679,7 @@
                                     </div>
                                 </div>
 
-                                <div class="member-data-field">
+                                <div id="member-municipality-field" class="member-data-field">
                                     <label for="member-municipality">Municipio</label>
                                     <div class="member-data-select-wrap">
                                         <select id="member-municipality" name="municipio" required disabled>
@@ -2699,8 +2715,8 @@
 
                                 <div class="member-data-field">
                                     <label for="member-whatsapp">WhatsApp</label>
-                                    <input id="member-whatsapp" name="wasap" type="tel" inputmode="numeric" autocomplete="tel" maxlength="17" placeholder="+58 414 123 4567" required aria-describedby="member-whatsapp-help">
-                                    <p id="member-whatsapp-help" class="member-data-help"><i class="fa-solid fa-circle-info"></i> 12 dígitos, sin cero inicial y comenzando por 584.</p>
+                                    <input id="member-whatsapp" name="wasap" type="tel" inputmode="tel" autocomplete="tel" placeholder="Número de WhatsApp" required aria-describedby="member-whatsapp-help">
+                                    <p id="member-whatsapp-help" class="member-data-help"><i class="fa-solid fa-circle-info"></i> Usa el selector internacional e ingresa un número válido.</p>
                                 </div>
 
                                 <div class="member-data-field member-data-wide">
@@ -3122,10 +3138,61 @@
         let supabaseClient = null;
 
         let map; let markersCluster; let heatmapLayer = null;
+        let editorTelefonoIntl = null;
+        let coordenadasPaises = { VE: { lat: 7.0, lng: -66.0 } };
         let chartInstances = { lab: null, gen: null, edad: null };
         let globalData = []; 
         let datosGeograficosGlobal = {};
-        let stateFiltros = { academico: 'todos', estado: 'todos', municipio: 'todos', laboral: 'todos', genero: 'todos', nombreBusqueda: '', modoHeatmap: false };
+        let stateFiltros = { pais: 'todos', academico: 'todos', estado: 'todos', municipio: 'todos', laboral: 'todos', genero: 'todos', nombreBusqueda: '', modoHeatmap: false };
+
+        function nombrePais(iso2) {
+            try { return new Intl.DisplayNames(['es'], { type: 'region' }).of(String(iso2 || 'VE').toUpperCase()); }
+            catch (_) { return String(iso2 || 'VE').toUpperCase(); }
+        }
+
+        function banderaPais(iso2) {
+            return String(iso2 || 'VE').toUpperCase().replace(/./g, l => String.fromCodePoint(127397 + l.charCodeAt()));
+        }
+
+        function ubicacionIntegrante(item, incluirBandera = false) {
+            const iso2 = String(item?.pais_iso2 || 'VE').toUpperCase();
+            const pais = item?.pais_nombre || nombrePais(iso2);
+            const partes = iso2 === 'VE' ? [item?.municipio, item?.estado, pais] : [pais];
+            return `${incluirBandera ? `${banderaPais(iso2)} ` : ''}${partes.filter(Boolean).join(', ')}`;
+        }
+
+        function actualizarVisibilidadFiltrosTerritoriales() {
+            const pais = document.getElementById('filtro-pais')?.value || 'todos';
+            document.getElementById('filtros-venezuela')?.classList.toggle('hidden', !['todos', 'VE'].includes(pais));
+            if (pais !== 'VE') {
+                const estado = document.getElementById('filtro-estado');
+                const municipio = document.getElementById('filtro-municipio');
+                if (estado) estado.value = 'todos';
+                if (municipio) { municipio.value = 'todos'; municipio.disabled = true; }
+            }
+        }
+
+        function poblarSelectorPaises(select, incluirTodos = false) {
+            if (!select || !window.intlTelInput) return;
+            const actual = select.value;
+            select.innerHTML = incluirTodos ? '<option value="todos">Todos los países</option>' : '<option value="">Selecciona un país</option>';
+            window.intlTelInput.getCountryData().slice().sort((a,b) => nombrePais(a.iso2).localeCompare(nombrePais(b.iso2), 'es')).forEach(p => {
+                const option = document.createElement('option');
+                option.value = p.iso2.toUpperCase();
+                option.textContent = `${banderaPais(p.iso2)} ${nombrePais(p.iso2)}`;
+                select.appendChild(option);
+            });
+            if (actual && Array.from(select.options).some(o => o.value === actual)) select.value = actual;
+        }
+
+        async function cargarCoordenadasPaises() {
+            try {
+                const response = await fetch('https://restcountries.com/v3.1/all?fields=cca2,latlng');
+                if (!response.ok) throw new Error('Catálogo geográfico no disponible');
+                const countries = await response.json();
+                countries.forEach(c => { if (c.cca2 && Array.isArray(c.latlng)) coordenadasPaises[c.cca2] = { lat: c.latlng[0], lng: c.latlng[1] }; });
+            } catch (error) { console.warn('Se usarán coordenadas de respaldo para países:', error); }
+        }
         
         // Variables para renderizado diferido (Lazy Loading) de Gráficos
         let chartsDrawn = false;
@@ -3729,13 +3796,11 @@
             const mapContainer = document.getElementById('map-container');
             if (!mapContainer) throw new Error('No existe el contenedor #map-container.');
 
-            const venezuelaBounds = L.latLngBounds(L.latLng(0.5, -73.5), L.latLng(12.5, -59.5));
             map = L.map(mapContainer, {
                 zoomControl: false,
-                maxBounds: venezuelaBounds,
-                maxBoundsViscosity: 0.9,
-                minZoom: 5
-            }).setView([7.523, -66.178], 6);
+                worldCopyJump: true,
+                minZoom: 2
+            }).setView([12, -45], 2);
 
             L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
                 attribution: '&copy; OpenStreetMap &copy; CARTO',
@@ -3915,7 +3980,7 @@
                 const PAGE_SIZE = 1000;
                 const data = [];
                 let desde = 0;
-                let rpcDirectorio = 'directorio_publico_actividad_v2';
+                let rpcDirectorio = 'directorio_internacional_v1';
                 let intentoFallbackRealizado = false;
 
                 while (true) {
@@ -3931,7 +3996,7 @@
                      * Fallback seguro: si el HTML se publica antes de ejecutar el SQL
                      * de actividad, el Directorio sigue abriendo con la RPC anterior.
                      */
-                    if (respuesta.error && desde === 0 && !intentoFallbackRealizado && rpcDirectorio === 'directorio_publico_actividad_v2') {
+                    if (respuesta.error && desde === 0 && !intentoFallbackRealizado && rpcDirectorio === 'directorio_internacional_v1') {
                         console.warn('La RPC v2 aún no está disponible; se usa la versión anterior.', respuesta.error);
                         rpcDirectorio = 'directorio_publico_actividad';
                         intentoFallbackRealizado = true;
@@ -3958,6 +4023,8 @@
                 data.forEach(item => {
                     item.estado = (item.estado || '').toString().trim();
                     item.municipio = (item.municipio || '').toString().trim();
+                    item.pais_iso2 = (item.pais_iso2 || 'VE').toString().trim().toUpperCase();
+                    item.pais_nombre = (item.pais_nombre || nombrePais(item.pais_iso2)).toString().trim();
                     item.genero = normalizarGenero(item.genero || item.Genero || item.GENERO);
 
                     item._laboral_clean = normalizarLaboral(item.laboral || item.Laboral || item.LABORAL);
@@ -4046,7 +4113,7 @@
                     <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center shrink-0 border border-slate-200 shadow-sm"><i class="fa-solid ${iconGen} text-[10px]"></i></div>
                     <div class="truncate min-w-0">
                         <p class="text-xs font-bold text-movida-navy truncate leading-tight">${item._nombre_completo}</p>
-                        <p class="text-[9px] font-medium text-slate-500 truncate mt-0.5">${item.estado} • ${(item._profesion_clean || '').toLowerCase()}</p>
+                        <p class="text-[9px] font-medium text-slate-500 truncate mt-0.5">${escapeHTML(ubicacionIntegrante(item, true))} • ${(item._profesion_clean || '').toLowerCase()}</p>
                         <div class="mt-1">${chipActividadHTML(item, true)}</div>
                     </div>
                 </div>`;
@@ -4220,7 +4287,7 @@
                         </div>
                     </div>
                     <div class="space-y-2 mb-4">
-                        <p class="text-xs text-slate-600 font-medium flex items-center"><i class="fa-solid fa-location-dot text-slate-400 w-5 text-center mr-2 text-sm"></i> ${escapeHTML(item.estado || '')}, ${escapeHTML(item.municipio || '')}</p>
+                        <p class="text-xs text-slate-600 font-medium flex items-center"><i class="fa-solid fa-location-dot text-slate-400 w-5 text-center mr-2 text-sm"></i> ${escapeHTML(ubicacionIntegrante(item, true))}</p>
                         <p class="text-xs text-slate-600 font-medium flex items-center"><i class="fa-solid fa-briefcase text-slate-400 w-5 text-center mr-2 text-sm"></i> ${item._laboral_clean === 'Buscando' ? 'Buscando Oportunidades' : escapeHTML(item._laboral_clean || '')}</p>
                     </div>
 
@@ -4278,13 +4345,12 @@
 
                     <div class="w-full flex gap-2 profile-contact-grid">
                         ${(() => {
-                            let phone = item.wasap || item.Wasap || item.WASAP || item.whatsapp || item.WhatsApp || item.telefono || item.Telefono || item.celular || item.Celular || '';
+                            let phone = item.telefono_e164 || item.wasap || item.Wasap || item.WASAP || item.whatsapp || item.WhatsApp || item.telefono || item.Telefono || item.celular || item.Celular || '';
                             let linkLd = item.linkedin || item.Linkedin || item.LINKEDIN || item.LinkedIn || '';
                             let btns = '';
                             if (email) btns += `<a href="mailto:${email}" class="flex-1 flex items-center justify-center gap-1.5 bg-movida-navy hover:bg-movida-teal text-white font-bold py-3 rounded-xl shadow-md transition-colors active:scale-95 text-[11px] sm:text-xs profile-contact-btn profile-contact-email"><i class="fa-solid fa-envelope text-base"></i> Correo</a>`;
                             if (phone) {
                                 let num = phone.toString().replace(/\D/g, ''); 
-                                if (num.startsWith('0')) num = '58' + num.substring(1); else if (!num.startsWith('58') && num.length === 10) num = '58' + num;
                                 btns += `<a href="https://wa.me/${num}" target="_blank" class="flex-1 flex items-center justify-center gap-1.5 bg-[#25D366] text-white font-bold py-3 rounded-xl shadow-md transition-colors active:scale-95 text-[11px] sm:text-xs profile-contact-btn profile-contact-whatsapp"><i class="fa-brands fa-whatsapp text-base"></i> WhatsApp</a>`;
                             }
                             if (linkLd && linkLd.trim() !== '') {
@@ -4324,28 +4390,26 @@
             document.getElementById('ui-backdrop').classList.remove('hidden');
             setTimeout(() => { document.getElementById('ui-backdrop').classList.remove('opacity-0'); document.getElementById('profile-sheet').classList.remove('translate-y-full'); }, 10);
             
-            let baseCoords = geodata.municipios[`${item.estado}_${item.municipio}`] || geodata.estados[item.estado];
+            let baseCoords = item.pais_iso2 === 'VE'
+                ? (geodata.municipios[`${item.estado}_${item.municipio}`] || geodata.estados[item.estado])
+                : coordenadasPaises[item.pais_iso2];
             if(baseCoords) map.setView([baseCoords.lat - 0.5, baseCoords.lng], 8, {animate: true, duration: 0.8}); 
         }
 
-        // Unifica el criterio de conteo entre el mapa y las métricas.
-        // Un integrante sólo forma parte del total visible si tiene un estado válido,
-        // exactamente igual que en la sección del mapa.
         function esRegistroBaseValido(item) {
-            return Boolean(
-                item &&
-                item.estado !== null &&
-                item.estado !== undefined &&
-                item.estado.toString().trim() !== ''
-            );
+            if (!item) return false;
+            const pais = String(item.pais_iso2 || 'VE').trim();
+            return Boolean(pais && (pais !== 'VE' || String(item.estado || '').trim()));
         }
 
         function aplicarFiltrosGlobales() {
             const estadoSelect = document.getElementById('filtro-estado');
             const municipioSelect = document.getElementById('filtro-municipio');
+            const paisSelect = document.getElementById('filtro-pais');
             const nombreInput = document.getElementById('filtro-nombre');
             stateFiltros.estado = estadoSelect ? estadoSelect.value : 'todos';
             stateFiltros.municipio = municipioSelect ? municipioSelect.value : 'todos';
+            stateFiltros.pais = paisSelect ? paisSelect.value : 'todos';
             stateFiltros.nombreBusqueda = nombreInput ? nombreInput.value.trim().toLowerCase() : '';
 
             if (!map || !markersCluster) {
@@ -4362,6 +4426,7 @@
 
             globalData.forEach(item => {
                 if (!esRegistroBaseValido(item)) return;
+                if (stateFiltros.pais !== 'todos' && item.pais_iso2 !== stateFiltros.pais) return;
                 if (stateFiltros.academico !== 'todos' && item._nivel_acad !== stateFiltros.academico) return;
                 if (stateFiltros.estado !== 'todos' && item.estado.trim() !== stateFiltros.estado) return;
                 if (stateFiltros.municipio !== 'todos' && (item.municipio || "").trim().toLowerCase() !== stateFiltros.municipio.toLowerCase()) return;
@@ -4371,7 +4436,10 @@
 
                 countVisibles++;
                 let est = item.estado.trim(); let mun = (item.municipio || "").trim();
-                let baseCoords = geodata.municipios[`${est}_${mun}`] || geodata.estados[est] || { lat: 8.0, lng: -66.0 };
+                let baseCoords = item.pais_iso2 === 'VE'
+                    ? (geodata.municipios[`${est}_${mun}`] || geodata.estados[est])
+                    : coordenadasPaises[item.pais_iso2];
+                baseCoords ||= { lat: 12.0, lng: -45.0 };
                 let lat = baseCoords.lat + (Math.random() * 0.02 - 0.01); let lng = baseCoords.lng + (Math.random() * 0.02 - 0.01);
 
                 if (stateFiltros.modoHeatmap) heatPoints.push([lat, lng, 1]);
@@ -4403,6 +4471,7 @@
 
             const porEstado = {};
             const porMunicipio = new Set();
+            const paisesRepresentados = new Set();
             datosGeograficosGlobal = {};
 
             const genData = { 'Masculino': 0, 'Femenino': 0, 'Sin especificar': 0 };
@@ -4427,6 +4496,7 @@
             };
 
             registrosValidos.forEach(item => {
+                paisesRepresentados.add(item.pais_iso2 || 'VE');
                 const estado = (item.estado || '').toString().trim();
                 const municipio = (item.municipio || '').toString().trim();
 
@@ -4474,7 +4544,7 @@
             });
 
             document.getElementById('dash-total').innerText = registrosValidos.length;
-            document.getElementById('dash-estados').innerText = Object.keys(porEstado).length;
+            document.getElementById('dash-estados').innerText = paisesRepresentados.size;
             document.getElementById('dash-municipios').innerText = porMunicipio.size;
 
             dibujarResumenAcademico(statsAcademico);
@@ -4856,6 +4926,7 @@
             const editor = {
                 form: document.getElementById('member-data-editor'),
                 age: document.getElementById('member-age'),
+                country: document.getElementById('member-country'),
                 state: document.getElementById('member-state'),
                 municipality: document.getElementById('member-municipality'),
                 employment: document.getElementById('member-employment'),
@@ -4874,6 +4945,14 @@
                 btnSave: document.getElementById('btn-save-member-data'),
                 status: document.getElementById('member-data-status')
             };
+            poblarSelectorPaises(editor.country);
+            poblarSelectorPaises(document.getElementById('portal-country'));
+            poblarSelectorPaises(document.getElementById('filtro-pais'), true);
+            document.getElementById('portal-country').value = 'VE';
+            editorTelefonoIntl = window.intlTelInput(editor.whatsapp, {
+                initialCountry: 've', separateDialCode: true, nationalMode: true, strictMode: true,
+                loadUtils: () => import('https://cdn.jsdelivr.net/npm/intl-tel-input@25.12.2/build/js/utils.js')
+            });
             const codeChange = {
                 form: document.getElementById('member-code-change'),
                 newCode: document.getElementById('member-new-code'),
@@ -4885,6 +4964,7 @@
             };
             const validator = {
                 input: document.getElementById('val-input'),
+                country: document.getElementById('val-country'),
                 btnSubmit: document.getElementById('btn-val-submit'),
                 idleState: document.getElementById('val-idle'),
                 errorState: document.getElementById('val-error'),
@@ -4901,6 +4981,8 @@
                 btnShare: document.getElementById('btn-val-share'),
                 btnChat: document.getElementById('btn-val-chat')
             };
+            poblarSelectorPaises(validator.country);
+            validator.country.value = 'VE';
             const modal = { container: document.getElementById('cropper-modal'), img: document.getElementById('image-to-crop'), btnCancel: document.getElementById('btn-crop-cancel'), btnSave: document.getElementById('btn-crop-save') };
 
             const manageBtnState = (btn, isLoading) => {
@@ -5166,6 +5248,12 @@
             const cargarFormularioDatos = (data) => {
                 if (!editor.form || !data) return;
                 editor.age.value = data.edad ?? '';
+                editor.country.value = (data.pais_iso2 || 'VE').toString().toUpperCase();
+                const esVenezuela = editor.country.value === 'VE';
+                document.getElementById('member-state-field')?.classList.toggle('hidden', !esVenezuela);
+                document.getElementById('member-municipality-field')?.classList.toggle('hidden', !esVenezuela);
+                editor.state.required = esVenezuela;
+                editor.municipality.required = esVenezuela;
                 editor.state.value = (data.estado || '').toString().trim();
 
                 const municipioActual = (data.municipio || '').toString().trim();
@@ -5193,8 +5281,9 @@
                 editor.linkedin.setCustomValidity('');
 
                 const wasapActual = data.wasap || data.Wasap || data.WASAP || data.whatsapp || data.WhatsApp || '';
-                const wasapNormalizado = normalizarWasapVenezuela(wasapActual);
-                editor.whatsapp.value = formatearWasapVenezuela(wasapNormalizado);
+                const wasapNormalizado = obtenerDigitosWasap(wasapActual);
+                editorTelefonoIntl?.setCountry((data.telefono_pais_iso2 || data.pais_iso2 || 'VE').toLowerCase());
+                editorTelefonoIntl?.setNumber(data.telefono_e164 || (wasapNormalizado ? `+${wasapNormalizado}` : ''));
                 editor.whatsapp.setCustomValidity('');
                 editor.linkedin.setCustomValidity('');
 
@@ -5249,6 +5338,8 @@
             };
 
             const normalizarRegistroLocal = (registro) => {
+                registro.pais_iso2 = (registro.pais_iso2 || 'VE').toString().trim().toUpperCase();
+                registro.pais_nombre = (registro.pais_nombre || nombrePais(registro.pais_iso2)).toString().trim();
                 registro.estado = (registro.estado || '').toString().trim();
                 registro.municipio = (registro.municipio || '').toString().trim();
                 registro.genero = normalizarGenero(registro.genero || registro.Genero || registro.GENERO);
@@ -5566,8 +5657,8 @@
             const loginPortal = async () => {
                 const dni =
                     portal.dni.value
-                        .replace(/\D/g, '')
-                        .trim();
+                        .trim().toUpperCase();
+                const paisIso2 = document.getElementById('portal-country')?.value || 'VE';
 
                 const code =
                     portal.code.value
@@ -5586,8 +5677,9 @@
 
                 try {
                     const { data: rpcData, error } = await supabaseClient
-                        .rpc('acceso_integrante_v2', {
-                            p_cedula: dni,
+                        .rpc('acceso_integrante_internacional', {
+                            p_pais_iso2: paisIso2,
+                            p_documento: dni,
                             p_codigo: code
                         });
 
@@ -5605,7 +5697,7 @@
                         return;
                     }
 
-                    currentMemberDNI = data.cedula;
+                    currentMemberDNI = data.documento || data.cedula;
                     currentMemberCode = code;
                     currentMemberData = data;
 
@@ -5625,10 +5717,8 @@
                 }
             };
 
-            const construirUrlVerificacion = (cedula) => {
-                const cedulaLimpia =
-                    String(cedula || '')
-                        .replace(/\D/g, '');
+            const construirUrlVerificacion = (consulta, paisIso2 = 'VE') => {
+                const valor = String(consulta || '').trim();
 
                 let baseUrl = DOMINIO_OFICIAL;
 
@@ -5649,10 +5739,8 @@
 
                 url.search = '';
                 url.hash = '';
-                url.searchParams.set(
-                    'verificar',
-                    cedulaLimpia
-                );
+                if (/^[0-9a-f-]{36}$/i.test(valor)) url.searchParams.set('id', valor);
+                else { url.searchParams.set('verificar', valor); url.searchParams.set('pais', paisIso2); }
 
                 return url.toString();
             };
@@ -5666,6 +5754,8 @@
                         actual.hash.replace(/^#/, '')
                     );
 
+                const idPublico = actual.searchParams.get('id') || hashParams.get('id');
+                if (/^[0-9a-f-]{36}$/i.test(String(idPublico || ''))) return idPublico;
                 const candidatos = [
                     actual.searchParams.get('verificar'),
                     actual.searchParams.get('cedula'),
@@ -5676,13 +5766,8 @@
                 ];
 
                 for (const candidato of candidatos) {
-                    const cedula =
-                        String(candidato || '')
-                            .replace(/\D/g, '');
-
-                    if (/^\d{6,12}$/.test(cedula)) {
-                        return cedula;
-                    }
+                    const documento = String(candidato || '').trim().toUpperCase().replace(/[^A-Z0-9.-]/g, '');
+                    if (documento.length >= 3) return documento;
                 }
 
                 /*
@@ -5780,7 +5865,7 @@
                 portal.lastname.textContent = lPart || '—';
 
                 portal.dniDisplay.textContent =
-                    (data.cedula || '').toString().replace(/\D/g, '') || '—';
+                    (data.documento || data.cedula || '').toString().trim() || '—';
 
                 const grado = (data.grado || "SST").toString().trim();
                 portal.grado.textContent = grado;
@@ -5799,9 +5884,7 @@
                     '13px';
 
                 const ubicacionCredencial =
-                    [data.municipio, data.estado]
-                        .filter(Boolean)
-                        .join(', ') || 'Venezuela';
+                    ubicacionIntegrante(data);
 
                 portal.estado.textContent = ubicacionCredencial;
                 portal.estado.style.fontSize =
@@ -5812,14 +5895,12 @@
 
                 portal.codeDisplay.textContent = "QR OFICIAL";
 
-                const cedulaVerificacion =
-                    (data.cedula || '')
-                        .toString()
-                        .replace(/\D/g, '');
+                const cedulaVerificacion = (data.public_id || data.documento || data.cedula || '').toString().trim();
 
                 const qrUrl = cedulaVerificacion
                     ? construirUrlVerificacion(
-                        cedulaVerificacion
+                        cedulaVerificacion,
+                        data.pais_iso2 || 'VE'
                     )
                     : DOMINIO_OFICIAL;
 
@@ -5896,12 +5977,16 @@
                 }
 
                 const edad = Number.parseInt(editor.age.value, 10);
-                const estado = editor.state.value.trim();
+                const paisIso2 = editor.country.value.trim().toUpperCase();
+                const paisNombre = nombrePais(paisIso2);
+                const esVenezuela = paisIso2 === 'VE';
+                const estado = esVenezuela ? editor.state.value.trim() : '';
                 const municipioIngresado = editor.municipality.value.trim();
-                const municipio = obtenerMunicipioCanonico(estado, municipioIngresado);
+                const municipio = esVenezuela ? obtenerMunicipioCanonico(estado, municipioIngresado) : '';
                 const laboral = editor.employment?.value.trim() || '';
                 const correo = editor.email.value.trim().toLowerCase();
-                const wasap = obtenerDigitosWasap(editor.whatsapp.value);
+                const telefonoE164 = editorTelefonoIntl?.getNumber() || '';
+                const wasap = telefonoE164.replace(/\D/g, '');
                 const mostrarWasap = Boolean(editor.whatsappVisibility?.checked);
                 const usuarioIngresado = (editor.whatsappUsername?.value || '').trim().replace(/\s+/g, '');
                 const whatsappUsername = usuarioIngresado
@@ -5920,12 +6005,12 @@
                     editor.age.focus();
                     return;
                 }
-                if (!estado) {
+                if (esVenezuela && !estado) {
                     setEditorStatus('Selecciona el estado de residencia.', 'error');
                     editor.state.focus();
                     return;
                 }
-                if (!municipio) {
+                if (esVenezuela && !municipio) {
                     setEditorStatus('Selecciona un municipio válido que pertenezca al estado elegido.', 'error');
                     editor.municipality.focus();
                     return;
@@ -5951,9 +6036,9 @@
                     editor.email.focus();
                     return;
                 }
-                if (!/^584\d{9}$/.test(wasap)) {
-                    editor.whatsapp.setCustomValidity('Debe contener 12 dígitos y comenzar por 584. Ejemplo: +58 414 123 4567.');
-                    setEditorStatus('El WhatsApp debe tener 12 dígitos y comenzar por 584.', 'error');
+                if (!editorTelefonoIntl?.isValidNumber() || !/^\+[1-9]\d{6,14}$/.test(telefonoE164)) {
+                    editor.whatsapp.setCustomValidity('Ingresa un número internacional válido.');
+                    setEditorStatus('El número de WhatsApp no es válido para el prefijo seleccionado.', 'error');
                     editor.whatsapp.focus();
                     editor.whatsapp.reportValidity();
                     return;
@@ -5986,11 +6071,15 @@
                 try {
                     const cambiosPermitidos = {
                         edad,
-                        estado,
-                        municipio,
+                        pais_iso2: paisIso2,
+                        pais_nombre: paisNombre,
+                        estado: estado || null,
+                        municipio: municipio || null,
                         laboral,
                         correo,
                         wasap,
+                        telefono_e164: telefonoE164,
+                        telefono_pais_iso2: editorTelefonoIntl.getSelectedCountryData().iso2.toUpperCase(),
                         mostrar_wasap: mostrarWasap,
                         whatsapp_username: whatsappUsername,
                         mostrar_whatsapp_username: mostrarWhatsappUsername,
@@ -6001,8 +6090,9 @@
                         doctorado: doctorado || null
                     };
                     const { data: rpcData, error } = await supabaseClient
-                        .rpc('actualizar_integrante_v2', {
-                            p_cedula: currentMemberDNI,
+                        .rpc('actualizar_integrante_internacional', {
+                            p_pais_iso2: currentMemberData.pais_iso2 || 'VE',
+                            p_documento: currentMemberDNI,
                             p_codigo: currentMemberCode,
                             p_datos: cambiosPermitidos
                         });
@@ -6092,8 +6182,9 @@
                     const codigoAnterior = currentMemberCode;
 
                     const { data: rpcData, error } = await supabaseClient
-                        .rpc('cambiar_codigo_integrante', {
-                            p_cedula: currentMemberDNI,
+                        .rpc('cambiar_codigo_integrante_internacional', {
+                            p_pais_iso2: currentMemberData?.pais_iso2 || 'VE',
+                            p_documento: currentMemberDNI,
                             p_codigo_actual: codigoAnterior,
                             p_codigo_nuevo: nuevoCodigo
                         });
@@ -6241,6 +6332,12 @@
 
                                     cedula:
                                         currentMemberDNI,
+
+                                    documento:
+                                        currentMemberDNI,
+
+                                    pais_iso2:
+                                        currentMemberData?.pais_iso2 || 'VE',
 
                                     codigo_integrante:
                                         currentMemberCode,
@@ -6562,9 +6659,9 @@
                 query,
                 opciones = {}
             ) => {
-                const cedulaConsulta =
-                    String(query || '')
-                        .replace(/\D/g, '');
+                const cedulaConsulta = String(query || '').trim().toUpperCase();
+                const esPublicId = /^[0-9A-F-]{36}$/.test(cedulaConsulta);
+                const paisConsulta = new URL(window.location.href).searchParams.get('pais') || validator.country?.value || 'VE';
 
                 const {
                     reintentos = 2,
@@ -6577,10 +6674,10 @@
 
                 limpiarErrorVerificador();
 
-                if (!/^\d{6,12}$/.test(cedulaConsulta)) {
+                if (!esPublicId && !/^[A-Z0-9.-]{3,32}$/.test(cedulaConsulta)) {
                     establecerErrorVerificador(
-                        'Cédula inválida',
-                        'La cédula de verificación debe contener entre 6 y 12 dígitos.'
+                        'Documento inválido',
+                        'Ingresa un documento de identidad válido.'
                     );
 
                     return false;
@@ -6616,10 +6713,10 @@
                             error
                         } = await supabaseClient
                             .rpc(
-                                'verificar_credencial',
+                                'verificar_credencial_internacional',
                                 {
-                                    p_cedula:
-                                        cedulaConsulta
+                                    p_consulta: cedulaConsulta,
+                                    p_pais_iso2: paisConsulta
                                 }
                             );
 
@@ -6718,11 +6815,11 @@
                 validator.nombres.textContent = d.nombres || "N/A";
                 validator.apellidos.textContent = d.apellidos || "";
                 
-                if (validator.cedula) validator.cedula.textContent = (d.cedula || '').toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                if (validator.cedula) validator.cedula.textContent = (d.documento || d.cedula || '').toString();
                 
                 validator.grado.textContent = d.grado || '-';
                 validator.carrera.textContent = d.carrera || '-';
-                validator.ubicacion.textContent = `${d.municipio || ''}, Edo. ${d.estado || ''}`;
+                validator.ubicacion.textContent = ubicacionIntegrante(d, true);
 
                 let fotoData = d.foto_url || d.foto || '';
                 
@@ -6741,18 +6838,18 @@
                     validator.photo.classList.add('hidden'); validator.photoPlaceholder.classList.remove('hidden');
                 }
 
-                let w = (d.wasap || d.whatsapp || d.telefono || d.celular || '').toString().replace(/\D/g, '');
-                if (w.startsWith('0')) w = '58' + w.substring(1);
-                else if (!w.startsWith('58') && w.length === 10) w = '58' + w;
+                let w = (d.telefono_e164 || d.wasap || d.whatsapp || d.telefono || d.celular || '').toString().replace(/\D/g, '');
                 validator.btnChat.href = w ? `https://wa.me/${w}` : '#';
                 validator.btnChat.classList.toggle('pointer-events-none', !w);
                 validator.btnChat.classList.toggle('opacity-50', !w);
 
-                const coords = geodata.estados[d.estado] || { lat: 10.5, lng: -66.9 };
+                const coords = (d.pais_iso2 || 'VE') === 'VE'
+                    ? (geodata.estados[d.estado] || { lat: 10.5, lng: -66.9 })
+                    : (coordenadasPaises[d.pais_iso2] || { lat: 12, lng: -45 });
                 const latLng = [coords.lat, coords.lng];
                 
                 if(!valMapInstance) {
-                    valMapInstance = L.map('valStateMap', { zoomControl: false, attributionControl: false }).setView(latLng, 7);
+                    valMapInstance = L.map('valStateMap', { zoomControl: false, attributionControl: false }).setView(latLng, (d.pais_iso2 || 'VE') === 'VE' ? 7 : 4);
                     L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { maxZoom: 19 }).addTo(valMapInstance);
                     valMarkerInstance = L.circleMarker(latLng, { color: '#007b85', fillColor: '#007b85', fillOpacity: 0.4, radius: 12 }).addTo(valMapInstance);
                 } else {
@@ -6781,19 +6878,20 @@
             });
 
             validator.btnSubmit.addEventListener('click', () => {
-                const q = validator.input.value.replace(/\D/g, '');
-                validator.input.value = q.slice(0, 12);
+                const q = validator.input.value.trim().toUpperCase().replace(/[^A-Z0-9.-]/g, '');
+                validator.input.value = q.slice(0, 36);
                 searchValidator(validator.input.value);
             });
 
             validator.input.addEventListener('keypress', (e) => { if(e.key === 'Enter') validator.btnSubmit.click(); });
             validator.input.addEventListener('input', function() {
-                this.value = this.value.replace(/\D/g, '').slice(0, 12);
+                this.value = this.value.toUpperCase().replace(/[^A-Z0-9.-]/g, '').slice(0, 32);
             });
 
             validator.btnShare.addEventListener('click', () => {
                 if(!currentValidatorData) return;
-                const cedulaVerificacion = (currentValidatorData.cedula || '').toString().replace(/\D/g, '');
+                const cedulaVerificacion = (currentValidatorData.documento || currentValidatorData.cedula || '')
+                    .toString().trim().toUpperCase().replace(/[^A-Z0-9.-]/g, '');
                 const urlVerificacion =
                     construirUrlVerificacion(
                         cedulaVerificacion
@@ -6913,6 +7011,16 @@
                 if (editor.municipality) editor.municipality.setCustomValidity('');
                 setEditorStatus('');
             });
+            if (editor.country) editor.country.addEventListener('change', () => {
+                const esVenezuela = editor.country.value === 'VE';
+                document.getElementById('member-state-field')?.classList.toggle('hidden', !esVenezuela);
+                document.getElementById('member-municipality-field')?.classList.toggle('hidden', !esVenezuela);
+                editor.state.required = esVenezuela;
+                editor.municipality.required = esVenezuela;
+                if (!esVenezuela) { editor.state.value = ''; actualizarSugerenciasMunicipioEditor('', ''); }
+                editorTelefonoIntl?.setCountry(editor.country.value.toLowerCase());
+                setEditorStatus('');
+            });
             if (editor.whatsappVisibility) {
                 editor.whatsappVisibility.addEventListener('change', () => {
                     actualizarTextoPrivacidadWasap();
@@ -6923,16 +7031,12 @@
 
             if (editor.whatsapp) {
                 editor.whatsapp.addEventListener('input', function () {
-                    const digitos = obtenerDigitosWasap(this.value).slice(0, 12);
-                    this.value = formatearWasapVenezuela(digitos);
                     this.setCustomValidity('');
                     setEditorStatus('');
                 });
                 editor.whatsapp.addEventListener('blur', function () {
-                    const normalizado = normalizarWasapVenezuela(this.value);
-                    this.value = formatearWasapVenezuela(normalizado);
-                    if (normalizado && !/^584\d{9}$/.test(normalizado)) {
-                        this.setCustomValidity('Debe contener 12 dígitos y comenzar por 584.');
+                    if (this.value && !editorTelefonoIntl?.isValidNumber()) {
+                        this.setCustomValidity('Ingresa un número internacional válido.');
                     } else {
                         this.setCustomValidity('');
                     }
@@ -6951,7 +7055,7 @@
                 const cedulaVerificacion =
                     obtenerCedulaVerificacionDesdeUrl();
 
-                if (!/^\d{6,12}$/.test(cedulaVerificacion)) {
+                if (!cedulaVerificacion || cedulaVerificacion.length < 3) {
                     return;
                 }
 
@@ -7050,6 +7154,9 @@
 
             // El splash nunca bloquea la navegación.
             setTimeout(ocultarSplash, 700);
+
+            await esperarHasta(() => Boolean(window.intlTelInput), 7000);
+            await cargarCoordenadasPaises();
 
             try { initCarouselDrag(); } catch (error) { console.error('Carrusel:', error); }
             try { initCredenciales(); }
