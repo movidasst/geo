@@ -2193,20 +2193,36 @@
                 </div>
             </a>
 
+            <section class="glass-card p-4" aria-labelledby="dashboard-country-title">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="w-10 h-10 rounded-xl bg-movida-teal/10 text-movida-teal flex items-center justify-center shrink-0"><i class="fa-solid fa-earth-americas"></i></div>
+                    <div class="min-w-0">
+                        <h2 id="dashboard-country-title" class="text-sm font-black text-movida-navy">Métricas por país</h2>
+                        <p class="text-[11px] text-slate-500 leading-snug">Selecciona un país para analizar exclusivamente sus profesionales.</p>
+                    </div>
+                </div>
+                <label for="dashboard-country" class="sr-only">País de las métricas</label>
+                <div class="relative">
+                    <select id="dashboard-country" onchange="cambiarPaisMetricas(this.value)" class="w-full appearance-none bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 pr-10 text-sm font-bold text-movida-navy focus:outline-none focus:border-movida-teal focus:ring-2 focus:ring-movida-teal/10"><option value="todos">🌎 Mundo · Toda la red</option></select>
+                    <i class="fa-solid fa-chevron-down pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-xs text-movida-teal"></i>
+                </div>
+                <div id="dashboard-country-scope" class="mt-3 rounded-xl bg-movida-teal/5 border border-movida-teal/10 px-3 py-2 text-[11px] font-semibold text-slate-600" aria-live="polite">Mostrando las métricas de toda la red internacional.</div>
+            </section>
+
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-2">
                 <div class="glass-card p-3 flex flex-col items-center justify-center text-center">
-                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wide">Total Red</p>
+                    <p id="dash-total-label" class="text-[10px] text-slate-500 font-bold uppercase tracking-wide">Total Red</p>
                     <p class="text-2xl font-extrabold text-movida-navy mt-1" id="dash-total">0</p>
                 </div>
-                <div class="glass-card p-3 flex flex-col items-center justify-center text-center">
-                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wide">Países</p>
+                <div id="dash-territory-card" class="glass-card p-3 flex flex-col items-center justify-center text-center">
+                    <p id="dash-territory-label" class="text-[10px] text-slate-500 font-bold uppercase tracking-wide">Países</p>
                     <p class="text-2xl font-extrabold text-movida-teal mt-1" id="dash-estados">0</p>
                 </div>
-                <div class="glass-card p-3 flex flex-col items-center justify-center text-center">
+                <div id="dash-municipality-card" class="glass-card p-3 flex flex-col items-center justify-center text-center">
                     <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wide">Municipios VE</p>
                     <p class="text-2xl font-extrabold text-movida-green mt-1" id="dash-municipios">0</p>
                 </div>
-                <div class="glass-card p-3 flex flex-col items-center justify-center text-center">
+                <div id="dash-international-card" class="glass-card p-3 flex flex-col items-center justify-center text-center">
                     <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wide">Fuera de VE</p>
                     <p class="text-2xl font-extrabold text-movida-yellow mt-1" id="dash-internacionales">0</p>
                 </div>
@@ -2251,11 +2267,11 @@
                 <div id="professions-list" class="space-y-3"><p class="text-center text-slate-400 text-sm">Analizando perfiles...</p></div>
             </div>
 
-            <div class="glass-card p-5">
+            <div id="dashboard-geography-card" class="glass-card p-5">
                 <h3 class="text-movida-navy font-bold text-sm uppercase tracking-wide mb-4 flex items-center gap-2">
                     <i class="fa-solid fa-earth-americas text-movida-teal"></i> Red por países
                 </h3>
-                <p class="text-[11px] text-slate-500 leading-relaxed mb-4">Muestra todos los países representados. Venezuela conserva el detalle adicional por estado y municipio.</p>
+                <p id="dashboard-geography-help" class="text-[11px] text-slate-500 leading-relaxed mb-4">Muestra todos los países representados. Venezuela conserva el detalle adicional por estado y municipio.</p>
                 <div id="states-list" class="space-y-3"><p class="text-center text-slate-400 text-sm py-4">Sincronizando...</p></div>
                 <button id="btn-show-more-states" onclick="mostrarTodosLosEstados()" class="hidden w-full mt-4 bg-slate-50 text-movida-navy border border-slate-200 font-bold text-xs py-3 rounded-xl hover:bg-slate-100 transition-colors">Ver todos los países</button>
             </div>
@@ -3350,6 +3366,7 @@
         let globalGenData = null;
         let globalLabData = null;
         let globalEdadData = null;
+        let dashboardCountry = 'todos';
 
 
         // =========================================================
@@ -4242,6 +4259,7 @@
                 });
 
                 globalData = data;
+                poblarSelectorPaisesMetricas(globalData);
                 aplicarFiltrosGlobales();
                 procesarDatosParaDashboard(globalData);
 
@@ -4711,8 +4729,38 @@
             if (internacionalesEl) internacionalesEl.innerText = internacionalesVisibles;
         }
 
+        function poblarSelectorPaisesMetricas(data) {
+            const select = document.getElementById('dashboard-country');
+            if (!select) return;
+            const paises = new Map();
+            (Array.isArray(data) ? data : []).filter(esRegistroBaseValido).forEach(item => {
+                const iso2 = String(item.pais_iso2 || 'VE').trim().toUpperCase();
+                if (iso2) paises.set(iso2, item.pais_nombre || nombrePais(iso2));
+            });
+            const opciones = Array.from(paises.entries()).sort((a, b) => {
+                if (a[0] === 'VE') return -1;
+                if (b[0] === 'VE') return 1;
+                return String(a[1]).localeCompare(String(b[1]), 'es', { sensitivity: 'base' });
+            });
+            select.innerHTML = '<option value="todos">🌎 Mundo · Toda la red</option>' + opciones.map(([iso2, nombre]) =>
+                `<option value="${escapeHTML(iso2)}">${banderaPais(iso2)} ${escapeHTML(nombre)}</option>`
+            ).join('');
+            if (!paises.has(dashboardCountry) && dashboardCountry !== 'todos') dashboardCountry = 'todos';
+            select.value = dashboardCountry;
+        }
+
+        function cambiarPaisMetricas(iso2) {
+            dashboardCountry = String(iso2 || 'todos').trim().toUpperCase();
+            if (dashboardCountry === 'TODOS') dashboardCountry = 'todos';
+            procesarDatosParaDashboard(globalData);
+            document.getElementById('dashboard-view')?.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
         function procesarDatosParaDashboard(data) {
-            const registrosValidos = (Array.isArray(data) ? data : []).filter(esRegistroBaseValido);
+            const todosLosRegistros = (Array.isArray(data) ? data : []).filter(esRegistroBaseValido);
+            const registrosValidos = dashboardCountry === 'todos'
+                ? todosLosRegistros
+                : todosLosRegistros.filter(item => String(item.pais_iso2 || 'VE').toUpperCase() === dashboardCountry);
 
             const porMunicipio = new Set();
             const paisesRepresentados = new Set();
@@ -4795,10 +4843,31 @@
                 if (profesion) carreras[profesion] = (carreras[profesion] || 0) + 1;
             });
 
+            const esMundo = dashboardCountry === 'todos';
+            const esVenezuela = dashboardCountry === 'VE';
+            const nombreAmbito = esMundo ? 'toda la red internacional' : nombrePais(dashboardCountry);
+            const banderaAmbito = esMundo ? '🌎' : banderaPais(dashboardCountry);
+
             document.getElementById('dash-total').innerText = registrosValidos.length;
-            document.getElementById('dash-estados').innerText = paisesRepresentados.size;
+            document.getElementById('dash-total-label').innerText = esMundo ? 'Total red' : 'Profesionales';
+            document.getElementById('dash-territory-label').innerText = esVenezuela ? 'Estados' : 'Países';
+            document.getElementById('dash-estados').innerText = esVenezuela
+                ? Object.keys(datosGeograficosGlobal.VE?.estados || {}).length
+                : paisesRepresentados.size;
             document.getElementById('dash-municipios').innerText = porMunicipio.size;
             document.getElementById('dash-internacionales').innerText = integrantesFueraVenezuela;
+
+            document.getElementById('dash-territory-card')?.classList.toggle('hidden', !esMundo && !esVenezuela);
+            document.getElementById('dash-municipality-card')?.classList.toggle('hidden', !esVenezuela);
+            document.getElementById('dash-international-card')?.classList.toggle('hidden', !esMundo);
+            document.getElementById('dashboard-geography-card')?.classList.toggle('hidden', !esMundo && !esVenezuela);
+
+            const scope = document.getElementById('dashboard-country-scope');
+            if (scope) scope.innerHTML = `${banderaAmbito} Mostrando únicamente las métricas de <strong>${escapeHTML(nombreAmbito)}</strong> · ${registrosValidos.length} profesionales.`;
+            const geographyHelp = document.getElementById('dashboard-geography-help');
+            if (geographyHelp) geographyHelp.textContent = esVenezuela
+                ? 'Distribución territorial de Venezuela. Toca un estado para consultar sus municipios.'
+                : 'Muestra todos los países representados. Selecciona Venezuela para consultar estados y municipios.';
 
             dibujarResumenAcademico(statsAcademico);
             dibujarTopCarreras(carreras);
