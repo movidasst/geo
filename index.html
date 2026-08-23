@@ -310,7 +310,30 @@
         .country-marker-count { font-size:12px; line-height:1; font-weight:900; }
         .country-marker-name { display:none; font-size:9px; line-height:1; font-weight:800; opacity:.82; }
         .country-marker-shell.country-marker-wide .country-marker-name { display:block; }
-        .member-photo-map-marker { width:38px; height:38px; border-radius:50%; overflow:hidden; border:3px solid #fff; background:#e2e8f0; box-shadow:0 6px 16px rgba(15,23,42,.3); }
+        .member-map-touch-target {
+            width: 46px;
+            height: 46px;
+            display: grid;
+            place-items: center;
+            border-radius: 999px;
+            cursor: pointer;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .member-map-dot {
+            width: 22px;
+            height: 22px;
+            border-radius: 999px;
+            border: 3px solid #fff;
+            box-shadow: 0 4px 12px rgba(15,23,42,.28);
+            transition: transform .15s ease, box-shadow .15s ease;
+        }
+        .member-map-touch-target:hover .member-map-dot,
+        .member-map-touch-target:active .member-map-dot {
+            transform: scale(1.16);
+            box-shadow: 0 5px 16px rgba(15,23,42,.38);
+        }
+        .member-photo-map-marker { width:40px; height:40px; border-radius:50%; overflow:hidden; border:3px solid #fff; background:#e2e8f0; box-shadow:0 6px 16px rgba(15,23,42,.3); }
         .member-photo-map-marker img { width:100%; height:100%; object-fit:cover; display:block; }
 
         #map-region-bar { scrollbar-width:none; }
@@ -328,8 +351,8 @@
         .movida-activity-div-icon { background: transparent !important; border: 0 !important; }
         .movida-activity-marker {
             position: relative;
-            width: 24px;
-            height: 24px;
+            width: 25px;
+            height: 25px;
             border-radius: 999px;
             border: 3px solid #fff;
             box-shadow: 0 4px 12px rgba(15, 23, 42, .28);
@@ -3938,9 +3961,11 @@
 
             markersCluster = L.markerClusterGroup({
                 showCoverageOnHover: false,
-                maxClusterRadius: 40,
+                maxClusterRadius: 38,
                 spiderfyOnMaxZoom: true,
-                zoomToBoundsOnClick: true
+                zoomToBoundsOnClick: true,
+                spiderfyDistanceMultiplier: 2.15,
+                spiderLegPolylineOptions: { weight: 2, color: '#64748b', opacity: 0.58 }
             });
             map.addLayer(markersCluster);
             countryLayer = L.layerGroup().addTo(map);
@@ -4084,38 +4109,38 @@
 
         function crearMarcadorActividad(item, lat, lng, pinColor) {
             const fotoRaw = String(item?.foto_url || item?.foto || '');
+            const nombreMarcador = String(item?._nombre_completo || 'Profesional SST').trim();
             if (map?.getZoom() >= 10 && fotoRaw) {
                 let foto = fotoRaw;
                 if (fotoRaw.includes('id=')) foto = `https://lh3.googleusercontent.com/d/${fotoRaw.split('id=')[1].split('&')[0]}`;
                 else if (fotoRaw.includes('/d/')) foto = `https://lh3.googleusercontent.com/d/${fotoRaw.split('/d/')[1].split('/')[0]}`;
                 const iconoFoto = L.divIcon({
                     className: 'movida-activity-div-icon',
-                    html: `<div class="member-photo-map-marker" style="box-shadow:0 0 0 3px ${pinColor}55,0 6px 16px rgba(15,23,42,.3)"><img src="${escapeHTML(foto)}" alt="" loading="lazy" onerror="this.parentElement.style.background='${pinColor}';this.remove()"></div>`,
-                    iconSize: [42, 42],
-                    iconAnchor: [21, 21]
+                    html: `<div class="member-map-touch-target" aria-label="Abrir perfil de ${escapeHTML(nombreMarcador)}"><div class="member-photo-map-marker" style="box-shadow:0 0 0 3px ${pinColor}55,0 6px 16px rgba(15,23,42,.3)"><img src="${escapeHTML(foto)}" alt="" loading="lazy" onerror="this.parentElement.style.background='${pinColor}';this.remove()"></div></div>`,
+                    iconSize: [46, 46],
+                    iconAnchor: [23, 23]
                 });
-                return L.marker([lat, lng], { icon: iconoFoto, keyboard: true, riseOnHover: true });
+                return L.marker([lat, lng], { icon: iconoFoto, keyboard: true, riseOnHover: true, title: `Abrir perfil de ${nombreMarcador}` });
             }
 
             const actividad = datosActividad(item);
             if (actividad.puntos <= 0) {
-                return L.circleMarker([lat, lng], {
-                    radius: 10,
-                    fillColor: pinColor,
-                    color: '#ffffff',
-                    weight: 3,
-                    fillOpacity: 0.95,
-                    shadowBlur: 10
+                const iconoPunto = L.divIcon({
+                    className: 'movida-activity-div-icon',
+                    html: `<div class="member-map-touch-target" aria-label="Abrir perfil de ${escapeHTML(nombreMarcador)}"><span class="member-map-dot" style="background:${pinColor}"></span></div>`,
+                    iconSize: [46, 46],
+                    iconAnchor: [23, 23]
                 });
+                return L.marker([lat, lng], { icon: iconoPunto, keyboard: true, riseOnHover: true, title: `Abrir perfil de ${nombreMarcador}` });
             }
 
             const icon = L.divIcon({
                 className: 'movida-activity-div-icon',
-                html: `<div class="movida-activity-marker" style="background:${pinColor}"><span class="movida-activity-marker__badge">${escapeHTML(actividad.icono)}</span></div>`,
-                iconSize: [28, 28],
-                iconAnchor: [14, 14]
+                html: `<div class="member-map-touch-target" aria-label="Abrir perfil de ${escapeHTML(nombreMarcador)}"><div class="movida-activity-marker" style="background:${pinColor}"><span class="movida-activity-marker__badge">${escapeHTML(actividad.icono)}</span></div></div>`,
+                iconSize: [46, 46],
+                iconAnchor: [23, 23]
             });
-            return L.marker([lat, lng], { icon, keyboard: true, riseOnHover: true });
+            return L.marker([lat, lng], { icon, keyboard: true, riseOnHover: true, title: `Abrir perfil de ${nombreMarcador}` });
         }
 
         function colorMarcadorIntegrante(item) {
