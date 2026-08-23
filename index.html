@@ -2197,7 +2197,7 @@
                 <div class="flex items-center gap-3 mb-3">
                     <div class="w-10 h-10 rounded-xl bg-movida-teal/10 text-movida-teal flex items-center justify-center shrink-0"><i class="fa-solid fa-earth-americas"></i></div>
                     <div class="min-w-0">
-                        <h2 id="dashboard-country-title" class="text-sm font-black text-movida-navy">Métricas por país</h2>
+                        <h2 id="dashboard-country-title" class="text-sm font-black text-movida-navy">Filtrar todas las métricas por país</h2>
                         <p class="text-[11px] text-slate-500 leading-snug">Selecciona un país para analizar exclusivamente sus profesionales.</p>
                     </div>
                 </div>
@@ -4839,7 +4839,10 @@
                 else statsAcademico.sinEspecificar++;
 
                 const carreraOriginal = (item.carrera || item.Carrera || '').toString().trim();
-                const profesion = carreraOriginal ? item._profesion_clean : '';
+                const gradoOriginal = (item.grado || item.Grado || '').toString().trim();
+                const profesion = carreraOriginal
+                    ? item._profesion_clean
+                    : (gradoOriginal ? toTitleCase(gradoOriginal).replace(/\btsu\b/ig, 'TSU').replace(/\bsst\b/ig, 'SST') : '');
                 if (profesion) carreras[profesion] = (carreras[profesion] || 0) + 1;
             });
 
