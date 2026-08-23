@@ -48,8 +48,8 @@
     <link rel="canonical" href="https://directorio.movidasst.com/">
     <meta property="og:site_name" content="La Movida SST Plus">
     <meta property="og:locale" content="es_VE">
-    <meta name="twitter:title" content="Directorio de Profesionales de SST en Venezuela">
-    <meta name="twitter:description" content="Consulta profesionales de SST por estado, municipio, formación académica y situación laboral.">
+    <meta name="twitter:title" content="Directorio Internacional de Profesionales de SST">
+    <meta name="twitter:description" content="Consulta profesionales de SST por país, formación académica y situación laboral.">
 
     <!-- Fuentes y Tailwind -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
@@ -287,6 +287,42 @@
 
         .marker-cluster-small, .marker-cluster-medium, .marker-cluster-large { background-color: rgba(0, 123, 133, 0.3) !important; }
         .marker-cluster-small div, .marker-cluster-medium div, .marker-cluster-large div { background-color: rgba(0, 32, 91, 0.9) !important; color: white !important; font-family: 'Outfit', sans-serif; font-weight: bold; }
+
+        .country-marker-shell {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            min-width: 58px;
+            height: 38px;
+            padding: 4px 9px 4px 6px;
+            border: 2px solid rgba(255,255,255,.96);
+            border-radius: 999px;
+            background: linear-gradient(145deg, rgba(0,32,91,.96), rgba(0,123,133,.95));
+            color: #fff;
+            box-shadow: 0 7px 18px rgba(0,32,91,.26);
+            font-family: 'Outfit', sans-serif;
+            white-space: nowrap;
+            transform: translateZ(0);
+            transition: transform .18s ease, box-shadow .18s ease;
+        }
+        .country-marker-shell:hover { transform: translateY(-2px) scale(1.04); box-shadow: 0 9px 22px rgba(0,32,91,.32); }
+        .country-marker-flag { display:grid; place-items:center; width:27px; height:27px; border-radius:50%; background:#fff; font-size:18px; box-shadow:inset 0 0 0 1px rgba(15,23,42,.08); }
+        .country-marker-count { font-size:12px; line-height:1; font-weight:900; }
+        .country-marker-name { display:none; font-size:9px; line-height:1; font-weight:800; opacity:.82; }
+        .country-marker-shell.country-marker-wide .country-marker-name { display:block; }
+        .member-photo-map-marker { width:38px; height:38px; border-radius:50%; overflow:hidden; border:3px solid #fff; background:#e2e8f0; box-shadow:0 6px 16px rgba(15,23,42,.3); }
+        .member-photo-map-marker img { width:100%; height:100%; object-fit:cover; display:block; }
+
+        #map-region-bar { scrollbar-width:none; }
+        #map-region-bar::-webkit-scrollbar { display:none; }
+        .map-region-chip { min-height:29px; padding:4px 10px; border-radius:999px; background:rgba(255,255,255,.94); border:1px solid rgba(148,163,184,.45); color:#486173; box-shadow:0 3px 10px rgba(15,23,42,.08); font-size:9px; font-weight:900; white-space:nowrap; }
+        .map-region-chip.active { color:#fff; border-color:transparent; background:linear-gradient(135deg,#007b85,#00205b); }
+
+        #map-tools-capsule { padding:5px; border:1px solid rgba(0,123,133,.2); border-radius:999px; background:rgba(255,255,255,.76); box-shadow:0 9px 24px rgba(0,32,91,.14); backdrop-filter:blur(12px); }
+        #map-tools-capsule button { width:39px !important; height:39px !important; box-shadow:none !important; border:0 !important; }
+        #map-legend-panel { max-width:210px; }
+        .legend-dot { width:10px; height:10px; border-radius:50%; border:2px solid #fff; box-shadow:0 0 0 1px rgba(15,23,42,.12); }
+        .leaflet-tile-pane { filter:saturate(.86) contrast(.98) brightness(1.025); }
 
         /* Actividad / ranking: marcador discreto para integrantes con XP. */
         .movida-activity-div-icon { background: transparent !important; border: 0 !important; }
@@ -1950,7 +1986,7 @@
             >
         </div>
         <h2 id="splash-title">La Movida SST Plus</h2>
-        <div id="splash-subtitle">Red nacional de profesionales</div>
+        <div id="splash-subtitle">Red internacional de profesionales</div>
         <div id="splash-status">Abriendo aplicación…</div>
     </div>
 
@@ -1958,7 +1994,7 @@
         <div class="flex items-center gap-2 overflow-hidden pr-2">
             <img src="https://drive.google.com/thumbnail?id=1Qy0e_J7IUXfJVLhLDNUJNuHOmg3_M0fh&sz=w1000" alt="Logo" class="w-11 h-11 rounded-full bg-white object-contain shrink-0">
             <div class="truncate">
-                <h1 class="text-movida-navy font-extrabold text-[13px] leading-tight truncate">La Movida SST Plus <span class="font-semibold text-slate-500">| Red Nacional</span></h1>
+                <h1 class="text-movida-navy font-extrabold text-[13px] leading-tight truncate">La Movida SST Plus <span class="font-semibold text-slate-500">| Red Internacional</span></h1>
                 <p class="text-movida-teal text-[9px] font-bold uppercase tracking-wider truncate">Red internacional de profesionales SST</p>
             </div>
         </div>
@@ -1982,24 +2018,49 @@
                 <i class="fa-solid fa-sliders"></i> Filtros y Búsqueda
             </button>
         </div>
+
+        <div id="map-region-bar" class="absolute top-[126px] left-0 w-full z-[400] px-3 py-1 overflow-x-auto flex gap-1.5" aria-label="Filtrar por región">
+            <button class="map-region-chip active" data-region="todos" onclick="setFiltroContinente('todos', this)">🌐 Mundo</button>
+            <button class="map-region-chip" data-region="sudamerica" onclick="setFiltroContinente('sudamerica', this)">Sudamérica</button>
+            <button class="map-region-chip" data-region="centro-caribe" onclick="setFiltroContinente('centro-caribe', this)">Centroamérica y Caribe</button>
+            <button class="map-region-chip" data-region="norteamerica" onclick="setFiltroContinente('norteamerica', this)">Norteamérica</button>
+            <button class="map-region-chip" data-region="europa" onclick="setFiltroContinente('europa', this)">Europa</button>
+            <button class="map-region-chip" data-region="otros" onclick="setFiltroContinente('otros', this)">África, Asia y Oceanía</button>
+        </div>
         
         <!-- Botones Flotantes (GPS y Heatmap) -->
-        <div class="absolute top-[135px] right-3 z-[400] flex flex-col gap-3">
+        <div id="map-tools-capsule" class="absolute top-[171px] right-3 z-[400] flex flex-col gap-1">
             <button id="btn-locate" onclick="localizarUsuario()" class="w-11 h-11 bg-white rounded-full shadow-glass text-movida-navy border border-slate-100 flex items-center justify-center text-lg active:scale-95 transition-transform">
                 <i class="fa-solid fa-crosshairs"></i>
             </button>
             <button id="btn-heatmap" onclick="toggleHeatmap()" class="w-11 h-11 bg-white rounded-full shadow-glass text-movida-teal border border-slate-100 flex items-center justify-center text-lg active:scale-95 transition-transform">
                 <i class="fa-solid fa-fire"></i>
             </button>
+            <button id="btn-map-legend" onclick="toggleMapLegend()" class="w-11 h-11 bg-white rounded-full shadow-glass text-movida-navy border border-slate-100 flex items-center justify-center text-base active:scale-95 transition-transform" aria-label="Mostrar leyenda del mapa" aria-expanded="false">
+                <i class="fa-solid fa-circle-info"></i>
+            </button>
+        </div>
+
+        <div id="map-legend-panel" class="hidden absolute top-[171px] right-[66px] z-[401] bg-white/95 backdrop-blur-md rounded-2xl border border-slate-200 shadow-glass p-3 text-[10px] text-slate-600">
+            <p class="font-black text-movida-navy uppercase tracking-wider mb-2">Leyenda</p>
+            <div class="space-y-1.5">
+                <div class="flex items-center gap-2"><span class="legend-dot bg-movida-teal"></span><span>Profesionales SST</span></div>
+                <div class="flex items-center gap-2"><span class="legend-dot bg-movida-yellow"></span><span>Asesores independientes</span></div>
+                <div class="flex items-center gap-2"><span class="legend-dot bg-movida-green"></span><span>Buscando oportunidades</span></div>
+                <div class="flex items-center gap-2"><span class="text-base leading-none">🇺🇳</span><span>Burbuja por país al alejarse</span></div>
+            </div>
         </div>
 
         <div id="map-visible-card" class="absolute bottom-[100px] left-1/2 transform -translate-x-1/2 z-[400] bg-white/95 backdrop-blur-md px-4 py-2.5 rounded-2xl shadow-glass border border-slate-200 flex items-center gap-3 transition-all pointer-events-none">
             <div class="bg-movida-teal/10 w-9 h-9 rounded-full flex items-center justify-center shrink-0">
                 <i class="fa-solid fa-users text-movida-teal text-sm"></i>
             </div>
-            <div class="pr-2">
+            <div class="pr-1 min-w-0">
                 <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider m-0 leading-tight">Profesionales visibles</p>
-                <p class="text-xl font-black text-movida-navy m-0 leading-tight" id="map-visible-count">0</p>
+                <div class="flex items-baseline gap-2 whitespace-nowrap">
+                    <p class="text-xl font-black text-movida-navy m-0 leading-tight" id="map-visible-count">0</p>
+                    <p class="text-[9px] font-black text-movida-teal m-0"><span id="map-visible-countries">0</span> países · <span id="map-visible-international">0</span> fuera de VE</p>
+                </div>
             </div>
         </div>
 
@@ -2081,7 +2142,7 @@
 
             <div class="flex gap-3 pt-4 shrink-0 mt-2">
                 <button onclick="limpiarFiltrosAvanzados()" class="flex-1 bg-slate-100 text-slate-600 font-bold py-3 rounded-xl active:scale-95 transition-transform">Limpiar</button>
-                <button onclick="aplicarFiltrosGlobales(); cerrarTodosLosPaneles()" class="flex-[2] bg-movida-teal text-white font-bold py-3 rounded-xl shadow-md active:scale-95 transition-transform">Aplicar Filtros</button>
+                <button onclick="aplicarFiltrosGlobales({ ajustarResultados: true }); cerrarTodosLosPaneles()" class="flex-[2] bg-movida-teal text-white font-bold py-3 rounded-xl shadow-md active:scale-95 transition-transform">Aplicar Filtros</button>
             </div>
         </div>
     </div>
@@ -3142,7 +3203,7 @@
             'https://script.google.com/macros/s/AKfycbxiK3t5kxGLd1EODOy7ANAAw0P2DM2cWLFg_POWXxl5mynyJ88GAtzuiy8NoLC_N7aimw/exec';
         let supabaseClient = null;
 
-        let map; let markersCluster; let heatmapLayer = null;
+        let map; let markersCluster; let countryLayer; let heatmapLayer = null;
         let editorTelefonoIntl = null;
         // Coordenadas integradas: el mapa no depende de un servicio externo para ubicar países.
         const COORDENADAS_PAISES_BASE = {"AD":{"lat":42.5422,"lng":1.5969},"AE":{"lat":24.3588,"lng":53.9825},"AF":{"lat":33.9305,"lng":67.6789},"AG":{"lat":17.3632,"lng":-61.7894},"AI":{"lat":18.2251,"lng":-63.0722},"AL":{"lat":41.157,"lng":20.1812},"AM":{"lat":40.0662,"lng":45.1111},"AO":{"lat":-11.2095,"lng":17.8806},"AQ":{"lat":-75.2577,"lng":0.0},"AR":{"lat":-38.4213,"lng":-63.5874},"AS":{"lat":-12.7161,"lng":-170.254},"AT":{"lat":47.697,"lng":13.3465},"AU":{"lat":-26.8534,"lng":133.275},"AW":{"lat":12.5177,"lng":-69.9651},"AZ":{"lat":40.1474,"lng":47.5721},"BA":{"lat":43.8927,"lng":17.6705},"BB":{"lat":13.1836,"lng":-59.5346},"BD":{"lat":23.6876,"lng":90.351},"BE":{"lat":50.4995,"lng":4.4754},"BF":{"lat":12.2419,"lng":-1.5568},"BG":{"lat":42.7298,"lng":25.4917},"BH":{"lat":26.0397,"lng":50.5593},"BI":{"lat":-3.3879,"lng":29.9204},"BJ":{"lat":9.322,"lng":2.3131},"BM":{"lat":32.3202,"lng":-64.774},"BN":{"lat":4.5251,"lng":114.715},"BO":{"lat":-16.2883,"lng":-63.5495},"BR":{"lat":-14.2429,"lng":-53.1893},"BS":{"lat":24.886,"lng":-76.7099},"BT":{"lat":27.5157,"lng":90.4425},"BV":{"lat":-54.4314,"lng":3.4117},"BW":{"lat":-22.344,"lng":24.6802},"BY":{"lat":53.7111,"lng":27.9738},"BZ":{"lat":17.1929,"lng":-88.5009},"CA":{"lat":62.3933,"lng":-96.8182},"CD":{"lat":-2.9,"lng":23.7},"CF":{"lat":6.6141,"lng":20.9417},"CH":{"lat":46.8155,"lng":8.2245},"CI":{"lat":7.5468,"lng":-5.5471},"CK":{"lat":-15.9836,"lng":-159.203},"CL":{"lat":-36.7166,"lng":-73.6017},"CM":{"lat":7.3653,"lng":12.3434},"CN":{"lat":34.6681,"lng":104.1659},"CO":{"lat":4.5773,"lng":-74.2989},"CR":{"lat":9.6249,"lng":-84.2533},"CU":{"lat":21.527,"lng":-79.5446},"CV":{"lat":16.0026,"lng":-24.014},"CX":{"lat":-10.4915,"lng":105.623},"CY":{"lat":35.1674,"lng":33.4355},"CZ":{"lat":49.8009,"lng":15.4781},"DE":{"lat":51.1657,"lng":10.4528},"DJ":{"lat":11.8084,"lng":42.5953},"DK":{"lat":56.1554,"lng":11.6172},"DM":{"lat":15.4168,"lng":-61.3641},"DO":{"lat":18.7366,"lng":-70.1617},"DZ":{"lat":28.0268,"lng":1.6528},"EC":{"lat":-1.7799,"lng":-78.1316},"EE":{"lat":58.5962,"lng":25.0238},"EG":{"lat":26.6964,"lng":30.7982},"EH":{"lat":24.2219,"lng":-12.8867},"ER":{"lat":15.1814,"lng":39.7867},"ES":{"lat":39.8958,"lng":-2.4869},"ET":{"lat":9.1481,"lng":40.493},"FI":{"lat":64.9524,"lng":26.0689},"FK":{"lat":-51.8006,"lng":-59.5288},"FM":{"lat":6.9,"lng":158.2},"FO":{"lat":61.8978,"lng":-6.9288},"FR":{"lat":46.2322,"lng":2.2097},"GA":{"lat":-0.8281,"lng":11.5989},"GB":{"lat":54.6332,"lng":-3.4323},"GD":{"lat":12.1526,"lng":-61.6895},"GE":{"lat":42.3199,"lng":43.368},"GF":{"lat":3.9518,"lng":-53.0782},"GH":{"lat":7.955,"lng":-1.0318},"GI":{"lat":36.1322,"lng":-5.3523},"GL":{"lat":71.7024,"lng":-42.1771},"GM":{"lat":13.4454,"lng":-15.3115},"GN":{"lat":9.9349,"lng":-11.2838},"GP":{"lat":16.1922,"lng":-61.2724},"GQ":{"lat":1.6339,"lng":10.3413},"GR":{"lat":38.2753,"lng":23.8103},"GS":{"lat":-56.7249,"lng":-32.1253},"GT":{"lat":15.7763,"lng":-90.2297},"GU":{"lat":13.4441,"lng":144.7875},"GW":{"lat":11.8026,"lng":-15.177},"GY":{"lat":4.8663,"lng":-58.9325},"HK":{"lat":22.3565,"lng":114.1365},"HM":{"lat":-53.0507,"lng":73.2278},"HN":{"lat":14.7463,"lng":-86.2531},"HR":{"lat":44.4873,"lng":16.4603},"HT":{"lat":19.0544,"lng":-73.046},"HU":{"lat":47.1647,"lng":19.5089},"ID":{"lat":-2.5187,"lng":118.0156},"IE":{"lat":53.4198,"lng":-8.2405},"IL":{"lat":31.4184,"lng":35.0735},"IN":{"lat":21.1257,"lng":82.795},"IO":{"lat":-6.3532,"lng":71.8766},"IQ":{"lat":33.2237,"lng":43.6859},"IR":{"lat":32.4207,"lng":53.6824},"IS":{"lat":64.9639,"lng":-19.0211},"IT":{"lat":41.874,"lng":12.5641},"JM":{"lat":18.1153,"lng":-77.2734},"JO":{"lat":31.2768,"lng":37.1306},"JP":{"lat":34.8863,"lng":134.38},"KE":{"lat":0.1709,"lng":37.904},"KG":{"lat":41.2055,"lng":74.7799},"KH":{"lat":12.5478,"lng":104.984},"KI":{"lat":1.87,"lng":-157.36},"KM":{"lat":-11.8751,"lng":43.877},"KN":{"lat":17.2577,"lng":-62.7065},"KP":{"lat":40.3397,"lng":127.4955},"KR":{"lat":35.9017,"lng":127.736},"KW":{"lat":29.3102,"lng":47.4935},"KY":{"lat":19.5124,"lng":-80.58},"KZ":{"lat":48.0,"lng":68.0},"LA":{"lat":18.2052,"lng":103.895},"LB":{"lat":33.8727,"lng":35.8768},"LC":{"lat":13.904,"lng":-60.9742},"LI":{"lat":47.1595,"lng":9.5537},"LK":{"lat":7.9,"lng":80.7},"LR":{"lat":6.4524,"lng":-9.4286},"LS":{"lat":-29.6206,"lng":28.2475},"LT":{"lat":55.1741,"lng":23.9067},"LU":{"lat":49.8157,"lng":6.1315},"LV":{"lat":56.8756,"lng":24.6077},"MA":{"lat":31.7923,"lng":-7.0802},"MC":{"lat":43.7383,"lng":7.4245},"MD":{"lat":46.9796,"lng":28.3772},"MG":{"lat":-18.7772,"lng":46.8543},"MH":{"lat":10.1038,"lng":168.7285},"MK":{"lat":41.611,"lng":21.7514},"ML":{"lat":17.5798,"lng":-3.9988},"MN":{"lat":46.861,"lng":103.8368},"MO":{"lat":22.2013,"lng":113.5475},"MP":{"lat":17.3318,"lng":145.4755},"MQ":{"lat":14.6356,"lng":-61.0228},"MR":{"lat":21.0068,"lng":-10.9471},"MS":{"lat":16.7495,"lng":-62.1928},"MT":{"lat":35.9442,"lng":14.38},"MU":{"lat":-15.4225,"lng":60.0065},"MV":{"lat":3.1994,"lng":73.1653},"MW":{"lat":-13.2463,"lng":34.2954},"MX":{"lat":23.6248,"lng":-102.5787},"MY":{"lat":4.1093,"lng":109.4557},"MZ":{"lat":-18.6703,"lng":35.5302},"NA":{"lat":-22.9657,"lng":18.4861},"NC":{"lat":-21.1239,"lng":165.847},"NE":{"lat":17.611,"lng":8.0809},"NF":{"lat":-29.0292,"lng":167.9565},"NG":{"lat":9.0846,"lng":8.6743},"NI":{"lat":12.8667,"lng":-85.2143},"NL":{"lat":52.133,"lng":5.2953},"NO":{"lat":64.583,"lng":17.8641},"NP":{"lat":28.395,"lng":84.1278},"NR":{"lat":-0.5283,"lng":166.922},"NU":{"lat":-19.0517,"lng":-169.863},"NZ":{"lat":-41.0,"lng":174.0},"OM":{"lat":21.5169,"lng":55.8593},"PA":{"lat":8.4177,"lng":-80.1128},"PE":{"lat":-9.1813,"lng":-75.0024},"PF":{"lat":-17.7786,"lng":-143.9035},"PG":{"lat":-6.4883,"lng":148.403},"PH":{"lat":12.882,"lng":121.767},"PK":{"lat":30.4419,"lng":69.3598},"PL":{"lat":51.9228,"lng":19.1368},"PM":{"lat":46.9661,"lng":-56.3368},"PR":{"lat":18.2233,"lng":-66.5927},"PS":{"lat":31.8815,"lng":34.895},"PT":{"lat":39.5578,"lng":-7.8448},"PW":{"lat":5.6366,"lng":132.9205},"PY":{"lat":-23.4513,"lng":-58.4532},"QA":{"lat":25.3188,"lng":51.1969},"RE":{"lat":-21.126,"lng":55.5252},"RO":{"lat":45.9471,"lng":24.9806},"RW":{"lat":-1.9471,"lng":29.8764},"SA":{"lat":23.8863,"lng":45.0812},"SB":{"lat":-9.2201,"lng":161.245},"SC":{"lat":-7.0188,"lng":51.2512},"SD":{"lat":15.4585,"lng":30.2176},"SE":{"lat":62.1998,"lng":17.6375},"SG":{"lat":1.3649,"lng":103.8225},"SH":{"lat":-11.9537,"lng":-10.03},"SI":{"lat":46.1492,"lng":14.993},"SJ":{"lat":79.9912,"lng":25.4933},"SK":{"lat":48.6656,"lng":19.709},"SL":{"lat":8.4648,"lng":-11.7959},"SM":{"lat":43.9429,"lng":12.46},"SN":{"lat":14.4994,"lng":-14.4456},"SO":{"lat":5.1522,"lng":46.1996},"SR":{"lat":3.9179,"lng":-56.032},"SS":{"lat":7.3,"lng":30.0},"ST":{"lat":0.863,"lng":6.9683},"SV":{"lat":13.7969,"lng":-88.9104},"SY":{"lat":34.8149,"lng":39.0561},"SZ":{"lat":-26.5183,"lng":31.4657},"TC":{"lat":21.6923,"lng":-71.8038},"TD":{"lat":15.4457,"lng":18.7381},"TF":{"lat":-43.763,"lng":63.8845},"TG":{"lat":8.6217,"lng":0.8297},"TH":{"lat":13.0366,"lng":101.4923},"TJ":{"lat":38.8582,"lng":71.2622},"TK":{"lat":-8.9674,"lng":-171.8555},"TM":{"lat":38.9684,"lng":59.5628},"TN":{"lat":33.8922,"lng":9.5616},"TO":{"lat":-18.5091,"lng":-174.795},"TP":{"lat":-8.7997,"lng":125.6775},"TR":{"lat":38.9615,"lng":35.2518},"TT":{"lat":10.6872,"lng":-61.2208},"TV":{"lat":-8.2216,"lng":177.964},"TZ":{"lat":-6.3682,"lng":34.8852},"UA":{"lat":48.3799,"lng":31.1682},"UG":{"lat":1.3652,"lng":32.3047},"US":{"lat":36.9664,"lng":-95.8439},"UY":{"lat":-32.5315,"lng":-55.7583},"UZ":{"lat":41.3797,"lng":64.5644},"VC":{"lat":12.9809,"lng":-61.2874},"VE":{"lat":6.4141,"lng":-66.579},"VG":{"lat":18.42,"lng":-64.64},"VI":{"lat":18.34,"lng":-64.9},"VN":{"lat":15.9742,"lng":105.8065},"VU":{"lat":-16.6611,"lng":168.215},"WF":{"lat":-13.7657,"lng":-177.1735},"WS":{"lat":-13.7366,"lng":-172.1075},"YE":{"lat":15.5556,"lng":48.5315},"YT":{"lat":-12.8245,"lng":45.1654},"ZA":{"lat":-28.4832,"lng":24.677},"ZM":{"lat":-13.1519,"lng":27.8526},"ZW":{"lat":-19.0132,"lng":29.1467}};
@@ -3151,7 +3212,14 @@
         let globalData = []; 
         let datosGeograficosGlobal = {};
         let mapaEncuadradoInicial = false;
-        let stateFiltros = { pais: 'todos', academico: 'todos', estado: 'todos', municipio: 'todos', laboral: 'todos', genero: 'todos', nombreBusqueda: '', modoHeatmap: false };
+        let stateFiltros = { pais: 'todos', continente: 'todos', academico: 'todos', estado: 'todos', municipio: 'todos', laboral: 'todos', genero: 'todos', nombreBusqueda: '', modoHeatmap: false };
+
+        const REGIONES_ISO = {
+            sudamerica: new Set(['AR','BO','BR','CL','CO','EC','FK','GF','GY','PE','PY','SR','UY','VE']),
+            'centro-caribe': new Set(['AG','AI','AW','BB','BZ','BS','CR','CU','CW','DM','DO','GD','GP','GT','HN','HT','JM','KN','KY','LC','MQ','MS','NI','PA','PR','SV','TC','TT','VC','VG','VI']),
+            norteamerica: new Set(['BM','CA','GL','MX','PM','US']),
+            europa: new Set(['AD','AL','AT','AX','BA','BE','BG','BY','CH','CY','CZ','DE','DK','EE','ES','FI','FO','FR','GB','GG','GI','GR','HR','HU','IE','IM','IS','IT','JE','LI','LT','LU','LV','MC','MD','ME','MK','MT','NL','NO','PL','PT','RO','RS','RU','SE','SI','SJ','SK','SM','TR','UA','VA','XK'])
+        };
 
         function nombrePais(iso2) {
             try { return new Intl.DisplayNames(['es'], { type: 'region' }).of(String(iso2 || 'VE').toUpperCase()); }
@@ -3169,8 +3237,41 @@
             return `${incluirBandera ? `${banderaPais(iso2)} ` : ''}${partes.filter(Boolean).join(', ')}`;
         }
 
+        function perteneceARegion(iso2, region) {
+            if (!region || region === 'todos') return true;
+            const codigo = String(iso2 || '').toUpperCase();
+            if (region === 'otros') {
+                return !REGIONES_ISO.sudamerica.has(codigo) &&
+                    !REGIONES_ISO['centro-caribe'].has(codigo) &&
+                    !REGIONES_ISO.norteamerica.has(codigo) &&
+                    !REGIONES_ISO.europa.has(codigo);
+            }
+            return Boolean(REGIONES_ISO[region]?.has(codigo));
+        }
+
+        function setFiltroContinente(region, boton) {
+            stateFiltros.continente = region || 'todos';
+            const paisSelect = document.getElementById('filtro-pais');
+            if (paisSelect) paisSelect.value = 'todos';
+            document.querySelectorAll('.map-region-chip').forEach(chip => chip.classList.toggle('active', chip === boton));
+            mapaEncuadradoInicial = true;
+            aplicarFiltrosGlobales({ ajustarResultados: true });
+        }
+
+        function toggleMapLegend() {
+            const panel = document.getElementById('map-legend-panel');
+            const boton = document.getElementById('btn-map-legend');
+            const mostrar = panel?.classList.contains('hidden');
+            panel?.classList.toggle('hidden', !mostrar);
+            boton?.setAttribute('aria-expanded', String(Boolean(mostrar)));
+        }
+
         function actualizarVisibilidadFiltrosTerritoriales() {
             const pais = document.getElementById('filtro-pais')?.value || 'todos';
+            if (pais !== 'todos') {
+                stateFiltros.continente = 'todos';
+                document.querySelectorAll('.map-region-chip').forEach(chip => chip.classList.toggle('active', chip.dataset.region === 'todos'));
+            }
             document.getElementById('filtros-venezuela')?.classList.toggle('hidden', !['todos', 'VE'].includes(pais));
             if (pais !== 'VE') {
                 const estado = document.getElementById('filtro-estado');
@@ -3842,6 +3943,13 @@
                 zoomToBoundsOnClick: true
             });
             map.addLayer(markersCluster);
+            countryLayer = L.layerGroup().addTo(map);
+
+            let temporizadorZoomMapa = null;
+            map.on('zoomend', () => {
+                clearTimeout(temporizadorZoomMapa);
+                temporizadorZoomMapa = setTimeout(() => aplicarFiltrosGlobales({ preservarVista: true }), 90);
+            });
 
             map.on('locationfound', (e) => {
                 mostrarNotificacion('Ubicación obtenida', 'fa-check');
@@ -3975,6 +4083,20 @@
         }
 
         function crearMarcadorActividad(item, lat, lng, pinColor) {
+            const fotoRaw = String(item?.foto_url || item?.foto || '');
+            if (map?.getZoom() >= 10 && fotoRaw) {
+                let foto = fotoRaw;
+                if (fotoRaw.includes('id=')) foto = `https://lh3.googleusercontent.com/d/${fotoRaw.split('id=')[1].split('&')[0]}`;
+                else if (fotoRaw.includes('/d/')) foto = `https://lh3.googleusercontent.com/d/${fotoRaw.split('/d/')[1].split('/')[0]}`;
+                const iconoFoto = L.divIcon({
+                    className: 'movida-activity-div-icon',
+                    html: `<div class="member-photo-map-marker" style="box-shadow:0 0 0 3px ${pinColor}55,0 6px 16px rgba(15,23,42,.3)"><img src="${escapeHTML(foto)}" alt="" loading="lazy" onerror="this.parentElement.style.background='${pinColor}';this.remove()"></div>`,
+                    iconSize: [42, 42],
+                    iconAnchor: [21, 21]
+                });
+                return L.marker([lat, lng], { icon: iconoFoto, keyboard: true, riseOnHover: true });
+            }
+
             const actividad = datosActividad(item);
             if (actividad.puntos <= 0) {
                 return L.circleMarker([lat, lng], {
@@ -3994,6 +4116,26 @@
                 iconAnchor: [14, 14]
             });
             return L.marker([lat, lng], { icon, keyboard: true, riseOnHover: true });
+        }
+
+        function colorMarcadorIntegrante(item) {
+            if (item?._laboral_clean === 'Buscando') return '#70ad47';
+            if (item?._laboral_clean === 'Independiente') return '#ffb600';
+            return '#007b85';
+        }
+
+        function crearMarcadorPais(iso2, cantidad, coords) {
+            const nombre = nombrePais(iso2);
+            const icon = L.divIcon({
+                className: 'movida-activity-div-icon',
+                html: `<div class="country-marker-shell" aria-label="${escapeHTML(nombre)}: ${cantidad} integrantes"><span class="country-marker-flag">${banderaPais(iso2)}</span><span><span class="country-marker-count">${cantidad.toLocaleString('es')}</span><span class="country-marker-name">${escapeHTML(nombre)}</span></span></div>`,
+                iconSize: [68, 40],
+                iconAnchor: [34, 20]
+            });
+            const marker = L.marker([coords.lat, coords.lng], { icon, keyboard: true, riseOnHover: true, title: `${nombre}: ${cantidad}` });
+            marker.bindTooltip(`<strong>${escapeHTML(nombre)}</strong><br>${cantidad.toLocaleString('es')} profesionales`, { direction: 'top', offset: [0, -18], opacity: .96 });
+            marker.on('click', () => map.setView([coords.lat, coords.lng], iso2 === 'VE' ? 5 : 5, { animate: true, duration: .7 }));
+            return marker;
         }
 
         async function fetchYProcesarDatos() {
@@ -4170,6 +4312,7 @@
         }
 
         function limpiarFiltrosAvanzados() {
+            if(document.getElementById('filtro-pais')) document.getElementById('filtro-pais').value = 'todos';
             if(document.getElementById('filtro-estado')) document.getElementById('filtro-estado').value = 'todos';
             const muniSelect = document.getElementById('filtro-municipio');
             if(muniSelect) {
@@ -4179,8 +4322,11 @@
             if(document.getElementById('filtro-nombre')) document.getElementById('filtro-nombre').value = '';
             if(document.getElementById('resultados-nombre')) document.getElementById('resultados-nombre').classList.add('hidden');
             stateFiltros.nombreBusqueda = '';
+            stateFiltros.continente = 'todos';
+            document.querySelectorAll('.map-region-chip').forEach(chip => chip.classList.toggle('active', chip.dataset.region === 'todos'));
             selectChip('academico', 'todos'); selectChip('laboral', 'todos'); selectChip('genero', 'todos');
-            aplicarFiltrosGlobales(); cerrarTodosLosPaneles(); mostrarNotificacion('Filtros limpiados', 'fa-eraser');
+            actualizarVisibilidadFiltrosTerritoriales();
+            aplicarFiltrosGlobales({ ajustarResultados: true }); cerrarTodosLosPaneles(); mostrarNotificacion('Filtros limpiados', 'fa-eraser');
         }
 
         function actualizarMunicipios() {
@@ -4213,6 +4359,8 @@
 
         function abrirPerfil(itemStr) {
             const item = JSON.parse(decodeURIComponent(itemStr));
+            const paisPerfilIso2 = String(item.pais_iso2 || 'VE').trim().toUpperCase();
+            const banderaPerfil = banderaPais(paisPerfilIso2);
             let imgUrl = ''; let fotoRaw = item.foto_url || item.foto || item.Foto || item.FOTO || '';
             
             // Bypass universal (Sirve tanto para Google Drive viejo como para Supabase nuevo)
@@ -4297,9 +4445,9 @@
                 <div class="px-6 pt-4 pb-2 relative participant-profile">
                     <div class="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-4"></div>
                     <button onclick="cerrarTodosLosPaneles()" class="absolute top-4 right-6 w-8 h-8 bg-slate-100 text-slate-500 rounded-full flex items-center justify-center active:scale-95 profile-close-btn"><i class="fa-solid fa-times"></i></button>
-                    <div class="h-1.5 w-full flex rounded-full overflow-hidden mb-4"><div class="w-1/3 bg-[#FFCC00]"></div><div class="w-1/3 bg-[#00247D]"></div><div class="w-1/3 bg-[#CF142B]"></div></div>
+                    <div class="h-1.5 w-full rounded-full overflow-hidden mb-4 bg-gradient-to-r from-movida-navy via-movida-teal to-movida-green"></div>
                     <div class="flex items-center gap-4 mb-4">
-                        <div class="relative w-16 h-16 rounded-2xl p-[2px] bg-gradient-to-tr from-[#FFCC00] via-[#00247D] to-[#CF142B] shadow-md shrink-0 participant-avatar">
+                        <div class="relative w-16 h-16 rounded-2xl p-[2px] bg-gradient-to-tr from-movida-navy via-movida-teal to-movida-green shadow-md shrink-0 participant-avatar">
                             <div class="w-full h-full bg-slate-100 rounded-[14px] flex items-center justify-center overflow-hidden border border-white">
                                 ${imgUrl ? `<img src="${imgUrl}" loading="lazy" decoding="async" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" class="w-full h-full object-cover">` : ''}
                                 <div class="${imgUrl ? 'hidden' : 'flex'} w-full h-full items-center justify-center text-white font-bold text-xl" style="background-color:${colorGen}">${initial}</div>
@@ -4307,7 +4455,7 @@
                             <span class="absolute -right-2 -top-2 min-w-7 h-7 px-1.5 rounded-full bg-white border border-amber-200 shadow-md flex items-center justify-center text-base" title="${escapeHTML(actividadPerfil.nivel)} · ${formatearXP(actividadPerfil.puntos)} XP">${escapeHTML(actividadPerfil.icono)}</span>
                         </div>
                         <div class="truncate pr-4">
-                            <h2 class="text-lg font-black text-movida-navy truncate leading-tight flex items-center gap-1.5">${item._nombre_completo} <span class="text-[10px]">🇻🇪</span></h2>
+                            <h2 class="text-lg font-black text-movida-navy truncate leading-tight flex items-center gap-1.5">${item._nombre_completo} <span class="text-sm" title="${escapeHTML(nombrePais(paisPerfilIso2))}">${banderaPerfil}</span></h2>
                             <p class="text-xs font-bold text-slate-500 truncate mt-0.5">${item._profesion_clean}</p>
                             <p class="text-[10px] font-black text-movida-teal uppercase tracking-wide mt-0.5">${item._nivel_acad}</p>
                             <div class="mt-1.5">${chipActividadHTML(item)}</div>
@@ -4430,7 +4578,7 @@
             return Boolean(pais && (pais !== 'VE' || String(item.estado || '').trim()));
         }
 
-        function aplicarFiltrosGlobales() {
+        function aplicarFiltrosGlobales(opciones = {}) {
             const estadoSelect = document.getElementById('filtro-estado');
             const municipioSelect = document.getElementById('filtro-municipio');
             const paisSelect = document.getElementById('filtro-pais');
@@ -4447,14 +4595,19 @@
             }
 
             markersCluster.clearLayers();
+            countryLayer?.clearLayers();
             if(heatmapLayer && map.hasLayer(heatmapLayer)) map.removeLayer(heatmapLayer);
-            let countVisibles = 0; 
+            let countVisibles = 0;
             let heatPoints = [];
-            let marcadoresArray = []; 
+            let marcadoresArray = [];
+            const registrosFiltrados = [];
+            const paisesVisibles = new Set();
+            let internacionalesVisibles = 0;
 
             globalData.forEach(item => {
                 if (!esRegistroBaseValido(item)) return;
                 if (stateFiltros.pais !== 'todos' && item.pais_iso2 !== stateFiltros.pais) return;
+                if (!perteneceARegion(item.pais_iso2, stateFiltros.continente)) return;
                 if (stateFiltros.academico !== 'todos' && item._nivel_acad !== stateFiltros.academico) return;
                 if (stateFiltros.estado !== 'todos' && item.estado.trim() !== stateFiltros.estado) return;
                 if (stateFiltros.municipio !== 'todos' && (item.municipio || "").trim().toLowerCase() !== stateFiltros.municipio.toLowerCase()) return;
@@ -4462,12 +4615,34 @@
                 if (stateFiltros.genero !== 'todos' && item.genero !== stateFiltros.genero) return;
                 if (stateFiltros.nombreBusqueda !== "" && !(item._nombre_completo || "").toLowerCase().includes(stateFiltros.nombreBusqueda)) return;
 
-                countVisibles++;
                 const baseCoords = coordenadasIntegrante(item);
                 if (!baseCoords) {
                     console.warn('País sin coordenadas; se omite del mapa:', item.pais_iso2, item.codigo_integrante || item.id);
                     return;
                 }
+
+                countVisibles++;
+                registrosFiltrados.push(item);
+                paisesVisibles.add(item.pais_iso2);
+                if (item.pais_iso2 !== 'VE') internacionalesVisibles++;
+            });
+
+            const modoPaises = !stateFiltros.modoHeatmap && stateFiltros.pais === 'todos' && map.getZoom() <= 3;
+
+            if (modoPaises) {
+                const agrupados = new Map();
+                registrosFiltrados.forEach(item => {
+                    const iso2 = item.pais_iso2;
+                    if (!agrupados.has(iso2)) agrupados.set(iso2, []);
+                    agrupados.get(iso2).push(item);
+                });
+                agrupados.forEach((personas, iso2) => {
+                    const coords = coordenadasPaises[iso2];
+                    if (coords) countryLayer.addLayer(crearMarcadorPais(iso2, personas.length, coords));
+                });
+            } else {
+                registrosFiltrados.forEach(item => {
+                const baseCoords = coordenadasIntegrante(item);
                 const esVenezuela = String(item.pais_iso2 || 'VE').toUpperCase() === 'VE';
                 const desplazamiento = desplazamientoEstableIntegrante(item, esVenezuela ? 0.012 : 0.18);
                 const lat = baseCoords.lat + desplazamiento.lat;
@@ -4475,13 +4650,14 @@
 
                 if (stateFiltros.modoHeatmap) heatPoints.push([lat, lng, 1]);
                 else {
-                    let pinColor = item.genero === 'Femenino' ? '#70ad47' : '#007b85';
+                    const pinColor = colorMarcadorIntegrante(item);
                     const marker = crearMarcadorActividad(item, lat, lng, pinColor);
                     const itemStr = encodeURIComponent(JSON.stringify(item));
                     marker.on('click', () => abrirPerfil(itemStr));
                     marcadoresArray.push(marker);
                 }
-            });
+                });
+            }
             
             if (stateFiltros.modoHeatmap && heatPoints.length > 0) {
                 if (typeof L.heatLayer === 'function') {
@@ -4494,13 +4670,20 @@
                 markersCluster.addLayers(marcadoresArray); 
             }
 
-            if (!mapaEncuadradoInicial && stateFiltros.pais === 'todos' && marcadoresArray.length > 0) {
-                const limites = L.latLngBounds(marcadoresArray.map(marker => marker.getLatLng()));
-                if (limites.isValid()) map.fitBounds(limites, { padding: [28, 28], maxZoom: 4, animate: false });
+            const puntosEncuadre = modoPaises
+                ? Array.from(countryLayer?.getLayers() || []).map(marker => marker.getLatLng())
+                : marcadoresArray.map(marker => marker.getLatLng());
+            if ((!mapaEncuadradoInicial || opciones.ajustarResultados) && !opciones.preservarVista && puntosEncuadre.length > 0) {
+                const limites = L.latLngBounds(puntosEncuadre);
+                if (limites.isValid()) map.fitBounds(limites, { padding: [34, 34], maxZoom: modoPaises ? 3 : 6, animate: Boolean(opciones.ajustarResultados), duration: .7 });
                 mapaEncuadradoInicial = true;
             }
             
             document.getElementById('map-visible-count').innerText = countVisibles;
+            const paisesEl = document.getElementById('map-visible-countries');
+            const internacionalesEl = document.getElementById('map-visible-international');
+            if (paisesEl) paisesEl.innerText = paisesVisibles.size;
+            if (internacionalesEl) internacionalesEl.innerText = internacionalesVisibles;
         }
 
         function procesarDatosParaDashboard(data) {
