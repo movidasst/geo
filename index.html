@@ -15,7 +15,7 @@
   <script>
     (async function () {
       try {
-        const response = await fetch('./app.html?v=20260826-openfreemap-fix1', { cache: 'no-store' });
+        const response = await fetch('./app.html?v=20260826-openfreemap-geo335-v1', { cache: 'no-store' });
         if (!response.ok) throw new Error('No se pudo cargar la aplicación base.');
         let html = await response.text();
 
@@ -27,6 +27,9 @@
         if (!html.includes(mainBefore)) throw new Error('No se encontró la configuración del mapa principal.');
         html = html.replace(mainBefore, mainAfter);
         html = html.replace(validatorBefore, validatorAfter);
+
+        if (!html.includes('</body>')) throw new Error('No se encontró el cierre de la aplicación base.');
+        html = html.replace('</body>', '<script src="./geo335-patch.js?v=20260826-geo335-v1"><\/script></body>');
 
         document.open();
         document.write(html);
