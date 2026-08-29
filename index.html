@@ -29,7 +29,7 @@
         html = html.replace(validatorBefore, validatorAfter);
 
         if (!html.includes('</body>')) throw new Error('No se encontró el cierre de la aplicación base.');
-        html = html.replace('</body>', '<script src="./geo335-patch.js?v=20260826-geo335-v1"><\/script><script src="./corporate-cta.js?v=20260829-corporate-v1"><\/script></body>');
+        html = html.replace('</body>', '<script src="./geo335-patch.js?v=20260826-geo335-v1"><\/script><script src="./corporate-cta.js?v=20260829-corporate-v1"><\/script><script src="./hash-router.js?v=20260829-router-v1"><\/script></body>');
 
         document.open();
         document.write(html);
