@@ -3301,7 +3301,7 @@
          * La fotografía se guarda en Google Drive.
          * Apps Script actualiza foto_url en Supabase.
          */
-        const PHOTO_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyvXvf9ekmvxy37uyJFj8anLKGgQRSyf8fe4G_SKsxDBt7kEvB_govxEv9Nu7iSWNoBJg/exec';
+        const PHOTO_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxxxzaq_XLuRJm8Xd2agfbG4FAvvAN-1V1mF0dPfaSbMAb_GGzL3BuYFnQJ-aazx2sL/exec';
 
         /*
          * Sustituir después de implementar el Apps Script
@@ -6749,7 +6749,7 @@
                         const timeoutId =
                             setTimeout(
                                 () => controller.abort(),
-                                180000
+                                70000
                             );
 
                         try {
@@ -6760,7 +6760,7 @@
                             }
 
                             portal.uploadStatus.textContent =
-                                'Guardando fotografía y sincronizando con la Academia...';
+                                'Subiendo fotografía a Google Drive...';
 
                             const fotoBase64 =
                                 await blobToBase64(blob);
@@ -6768,7 +6768,7 @@
                             const body =
                                 new URLSearchParams({
                                     action:
-                                        'upload_registration_photo',
+                                        'upload_member_photo',
 
                                     cedula:
                                         currentMemberDNI,
@@ -6852,28 +6852,12 @@
                                 actualizado;
 
                             renderCredential(actualizado);
-                            clearTimeout(timeoutId);
+                            await refrescarDirectorioPublico();
 
-                            // La foto guardada y su sincronización son resultados distintos.
-                            const fotoMoodle = result.moodle_photo_sync;
-                            const sincronizada =
-                                fotoMoodle?.ok === true &&
-                                fotoMoodle?.result === 'SINCRONIZADA';
-                            const avisoFoto = document.createElement('span');
-                            avisoFoto.style.color = sincronizada ? '#166534' : '#92400e';
-                            avisoFoto.style.fontWeight = '900';
-                            avisoFoto.textContent = sincronizada
-                                ? '¡Foto actualizada en el Directorio y en la Academia!'
-                                : fotoMoodle?.result === 'SIN_USUARIO_MOODLE'
-                                    ? 'Foto guardada en el Directorio. No se sincronizó con la Academia porque tu cuenta todavía no está vinculada.'
-                                    : 'Foto guardada en el Directorio. No se pudo confirmar la sincronización con la Academia. Contacta a soporte.';
-                            portal.uploadStatus.replaceChildren(avisoFoto);
-
-                            try {
-                                await refrescarDirectorioPublico();
-                            } catch (errorDirectorio) {
-                                console.warn('La foto se guardó, pero no se pudo refrescar el directorio.');
-                            }
+                            portal.uploadStatus.innerHTML =
+                                '<span style="color:#166534;font-weight:900">' +
+                                '¡Foto actualizada correctamente!' +
+                                '</span>';
 
                             closeCropper();
 
@@ -6885,7 +6869,7 @@
 
                             const message =
                                 error?.name === 'AbortError'
-                                    ? 'No se recibió la confirmación a tiempo. Revisa tu foto en el Directorio y la Academia antes de volver a subirla.'
+                                    ? 'La carga tardó demasiado. Revisa tu conexión e intenta nuevamente.'
                                     : (
                                         error?.message ||
                                         'No fue posible actualizar la fotografía.'
