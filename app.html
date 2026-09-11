@@ -4274,49 +4274,53 @@
                  * El mapa consume únicamente la función pública autorizada.
                  */
                 const PAGE_SIZE = 1000;
-                const data = [];
-                let desde = 0;
-                let rpcDirectorio = 'directorio_internacional_v1';
-                let intentoFallbackRealizado = false;
 
-                while (true) {
-                    let respuesta = await conTimeout(
-                        supabaseClient
-                            .rpc(rpcDirectorio)
-                            .range(desde, desde + PAGE_SIZE - 1),
-                        12000,
-                        'Supabase tardó más de 12 segundos en responder.'
-                    );
-
-                    /*
-                     * Fallback seguro: si el HTML se publica antes de ejecutar el SQL
-                     * de actividad, el Directorio sigue abriendo con la RPC anterior.
-                     */
-                    if (respuesta.error && desde === 0 && !intentoFallbackRealizado && rpcDirectorio === 'directorio_internacional_v1') {
-                        console.warn('La RPC v2 aún no está disponible; se usa la versión anterior.', respuesta.error);
-                        rpcDirectorio = 'directorio_publico_actividad';
-                        intentoFallbackRealizado = true;
-                        respuesta = await conTimeout(
+                async function consultarRpcPaginada(nombreRpc) {
+                    const filas = [];
+                    for (let desde = 0; ; desde += PAGE_SIZE) {
+                        const respuesta = await conTimeout(
                             supabaseClient
-                                .rpc(rpcDirectorio)
-                                .range(0, PAGE_SIZE - 1),
-                            12000,
-                            'Supabase tardó más de 12 segundos en responder.'
+                                .rpc(nombreRpc)
+                                .range(desde, desde + PAGE_SIZE - 1),
+                            15000,
+                            `Supabase tardó más de 15 segundos al consultar ${nombreRpc}.`
                         );
+                        if (respuesta.error) throw respuesta.error;
+                        const pagina = Array.isArray(respuesta.data) ? respuesta.data : [];
+                        filas.push(...pagina);
+                        if (pagina.length < PAGE_SIZE) break;
                     }
-
-                    const pagina = respuesta.data;
-                    const error = respuesta.error;
-                    if (error) throw error;
-                    if (!pagina || pagina.length === 0) break;
-
-                    data.push(...pagina);
-
-                    if (pagina.length < PAGE_SIZE) break;
-                    desde += PAGE_SIZE;
+                    return filas;
                 }
 
+                /*
+                 * El perfil internacional conserva país y preferencias de visibilidad.
+                 * La actividad se consulta por separado y se combina por correo para no
+                 * perder ninguno de esos datos.
+                 */
+                const [data, actividad] = await Promise.all([
+                    consultarRpcPaginada('directorio_internacional_v1'),
+                    consultarRpcPaginada('directorio_publico_actividad').catch(error => {
+                        console.error('No se pudo cargar la actividad de Estudia:', error);
+                        return [];
+                    })
+                ]);
+
+                const normalizarCorreoActividad = valor => String(valor || '').trim().toLowerCase();
+                const actividadPorCorreo = new Map(
+                    actividad
+                        .filter(item => normalizarCorreoActividad(item.correo))
+                        .map(item => [normalizarCorreoActividad(item.correo), item])
+                );
+
                 data.forEach(item => {
+                    const actividadItem = actividadPorCorreo.get(normalizarCorreoActividad(item.correo)) || {};
+                    item.puntos = numeroActividad(actividadItem.puntos);
+                    item.nivel = actividadItem.nivel || 'Participante';
+                    item.nivel_icono = actividadItem.nivel_icono || '🥉';
+                    item.posicion_actividad = actividadItem.posicion_actividad || null;
+                    item.estudios_participados = numeroActividad(actividadItem.estudios_participados);
+
                     item.estado = (item.estado || '').toString().trim();
                     item.municipio = (item.municipio || '').toString().trim();
                     item.pais_iso2 = (item.pais_iso2 || 'VE').toString().trim().toUpperCase();
@@ -4606,7 +4610,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <a href="https://estudia.movidasst.com/" target="_blank" rel="noopener noreferrer" class="shrink-0 w-9 h-9 rounded-xl bg-white border border-slate-200 text-movida-teal shadow-sm flex items-center justify-center active:scale-95" title="Ver ranking y mis puntos" aria-label="Ver ranking y mis puntos"><i class="fa-solid fa-arrow-up-right-from-square text-xs"></i></a>
+                            <a href="https://estudia.movidasst.com/#/mispuntos" target="_blank" rel="noopener noreferrer" class="shrink-0 w-9 h-9 rounded-xl bg-white border border-slate-200 text-movida-teal shadow-sm flex items-center justify-center active:scale-95" title="Ver ranking y mis puntos" aria-label="Ver ranking y mis puntos"><i class="fa-solid fa-arrow-up-right-from-square text-xs"></i></a>
                         </div>
 
                         <div class="mt-3 grid grid-cols-3 gap-2">
@@ -4627,7 +4631,7 @@
                         <p class="mt-3 text-[9px] leading-relaxed text-slate-500">
                             Refleja participación acumulada en estudios, actividades y aportes dentro de La Movida SST. Los nuevos XP se suman automáticamente; no existe un techo de puntos. No constituye una evaluación de competencia profesional.
                         </p>
-                        <a href="https://estudia.movidasst.com/" target="_blank" rel="noopener noreferrer" class="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-movida-navy px-3 py-2.5 text-[10px] font-black text-white shadow-sm active:scale-[.99]">
+                        <a href="https://estudia.movidasst.com/#/mispuntos" target="_blank" rel="noopener noreferrer" class="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-movida-navy px-3 py-2.5 text-[10px] font-black text-white shadow-sm active:scale-[.99]">
                             <i class="fa-solid fa-ranking-star text-amber-300"></i> Ver ranking y consultar mis puntos
                         </a>
                     </div>
