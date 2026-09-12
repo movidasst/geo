@@ -2640,7 +2640,7 @@
                                 <div class="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 mb-2">
                                     <i class="fa-solid fa-qrcode text-xl"></i>
                                 </div>
-                                <p class="text-xs text-slate-500 font-medium">Escanea el QR oficial o ingresa la cédula para verificar.</p>
+                                <p class="text-xs text-slate-500 font-medium">Escanea el QR de membresía o ingresa el documento para verificar.</p>
                             </div>
 
                             <div id="val-error" class="hidden flex flex-col items-center justify-center p-6 mt-6 bg-rose-50 border border-rose-100 rounded-xl text-center shadow-sm">
@@ -2648,7 +2648,7 @@
                                     <i class="fa-solid fa-circle-exclamation text-xl animate-bounce"></i>
                                 </div>
                                 <h3 class="text-sm font-bold text-rose-700">No Encontrado</h3>
-                                <p class="text-xs text-rose-600/80 mt-1 font-medium">La credencial no es válida o no existe en la base de datos oficial.</p>
+                                <p class="text-xs text-rose-600/80 mt-1 font-medium">La credencial no es válida o no existe en el registro de integrantes.</p>
                             </div>
                         </div>
                     </div>
@@ -2658,7 +2658,7 @@
                     <div class="w-full flex flex-col items-center">
                         <div class="flex items-center justify-between w-full max-w-2xl mb-6">
                             <button class="btn-volver text-slate-400 hover:text-slate-700 transition-colors w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-100"><i class="fa-solid fa-arrow-left text-lg"></i></button>
-                            <h2 class="text-xl md:text-2xl font-bold text-slate-800 tracking-tight">Mi Credencial Oficial</h2>
+                            <h2 class="text-xl md:text-2xl font-bold text-slate-800 tracking-tight">Mi Credencial de Integrante</h2>
                             <div class="w-10"></div>
                         </div>
                         
@@ -2672,34 +2672,35 @@
                                 <div style="position:absolute;left:345px;top:132px;font-size:132px;font-weight:900;line-height:1;color:rgba(0,32,91,.025);letter-spacing:-10px;z-index:2;">SST</div>
 
                                 <div style="position:absolute;top:0;left:0;width:100%;height:6px;display:flex;z-index:60;">
-                                    <div style="width:33.333%;height:6px;background:#f7c600;"></div>
-                                    <div style="width:33.334%;height:6px;background:#003893;"></div>
-                                    <div style="width:33.333%;height:6px;background:#cf142b;"></div>
+                                    <div style="width:25%;height:6px;background:#007b85;"></div>
+                                    <div style="width:25%;height:6px;background:#00205b;"></div>
+                                    <div style="width:25%;height:6px;background:#70ad47;"></div>
+                                    <div style="width:25%;height:6px;background:#ffb600;"></div>
                                 </div>
 
                                 <div style="position:absolute;top:6px;left:0;width:100%;height:106px;background:linear-gradient(125deg,#001f4d 0%,#003b62 55%,#007b83 100%);z-index:10;"></div>
                                 <div style="position:absolute;top:6px;right:-42px;width:220px;height:150px;border-radius:50%;border:1px solid rgba(255,255,255,.14);z-index:11;"></div>
                                 <div style="position:absolute;top:28px;right:-8px;width:145px;height:95px;border-radius:50%;border:1px solid rgba(255,255,255,.1);z-index:11;"></div>
-                                <div style="position:absolute;top:30px;left:30px;font-size:25px;font-weight:900;color:#fff;letter-spacing:-.55px;line-height:1;z-index:20;">La Movida de SST</div>
+                                <div style="position:absolute;top:29px;left:30px;font-size:24px;font-weight:900;color:#fff;letter-spacing:-.55px;line-height:1;z-index:20;">La Movida de SST Plus</div>
                                 <div style="position:absolute;top:60px;left:30px;font-size:10px;font-weight:800;color:#8ce6e0;letter-spacing:1.45px;line-height:1;z-index:20;">RED INTERNACIONAL DE PROFESIONALES SST</div>
                                 <div style="position:absolute;top:79px;left:30px;font-size:9px;font-weight:800;color:#fff;letter-spacing:1.2px;line-height:1;z-index:20;">CREDENCIAL DE INTEGRANTE</div>
-                                <div style="position:absolute;top:94px;left:30px;font-size:7px;font-weight:700;color:#ffd447;letter-spacing:2.8px;line-height:1;z-index:20;">★ ★ ★ ★ ★ ★ ★ ★</div>
+                                <div style="position:absolute;top:94px;left:30px;font-size:7px;font-weight:800;color:#ffd447;letter-spacing:1.25px;line-height:1;z-index:20;">DE LA REACCIÓN A LA PREVENCIÓN</div>
 
-                                <div style="position:absolute;top:19px;right:26px;width:78px;height:78px;padding:4px;box-sizing:border-box;border-radius:50%;background:#fff;border:1px solid rgba(255,255,255,.7);box-shadow:0 5px 13px rgba(0,19,48,.24);z-index:35;">
+                                <div style="position:absolute;top:13px;right:20px;width:92px;height:92px;padding:4px;box-sizing:border-box;border-radius:50%;background:#fff;border:2px solid rgba(0,123,133,.72);box-shadow:0 6px 15px rgba(0,19,48,.25);z-index:35;">
                                     <img src="/logo-oficial-movida-sst-plus.png" style="display:block;width:100%;height:100%;object-fit:contain;border-radius:50%;" alt="Logo oficial La Movida de SST Plus">
                                 </div>
 
                                 <div style="position:absolute;top:130px;left:28px;width:128px;height:162px;padding:4px;box-sizing:border-box;border-radius:15px;background:#fff;border:1px solid #a9c4cd;box-shadow:0 6px 14px rgba(0,42,72,.12);z-index:22;">
                                     <img id="cred-photo" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNDAiIGhlaWdodD0iMzEwIiB2aWV3Qm94PSIwIDAgMjQwIDMxMCI+CjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD0iYiIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPjxzdG9wIHN0b3AtY29sb3I9IiNlZWY1ZjciLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNkYmU4ZWQiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz4KPHJlY3Qgd2lkdGg9IjI0MCIgaGVpZ2h0PSIzMTAiIHJ4PSIxOCIgZmlsbD0idXJsKCNiKSIvPgo8Y2lyY2xlIGN4PSIxMjAiIGN5PSIxMDUiIHI9IjQ0IiBmaWxsPSIjOWJiMWJkIi8+CjxwYXRoIGQ9Ik00NSAyODBjOC02NSA0Mi05OSA3NS05OXM2NyAzNCA3NSA5OSIgZmlsbD0iIzliYjFiZCIvPgo8Y2lyY2xlIGN4PSIxMjAiIGN5PSIxMDUiIHI9IjU1IiBmaWxsPSJub25lIiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iNiIgb3BhY2l0eT0iLjciLz4KPHRleHQgeD0iMTIwIiB5PSIyOTgiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSIjNjA3ODg3IiBsZXR0ZXItc3BhY2luZz0iMiI+Rk9UTzwvdGV4dD4KPC9zdmc+" style="display:block;width:100%;height:100%;object-fit:cover;border-radius:10px;background:#edf4f6;" crossorigin="anonymous" alt="Fotografía del integrante">
                                 </div>
-                                <div style="position:absolute;top:130px;left:28px;width:128px;height:5px;border-radius:15px 15px 0 0;background:linear-gradient(90deg,#f7c600 0 33.33%,#003893 33.33% 66.66%,#cf142b 66.66% 100%);z-index:24;"></div>
+                                <div style="position:absolute;top:130px;left:28px;width:128px;height:5px;border-radius:15px 15px 0 0;background:linear-gradient(90deg,#007b85 0 25%,#00205b 25% 50%,#70ad47 50% 75%,#ffb600 75% 100%);z-index:24;"></div>
 
-                                <div style="position:absolute;top:305px;left:28px;width:128px;height:29px;border-radius:15px;background:#eaf8f3;border:1px solid #8bc8ae;display:flex;align-items:center;justify-content:center;gap:6px;box-sizing:border-box;z-index:22;">
-                                    <span style="width:7px;height:7px;border-radius:50%;background:#17864b;"></span>
-                                    <span style="font-size:9px;font-weight:900;color:#12643a;letter-spacing:.85px;">INTEGRANTE ACTIVO</span>
+                                <div style="position:absolute;top:299px;left:28px;width:128px;height:42px;border-radius:13px;background:#eaf8f3;border:1px solid #8bc8ae;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;box-sizing:border-box;z-index:22;">
+                                    <span style="display:flex;align-items:center;gap:5px;font-size:8px;font-weight:900;color:#12643a;letter-spacing:.65px;"><span style="width:6px;height:6px;border-radius:50%;background:#17864b;"></span>INTEGRANTE ACTIVO</span>
+                                    <span id="cred-rank" style="display:block;width:116px;white-space:nowrap;overflow:hidden;text-align:center;font-size:7px;font-weight:900;color:#00205b;letter-spacing:.15px;line-height:1.1;">🥉 PARTICIPANTE · 0 XP</span>
                                 </div>
 
-                                <div style="position:absolute;top:128px;left:180px;font-size:8px;font-weight:900;color:#74899a;letter-spacing:1.5px;z-index:20;">IDENTIFICACIÓN PROFESIONAL</div>
+                                <div style="position:absolute;top:128px;left:180px;font-size:8px;font-weight:900;color:#74899a;letter-spacing:1.5px;z-index:20;">PERFIL DEL INTEGRANTE</div>
                                 <div id="cred-name" style="position:absolute;top:143px;left:180px;width:256px;height:29px;white-space:nowrap;overflow:hidden;text-overflow:clip;font-size:26px;font-weight:900;color:#00205b;text-transform:uppercase;line-height:1;letter-spacing:-.6px;z-index:20;">NOMBRES</div>
                                 <div id="cred-lastname" style="position:absolute;top:173px;left:180px;width:256px;height:29px;white-space:nowrap;overflow:hidden;text-overflow:clip;font-size:26px;font-weight:900;color:#00205b;text-transform:uppercase;line-height:1;letter-spacing:-.6px;z-index:20;">APELLIDOS</div>
 
@@ -2708,11 +2709,11 @@
                                 <div id="cred-carrera" style="position:absolute;top:234px;left:180px;width:256px;height:20px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:13px;font-weight:900;color:#00757d;text-transform:uppercase;line-height:1.2;letter-spacing:.35px;z-index:20;">ESPECIALIDAD</div>
 
                                 <div style="position:absolute;top:268px;left:180px;width:118px;height:52px;padding:7px 10px;box-sizing:border-box;border-radius:10px;background:#f2f7fa;border:1px solid #d8e5ea;z-index:20;">
-                                    <div style="font-size:7px;font-weight:900;color:#718596;letter-spacing:1.2px;">DNI / CÉDULA</div>
+                                    <div style="font-size:7px;font-weight:900;color:#718596;letter-spacing:1.2px;" style="letter-spacing:.75px;">DOCUMENTO DE IDENTIDAD</div>
                                     <div id="cred-dni" style="margin-top:4px;font-family:'JetBrains Mono','Courier New',monospace;font-size:16px;font-weight:900;color:#17324d;line-height:1;">12345678</div>
                                 </div>
                                 <div style="position:absolute;top:268px;left:306px;width:130px;height:52px;padding:7px 10px;box-sizing:border-box;border-radius:10px;background:#f2f7fa;border:1px solid #d8e5ea;z-index:20;">
-                                    <div style="font-size:7px;font-weight:900;color:#718596;letter-spacing:1.2px;">FORMACIÓN</div>
+                                    <div style="font-size:7px;font-weight:900;color:#718596;letter-spacing:1.2px;" style="letter-spacing:1px;">NIVEL ACADÉMICO</div>
                                     <div id="cred-grado" style="margin-top:4px;width:108px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:13px;font-weight:900;color:#17324d;line-height:1.1;">Universitario</div>
                                 </div>
                                 <div style="position:absolute;top:327px;left:180px;font-size:7px;font-weight:900;color:#718596;letter-spacing:1.2px;z-index:20;">UBICACIÓN</div>
@@ -2721,24 +2722,27 @@
 
                                 <div style="position:absolute;top:130px;left:452px;width:120px;height:204px;border-radius:15px;background:#fff;border:1px solid #b8cdd5;box-shadow:0 5px 13px rgba(0,42,72,.08);z-index:22;"></div>
                                 <div style="position:absolute;top:130px;left:452px;width:120px;height:32px;border-radius:15px 15px 0 0;background:linear-gradient(135deg,#00205b,#007b83);z-index:23;"></div>
-                                <div style="position:absolute;top:140px;left:452px;width:120px;text-align:center;font-size:8px;font-weight:900;color:#fff;letter-spacing:1.15px;z-index:24;">VERIFICACIÓN OFICIAL</div>
+                                <div style="position:absolute;top:140px;left:452px;width:120px;text-align:center;font-size:8px;font-weight:900;color:#fff;letter-spacing:1.15px;z-index:24;" style="letter-spacing:.65px;">VERIFICAR MEMBRESÍA</div>
                                 <div id="cred-code" style="position:absolute;top:168px;left:452px;width:120px;text-align:center;font-size:10px;font-weight:900;color:#00757d;letter-spacing:1px;z-index:24;">QR OFICIAL</div>
                                 <div style="position:absolute;top:187px;left:462px;width:100px;height:100px;padding:4px;box-sizing:border-box;border-radius:10px;background:#fff;border:1px solid #d9e6ea;z-index:24;">
                                     <div id="cred-qr" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;"></div>
                                 </div>
-                                <div style="position:absolute;top:295px;left:458px;width:108px;text-align:center;font-size:7px;font-weight:900;color:#718596;letter-spacing:.8px;line-height:1.35;z-index:24;">ESCANEA PARA<br>VALIDAR AUTENTICIDAD</div>
-                                <div style="position:absolute;top:319px;left:476px;width:72px;height:2px;background:linear-gradient(90deg,#f7c600 0 33.33%,#003893 33.33% 66.66%,#cf142b 66.66% 100%);z-index:24;"></div>
+                                <div style="position:absolute;top:295px;left:458px;width:108px;text-align:center;font-size:7px;font-weight:900;color:#718596;letter-spacing:.8px;line-height:1.35;z-index:24;">ESCANEA PARA<br>VERIFICAR CREDENCIAL</div>
+                                <div style="position:absolute;top:319px;left:476px;width:72px;height:2px;background:linear-gradient(90deg,#007b85 0 25%,#00205b 25% 50%,#70ad47 50% 75%,#ffb600 75% 100%);z-index:24;"></div>
 
                                 <div style="position:absolute;bottom:0;left:0;width:100%;height:28px;background:#00205b;z-index:40;"></div>
                                 <div style="position:absolute;bottom:10px;left:28px;font-size:7px;font-weight:800;color:#9edbdc;letter-spacing:1px;z-index:41;">DE LA REACCIÓN A LA PREVENCIÓN</div>
                                 <div style="position:absolute;bottom:10px;right:28px;font-family:'JetBrains Mono','Courier New',monospace;font-size:8px;font-weight:900;color:#fff;letter-spacing:1.6px;z-index:41;">WWW.MOVIDASST.COM</div>
                                 <div style="position:absolute;bottom:0;left:0;width:100%;height:4px;display:flex;z-index:42;">
-                                    <div style="width:33.333%;height:4px;background:#f7c600;"></div>
-                                    <div style="width:33.334%;height:4px;background:#003893;"></div>
-                                    <div style="width:33.333%;height:4px;background:#cf142b;"></div>
+                                    <div style="width:25%;height:4px;background:#007b85;"></div>
+                                    <div style="width:25%;height:4px;background:#00205b;"></div>
+                                    <div style="width:25%;height:4px;background:#70ad47;"></div>
+                                    <div style="width:25%;height:4px;background:#ffb600;"></div>
                                 </div>
                             </div>
                         </div>
+
+                        <div class="mt-2 w-full max-w-2xl rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-[11px] font-medium leading-relaxed text-slate-600"><i class="fa-solid fa-circle-info mr-1 text-movida-teal"></i>Esta credencial identifica a una persona registrada como integrante de La Movida de SST Plus. No constituye licencia profesional, certificación de competencias ni autorización para ejercer.</div>
 
                         <div class="mt-8 p-5 md:p-6 bg-white rounded-2xl border border-slate-200 w-full shadow-sm max-w-2xl">
                             <div class="flex items-center gap-2 mb-4">
@@ -5337,7 +5341,7 @@
             let hubCropper = null; let valMapInstance = null; let valMarkerInstance = null;
 
             const views = { home: document.getElementById('view-home'), portalResult: document.getElementById('view-portal-result'), valResult: document.getElementById('view-validator-result') };
-            const portal = { dni: document.getElementById('portal-dni'), code: document.getElementById('portal-code'), codeToggle: document.getElementById('portal-code-toggle'), btnSubmit: document.getElementById('btn-portal-submit'), error: document.getElementById('portal-error'), photo: document.getElementById('cred-photo'), name: document.getElementById('cred-name'), lastname: document.getElementById('cred-lastname'), dniDisplay: document.getElementById('cred-dni'), grado: document.getElementById('cred-grado'), carrera: document.getElementById('cred-carrera'), estado: document.getElementById('cred-estado'), codeDisplay: document.getElementById('cred-code'), qr: document.getElementById('cred-qr'), uploadPhoto: document.getElementById('photo-upload'), uploadCamera: document.getElementById('camera-upload'), uploadStatus: document.getElementById('portal-upload-status'), btnDownload: document.getElementById('btn-download'), downloadStatus: document.getElementById('portal-download-status'), btnWaGroup: document.getElementById('btn-whatsapp-group') };
+            const portal = { dni: document.getElementById('portal-dni'), code: document.getElementById('portal-code'), codeToggle: document.getElementById('portal-code-toggle'), btnSubmit: document.getElementById('btn-portal-submit'), error: document.getElementById('portal-error'), photo: document.getElementById('cred-photo'), name: document.getElementById('cred-name'), lastname: document.getElementById('cred-lastname'), dniDisplay: document.getElementById('cred-dni'), grado: document.getElementById('cred-grado'), carrera: document.getElementById('cred-carrera'), estado: document.getElementById('cred-estado'), rank: document.getElementById('cred-rank'), codeDisplay: document.getElementById('cred-code'), qr: document.getElementById('cred-qr'), uploadPhoto: document.getElementById('photo-upload'), uploadCamera: document.getElementById('camera-upload'), uploadStatus: document.getElementById('portal-upload-status'), btnDownload: document.getElementById('btn-download'), downloadStatus: document.getElementById('portal-download-status'), btnWaGroup: document.getElementById('btn-whatsapp-group') };
             const recovery = {
                 openButton: document.getElementById('btn-forgot-code'),
                 modal: document.getElementById('recovery-modal'),
@@ -6264,6 +6268,17 @@
                 );
 
             const renderCredential = (data) => {
+                const normalizarValorCredencial = valor => String(valor || '').trim().toLowerCase();
+                const integranteRanking = (globalData || []).find(item => {
+                    const correoData = data.correo || data.email;
+                    const correoItem = item.correo || item.email;
+                    const mismoPublicId = data.public_id && item.public_id && normalizarValorCredencial(data.public_id) === normalizarValorCredencial(item.public_id);
+                    const mismoCorreo = correoData && correoItem && normalizarValorCredencial(correoData) === normalizarValorCredencial(correoItem);
+                    const documentoData = normalizarValorCredencial(data.documento || data.cedula).replace(/\D/g, '');
+                    const documentoItem = normalizarValorCredencial(item.documento || item.cedula).replace(/\D/g, '');
+                    return mismoPublicId || mismoCorreo || (documentoData && documentoData === documentoItem);
+                });
+                const datosCompletos = integranteRanking ? { ...data, ...integranteRanking } : data;
                 const fullName = (data.nombres || "N/A").toString().trim();
                 let nPart = fullName;
                 let lPart = (data.apellidos || "").toString().trim();
@@ -6317,8 +6332,9 @@
                     carrera.length > 24 ? '11px' :
                     '13px';
 
-                const ubicacionCredencial =
-                    ubicacionIntegrante(data);
+                const paisCredencial = (datosCompletos.pais_nombre || nombrePais(datosCompletos.pais_iso2 || 'VE')).toString().trim();
+                const localidadCredencial = (datosCompletos.municipio || datosCompletos.estado || '').toString().trim();
+                const ubicacionCredencial = [paisCredencial.toUpperCase(), localidadCredencial].filter(Boolean).join(' · ');
 
                 portal.estado.textContent = ubicacionCredencial;
                 portal.estado.style.fontSize =
@@ -6327,7 +6343,12 @@
                     ubicacionCredencial.length > 21 ? '12px' :
                     '14px';
 
-                portal.codeDisplay.textContent = "QR OFICIAL";
+                const actividadCredencial = datosActividad(datosCompletos);
+                const posicionCredencial = actividadCredencial.posicion ? ` · #${actividadCredencial.posicion}` : '';
+                portal.rank.textContent = `${actividadCredencial.icono} ${actividadCredencial.nivel.toUpperCase()} · ${formatearXP(actividadCredencial.puntos)} XP${posicionCredencial}`;
+                portal.rank.style.fontSize = portal.rank.textContent.length > 34 ? '5.8px' : portal.rank.textContent.length > 27 ? '6.4px' : '7px';
+
+                portal.codeDisplay.textContent = "QR DE MEMBRESÍA";
 
                 const cedulaVerificacion = (data.public_id || data.documento || data.cedula || '').toString().trim();
 
