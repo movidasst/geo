@@ -7021,6 +7021,20 @@
             };
 
             const downloadCred = async () => {
+                const esMovil = window.matchMedia('(max-width: 820px)').matches ||
+                    navigator.maxTouchPoints > 1;
+                const esIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+                    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+                let ventanaIOS = null;
+
+                if (esIOS) {
+                    ventanaIOS = window.open('', '_blank');
+                    if (ventanaIOS) {
+                        ventanaIOS.document.write('<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><title>Preparando credencial</title></head><body style="margin:0;min-height:100vh;display:grid;place-items:center;background:#f5f8fa;color:#00205b;font-family:Arial,sans-serif;text-align:center"><div><strong>Preparando credencial…</strong><br><small style="display:block;margin-top:8px;color:#64748b">Esta ventana mostrará la imagen lista para guardar.</small></div></body></html>');
+                        ventanaIOS.document.close();
+                    }
+                }
+
                 manageBtnState(portal.btnDownload, true);
                 portal.downloadStatus.textContent =
                     'Preparando fotografía, QR y tipografías...';
@@ -7065,8 +7079,9 @@
 
                     await esperarRecursosCredencial(captureNode, true);
 
+                    const escalaCaptura = esMovil ? 3 : 4;
                     const canvas = await window.html2canvas(captureNode, {
-                        scale: 4,
+                        scale: escalaCaptura,
                         useCORS: true,
                         allowTaint: false,
                         backgroundColor: '#fbfdff',
@@ -7094,20 +7109,35 @@
                     });
 
                     const objectUrl = URL.createObjectURL(blob);
-                    const link = document.createElement('a');
-                    link.download =
+                    const nombreArchivo =
                         `Credencial_${currentMemberDNI || 'MovidaSST'}.png`;
-                    link.href = objectUrl;
-                    document.body.appendChild(link);
-                    link.click();
-                    link.remove();
 
-                    setTimeout(() => URL.revokeObjectURL(objectUrl), 1500);
+                    if (esIOS && ventanaIOS && !ventanaIOS.closed) {
+                        ventanaIOS.document.title = nombreArchivo;
+                        ventanaIOS.location.replace(objectUrl);
+                        portal.downloadStatus.textContent =
+                            'Credencial abierta. Mantén pulsada la imagen para guardarla.';
+                    } else {
+                        const link = document.createElement('a');
+                        link.download = nombreArchivo;
+                        link.href = objectUrl;
+                        link.rel = 'noopener';
+                        link.style.display = 'none';
+                        document.body.appendChild(link);
+                        link.click();
+                        requestAnimationFrame(() => link.remove());
+                        portal.downloadStatus.textContent = esMovil
+                            ? '¡Descarga iniciada! Revisa tus archivos o descargas.'
+                            : '¡Credencial descargada en alta calidad!';
+                    }
 
-                    portal.downloadStatus.textContent =
-                        '¡Credencial descargada en alta calidad!';
+                    setTimeout(
+                        () => URL.revokeObjectURL(objectUrl),
+                        esMovil ? 60000 : 5000
+                    );
                 } catch (error) {
                     console.error(error);
+                    if (ventanaIOS && !ventanaIOS.closed) ventanaIOS.close();
                     portal.downloadStatus.textContent =
                         `No se pudo generar la imagen: ${error.message || error}`;
                 } finally {
