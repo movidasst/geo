@@ -6333,8 +6333,7 @@
                     '13px';
 
                 const paisCredencial = (datosCompletos.pais_nombre || nombrePais(datosCompletos.pais_iso2 || 'VE')).toString().trim();
-                const localidadCredencial = (datosCompletos.municipio || datosCompletos.estado || '').toString().trim();
-                const ubicacionCredencial = [paisCredencial.toUpperCase(), localidadCredencial].filter(Boolean).join(' · ');
+                const ubicacionCredencial = paisCredencial.toUpperCase();
 
                 portal.estado.textContent = ubicacionCredencial;
                 portal.estado.style.fontSize =
