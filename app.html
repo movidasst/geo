@@ -2718,7 +2718,7 @@
                                 </div>
                                 <div style="position:absolute;top:327px;left:180px;font-size:7px;font-weight:900;color:#718596;letter-spacing:1.2px;z-index:20;">UBICACIÓN</div>
                                 <div style="position:absolute;top:341px;left:180px;width:8px;height:8px;border-radius:50%;background:#007b83;z-index:20;"></div>
-                                <div id="cred-estado" style="position:absolute;top:337px;left:194px;width:242px;height:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:14px;font-weight:900;color:#17324d;line-height:1.2;z-index:20;">Miranda, Venezuela</div>
+                                <div id="cred-estado" style="position:absolute;top:337px;left:194px;width:242px;height:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:14px;font-weight:900;color:#17324d;line-height:1.2;z-index:20;">VENEZUELA</div>
 
                                 <div style="position:absolute;top:130px;left:452px;width:120px;height:204px;border-radius:15px;background:#fff;border:1px solid #b8cdd5;box-shadow:0 5px 13px rgba(0,42,72,.08);z-index:22;"></div>
                                 <div style="position:absolute;top:130px;left:452px;width:120px;height:32px;border-radius:15px 15px 0 0;background:linear-gradient(135deg,#00205b,#007b83);z-index:23;"></div>
@@ -6333,8 +6333,7 @@
                     '13px';
 
                 const paisCredencial = (datosCompletos.pais_nombre || nombrePais(datosCompletos.pais_iso2 || 'VE')).toString().trim();
-                const localidadCredencial = (datosCompletos.municipio || datosCompletos.estado || '').toString().trim();
-                const ubicacionCredencial = [paisCredencial.toUpperCase(), localidadCredencial].filter(Boolean).join(' · ');
+                const ubicacionCredencial = paisCredencial.toUpperCase();
 
                 portal.estado.textContent = ubicacionCredencial;
                 portal.estado.style.fontSize =
