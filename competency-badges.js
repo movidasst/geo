@@ -75,8 +75,8 @@
 
   const style = document.createElement('style');
   style.textContent = `
-    #profile-sheet{overflow:hidden!important}
-    #profile-sheet-content{flex:1 1 auto;min-height:0;overflow-y:auto!important;overflow-x:hidden;overscroll-behavior-y:contain;-webkit-overflow-scrolling:touch;touch-action:pan-y;padding-bottom:calc(env(safe-area-inset-bottom) + 28px);scrollbar-gutter:stable}
+    #profile-sheet{top:max(8px,env(safe-area-inset-top))!important;bottom:0!important;height:auto!important;max-height:calc(100dvh - max(8px,env(safe-area-inset-top)))!important;overflow:hidden!important;padding-bottom:0!important;display:flex!important;flex-direction:column!important}
+    #profile-sheet-content{display:block!important;flex:1 1 0!important;width:100%;height:100%!important;min-height:0!important;max-height:100%!important;overflow-y:scroll!important;overflow-x:hidden!important;overscroll-behavior-y:contain;-webkit-overflow-scrolling:touch;touch-action:pan-y!important;padding-bottom:calc(env(safe-area-inset-bottom) + 110px)!important;scrollbar-gutter:stable}
     #profile-sheet-content .participant-profile{min-height:min-content}
     .competency-badges-panel{margin:0 0 20px;padding:16px;border:1px solid rgba(0,123,133,.18);border-radius:20px;background:linear-gradient(145deg,#f7ffff 0%,#fff 52%,#fff9e8 100%);box-shadow:0 10px 28px rgba(0,32,91,.07)}
     .competency-badges-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}.competency-badges-heading span{display:block;font-size:9px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;color:#007b85}.competency-badges-heading h3{margin:2px 0 0;font-size:15px;line-height:1.2;font-weight:900;color:#00205b}.competency-badges-heading strong{display:grid;place-items:center;min-width:46px;height:30px;border-radius:999px;background:#00205b;color:#fff;font-size:12px;box-shadow:0 5px 14px rgba(0,32,91,.2)}
