@@ -16,6 +16,12 @@
     return Number.isNaN(date.getTime()) ? '' : new Intl.DateTimeFormat('es', { month: 'short', year: 'numeric' }).format(date);
   }
 
+  function fechaCertificado(value) {
+    if (!value) return '';
+    const date = new Date(value);
+    return Number.isNaN(date.getTime()) ? '' : new Intl.DateTimeFormat('es', { day: 'numeric', month: 'short', year: 'numeric' }).format(date);
+  }
+
   function render(item) {
     const profile = document.querySelector('#profile-sheet-content .participant-profile');
     if (!profile) return;
@@ -25,11 +31,21 @@
       (Array.isArray(item?.insignias_competencias) ? item.insignias_competencias : [])
         .map(badge => [String(badge?.codigo || ''), badge])
     );
+    const certificates = new Map(
+      (Array.isArray(item?.certificados_competencias) ? item.certificados_competencias : [])
+        .map(certificate => [String(certificate?.codigo_competencia || ''), certificate])
+    );
     const count = earned.size;
     const cards = BADGES.map(([code, title, phrase, file]) => {
       const badge = earned.get(code);
+      const certificate = certificates.get(code);
       const unlocked = Boolean(badge);
       const date = fechaLogro(badge?.obtenida_at);
+      const certificateDate = fechaCertificado(certificate?.emitida_at);
+      const certificateCode = String(certificate?.codigo_certificado || '');
+      const verificationUrl = certificateCode
+        ? `https://desarrolla.movidasst.com/verificar.html?codigo=${encodeURIComponent(certificateCode)}`
+        : '';
       return `
         <article class="competency-badge-card ${unlocked ? 'is-earned' : 'is-locked'}" title="${unlocked ? `${title}: insignia obtenida` : `${title}: completa la ruta para desbloquearla`}">
           <div class="competency-badge-art">
@@ -39,6 +55,13 @@
           <h4>${title}</h4>
           <p>${unlocked ? phrase : 'Ruta pendiente'}</p>
           ${date ? `<time>${date}</time>` : ''}
+          ${certificate ? `
+            <a class="competency-certificate ${certificate.vigente ? 'is-valid' : 'is-revoked'}" href="${verificationUrl}" target="_blank" rel="noopener noreferrer" aria-label="Ver certificado de ${title}">
+              <span><i class="fa-solid ${certificate.vigente ? 'fa-circle-check' : 'fa-circle-xmark'}"></i> ${certificate.vigente ? 'Vigente' : 'Anulado'}</span>
+              <strong>Ver certificado</strong>
+              <small>${certificateCode}</small>
+              ${certificateDate ? `<time>Emitido ${certificateDate}</time>` : ''}
+            </a>` : ''}
         </article>`;
     }).join('');
 
@@ -50,7 +73,7 @@
         <div><span>Desarrolla SST</span><h3>Insignias de competencias</h3></div>
         <strong>${count}/6</strong>
       </div>
-      <p class="competency-badges-note">Cada insignia deja constancia de que completó la ruta: Evalúa + Aprende + Practica + Mejora.</p>
+      <p class="competency-badges-note">Cada insignia deja constancia de que completó la ruta: Evalúa + Aprende + Practica + Mejora + Demuestra.</p>
       <div class="competency-badges-grid">${cards}</div>`;
 
     const activityPanel = Array.from(profile.children).find(el => el.textContent?.includes('Actividad en La Movida SST'));
@@ -82,7 +105,8 @@
     .competency-badges-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}.competency-badges-heading span{display:block;font-size:9px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;color:#007b85}.competency-badges-heading h3{margin:2px 0 0;font-size:15px;line-height:1.2;font-weight:900;color:#00205b}.competency-badges-heading strong{display:grid;place-items:center;min-width:46px;height:30px;border-radius:999px;background:#00205b;color:#fff;font-size:12px;box-shadow:0 5px 14px rgba(0,32,91,.2)}
     .competency-badges-note{margin:8px 0 13px;font-size:10px!important;line-height:1.45;color:#607486!important}.competency-badges-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.competency-badge-card{position:relative;min-width:0;padding:10px 7px 11px;text-align:center;border-radius:15px;border:1px solid #dce9eb;background:rgba(255,255,255,.9);transition:transform .2s ease,box-shadow .2s ease}.competency-badge-card.is-earned{border-color:rgba(0,123,133,.26);box-shadow:0 6px 16px rgba(0,123,133,.1)}.competency-badge-card.is-earned:active{transform:scale(.97)}
     .competency-badge-art{position:relative;width:76px;height:88px;margin:0 auto 6px}.competency-badge-art img{display:block;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 5px 5px rgba(0,32,91,.18))}.competency-badge-card.is-locked .competency-badge-art img{filter:grayscale(1);opacity:.2}.competency-badge-check,.competency-badge-lock{position:absolute;right:-3px;bottom:1px;display:grid;place-items:center;width:22px;height:22px;border-radius:50%;font-size:9px}.competency-badge-check{color:#fff;background:#70ad47;border:2px solid #fff;box-shadow:0 3px 8px rgba(50,100,30,.3)}.competency-badge-lock{color:#81909b;background:#edf2f4;border:2px solid #fff}
-    .competency-badge-card h4{margin:0;font-size:10px;line-height:1.25;font-weight:900;color:#00205b;min-height:25px}.competency-badge-card p{margin:4px 0 0!important;font-size:8.5px!important;line-height:1.25!important;color:#667b89!important}.competency-badge-card time{display:block;margin-top:4px;font-size:7.5px;font-weight:800;text-transform:uppercase;color:#007b85}.competency-badge-card.is-locked h4{color:#71818c}
+    .competency-badge-card h4{margin:0;font-size:10px;line-height:1.25;font-weight:900;color:#00205b;min-height:25px}.competency-badge-card p{margin:4px 0 0!important;font-size:8.5px!important;line-height:1.25!important;color:#667b89!important}.competency-badge-card>time{display:block;margin-top:4px;font-size:7.5px;font-weight:800;text-transform:uppercase;color:#007b85}.competency-badge-card.is-locked h4{color:#71818c}
+    .competency-certificate{display:flex;flex-direction:column;align-items:center;gap:2px;margin-top:8px;padding:8px 5px;border-radius:10px;text-decoration:none;background:#eef8f7;border:1px solid rgba(0,123,133,.22);color:#00205b;overflow:hidden}.competency-certificate>span{font-size:7.5px;font-weight:900;text-transform:uppercase;letter-spacing:.06em;color:#4f8f35}.competency-certificate>strong{font-size:9px;line-height:1.2}.competency-certificate>small{display:block;width:100%;font:700 6.8px/1.2 'JetBrains Mono',monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#536b7a}.competency-certificate>time{margin:1px 0 0;font-size:6.8px;font-weight:700;color:#64748b}.competency-certificate.is-revoked{background:#fff1f2;border-color:#fecdd3}.competency-certificate.is-revoked>span{color:#be123c}.competency-certificate:focus-visible{outline:3px solid #ffb600;outline-offset:2px}
     @media(min-width:640px){.competency-badges-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.competency-badge-art{width:72px;height:84px}}
   `;
   document.head.appendChild(style);
