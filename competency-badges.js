@@ -50,7 +50,7 @@
         <div><span>Desarrolla SST</span><h3>Insignias de competencias</h3></div>
         <strong>${count}/6</strong>
       </div>
-      <p class="competency-badges-note">Cada insignia acredita que completó la ruta: Evalúa + Aprende + Practica + Mejora.</p>
+      <p class="competency-badges-note">Cada insignia deja constancia de que completó la ruta: Evalúa + Aprende + Practica + Mejora.</p>
       <div class="competency-badges-grid">${cards}</div>`;
 
     const activityPanel = Array.from(profile.children).find(el => el.textContent?.includes('Actividad en La Movida SST'));
