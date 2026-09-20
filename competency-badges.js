@@ -33,7 +33,7 @@
       return `
         <article class="competency-badge-card ${unlocked ? 'is-earned' : 'is-locked'}" title="${unlocked ? `${title}: insignia obtenida` : `${title}: completa la ruta para desbloquearla`}">
           <div class="competency-badge-art">
-            <img src="./assets/badges/${file}" alt="Insignia ${title}" loading="lazy">
+            <img src="./assets/badges/${file}?v=20260920-sin-texto-v3" alt="Insignia ${title}" loading="lazy">
             ${unlocked ? '<span class="competency-badge-check" aria-label="Obtenida"><i class="fa-solid fa-check"></i></span>' : '<span class="competency-badge-lock" aria-label="Pendiente"><i class="fa-solid fa-lock"></i></span>'}
           </div>
           <h4>${title}</h4>
