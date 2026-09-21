@@ -7,7 +7,8 @@
     ['liderazgo_preventivo', 'Liderazgo preventivo', 'Moviliza la prevención', 'liderazgo-preventivo.svg'],
     ['influencia_estrategica', 'Influencia estratégica', 'Conecta decisiones', 'influencia-estrategica.svg'],
     ['pensamiento_critico', 'Pensamiento crítico', 'Evidencia antes de actuar', 'pensamiento-critico.svg'],
-    ['gestion_emocional', 'Gestión emocional', 'Equilibrio bajo presión', 'gestion-emocional.svg']
+    ['gestion_emocional', 'Gestión emocional', 'Equilibrio bajo presión', 'gestion-emocional.svg'],
+    ['finanzas_sst', 'Finanzas y Valor Preventivo', 'Decisiones con valor', 'finanzas-valor-preventivo.svg']
   ];
 
   function fechaLogro(value) {
@@ -71,7 +72,7 @@
     section.innerHTML = `
       <div class="competency-badges-heading">
         <div><span>Desarrolla SST</span><h3>Insignias de competencias</h3></div>
-        <strong>${count}/6</strong>
+        <strong>${count}/7</strong>
       </div>
       <p class="competency-badges-note">Cada insignia deja constancia de que completó la ruta: Evalúa + Aprende + Practica + Mejora + Demuestra.</p>
       <div class="competency-badges-grid">${cards}</div>`;
