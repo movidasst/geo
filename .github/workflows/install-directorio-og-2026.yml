@@ -1,0 +1,64 @@
+name: Install Directorio OG image
+on:
+  push:
+    paths:
+      - '.github/workflows/install-directorio-og-2026.yml'
+permissions:
+  contents: write
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install image library
+        run: python -m pip install Pillow
+      - name: Prepare crisp social image
+        run: |
+          python - <<'PY'
+          from PIL import Image, ImageOps, ImageFilter
+          from pathlib import Path
+          from urllib.request import Request, urlopen
+          from urllib.error import HTTPError
+          from io import BytesIO
+          url = "https://media.canva.com/v2/image-resize/format:PNG/height:105/quality:100/uri:ifs%3A%2F%2FM%2F4e7709fa-5207-4811-ba85-994e42dd3f12/watermark:F/width:200?csig=AAAAAAAAAAAAAAAAAAAAAHcJ32uLowmaj0ppqE-FbaQ36C3euFLoNvRLPlgc9K0_&exp=1792601424&osig=AAAAAAAAAAAAAAAAAAAAAHF8R2MVm_VHZdb894K1neaUIxw1UMBH1tkH3ws91djX&signer=media-rpc&token=AAIAAU0AJDRlNzcwOWZhLTUyMDctNDgxMS1iYTg1LTk5NGU0MmRkM2YxMgAAAAABoV9fAIAeoYCXWoPCebNDjWAu4LCvtnoQZe_0o6pn24EGjdR3ag&x-canva-quality=thumbnail"
+          candidates = [
+              url.replace('height:105','height:909').replace('width:200','width:1731'),
+              url.replace('height:105','height:630').replace('width:200','width:1200'),
+              url,
+          ]
+          source = None
+          for i, link in enumerate(candidates):
+              try:
+                  with urlopen(Request(link,headers={'User-Agent':'Mozilla/5.0'}),timeout=20) as response:
+                      buf = response.read()
+                  test = Image.open(BytesIO(buf)).convert('RGB')
+                  print('Candidate',i,'source',test.size,'bytes',len(buf),flush=True)
+                  if source is None or test.width > source.width: source=test
+                  if test.width >= 1200: break
+              except Exception as error:
+                  print('Candidate',i,'failed:',str(error)[:250],flush=True)
+          if source is None: raise RuntimeError('No accessible preview source')
+          if source.width < 800: raise RuntimeError('Source too small for crisp WhatsApp preview; stop without publishing')
+          source = ImageOps.fit(source,(1200,630),method=Image.Resampling.LANCZOS)
+          source = source.filter(ImageFilter.UnsharpMask(radius=0.75,percent=65,threshold=2))
+          target=Path('og-directorio-sst-20261021.jpg')
+          for quality in [88,84,80,76,72,68,63,58,54]:
+              output=BytesIO()
+              source.save(output,format='JPEG',quality=quality,optimize=True,progressive=True,subsampling=2)
+              if output.tell()<=350000:
+                  target.write_bytes(output.getvalue());break
+          else: raise RuntimeError('Cannot produce file under 350KB')
+          with Image.open(target) as im:
+              print('Output', im.size,'bytes',target.stat().st_size,'quality',quality,flush=True)
+              im.verify()
+          PY
+      - name: Save optimized banner
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add og-directorio-sst-20261021.jpg
+          git commit -m 'Install social sharing image for Directorio SST' || exit 0
+          git push
