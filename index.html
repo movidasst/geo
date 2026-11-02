@@ -48,6 +48,18 @@
         html = html.replace(mainBefore, mainAfter);
         html = html.replace(validatorBefore, validatorAfter);
 
+        // El modo incrustado sólo se habilita si el HUB oficial es el origen de la carga.
+        const embedRequested = new URLSearchParams(location.search).get('embed') === 'mi-movida';
+        let trustedEmbed = false;
+        try {
+          trustedEmbed = embedRequested && window.parent !== window &&
+            new URL(document.referrer).origin === 'https://www.movidasst.com';
+        } catch { trustedEmbed = false; }
+        if (trustedEmbed) {
+          const embedBoot = '<script>window.__geoMiMovidaEmbedAllowed=true;document.documentElement.classList.add("mm-credential-embed");<\/script>' +
+            '<link rel="stylesheet" href="./mi-movida-credential-embed.css?v=20261102">';
+          html = html.replace('</head>', embedBoot + '</head>');
+        }
         if (!html.includes('</head>')) throw new Error('No se encontró la cabecera de la aplicación base.');
         html = html.replace('</head>', '<link rel="stylesheet" href="./map-layout-responsive.css?v=20261021-mapa-v1"><script defer src="https://www.movidasst.com/analytics.js?v=20261025-ga4com2"><\/script></head>');
 

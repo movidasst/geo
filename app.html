@@ -6459,6 +6459,74 @@
                 cargarFormularioDatos(data);
             };
 
+            // Integración opcional. Reutiliza el mismo DOM y renderizador de la credencial GEO.
+            // Nunca recibe un JWT, código de integrante ni contraseña desde Mi Movida.
+            if (window.__geoMiMovidaEmbedAllowed === true && window.parent !== window) {
+                const mmHubOrigin = 'https://www.movidasst.com';
+                const mmExpectedId = new URLSearchParams(window.location.search).get('id') || '';
+                const mmIdPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+                if (mmIdPattern.test(mmExpectedId)) {
+                    const mmShell = document.createElement('section');
+                    mmShell.id = 'mm-credential-shell';
+                    mmShell.setAttribute('aria-label', 'Credencial oficial de GEO');
+                    mmShell.innerHTML =
+                        '<p class="mm-credential-title">Credencial oficial de integrante</p>' +
+                        '<p class="mm-credential-note" id="mm-credential-loading" role="status">Preparando tu credencial en GEO…</p>' +
+                        '<div id="mm-credential-viewport"><div id="mm-credential-scale"></div></div>' +
+                        '<div id="mm-credential-actions"></div>' +
+                        '<p class="mm-credential-note">Credencial original de Directorio GEO · QR verificable.</p>';
+                    document.body.appendChild(mmShell);
+                    const mmViewport = document.getElementById('mm-credential-viewport');
+                    const mmScaled = document.getElementById('mm-credential-scale');
+                    const mmLoading = document.getElementById('mm-credential-loading');
+                    const mmActions = document.getElementById('mm-credential-actions');
+                    const mmResize = () => {
+                        const width = Math.min(600, Math.max(260, mmViewport.clientWidth));
+                        const scale = width / 600;
+                        mmScaled.style.transform = 'scale(' + scale.toFixed(5) + ')';
+                        mmViewport.style.height = Math.ceil(380 * scale) + 'px';
+                    };
+                    window.addEventListener('resize', mmResize, {passive: true});
+                    if (typeof ResizeObserver !== 'undefined') {
+                        new ResizeObserver(mmResize).observe(mmViewport);
+                    }
+                    window.addEventListener('message', (event) => {
+                        if (event.origin !== mmHubOrigin || event.source !== window.parent) return;
+                        const packet = event.data;
+                        if (!packet || packet.type !== 'movida-geo-credential-data') return;
+                        if (String(packet.public_id || '').toLowerCase() !== mmExpectedId.toLowerCase()) return;
+                        const d = packet.credential;
+                        if (!d || !mmIdPattern.test(String(d.public_id || '')) ||
+                            String(d.public_id).toLowerCase() !== mmExpectedId.toLowerCase()) return;
+                        try {
+                            // Los datos llegan exclusivamente desde la sesión validada de Mi Movida.
+                            // GEO conserva su diseño, QR y función original de descarga.
+                            renderCredential(d);
+                            currentMemberDNI = null;
+                            currentMemberCode = null;
+                            currentMemberData = null;
+                            mmScaled.appendChild(document.getElementById('credential'));
+                            mmActions.appendChild(portal.btnDownload);
+                            mmActions.appendChild(portal.downloadStatus);
+                            mmLoading.hidden = true;
+                            mmResize();
+                            window.parent.postMessage(
+                                {type:'movida-geo-credential-rendered', public_id:mmExpectedId}, mmHubOrigin
+                            );
+                        } catch (error) {
+                            console.error('Vista GEO para Mi Movida:', error);
+                            mmLoading.textContent = 'No se pudo presentar la credencial. Ábrela en Directorio GEO.';
+                            window.parent.postMessage(
+                                {type:'movida-geo-credential-unavailable', public_id:mmExpectedId}, mmHubOrigin
+                            );
+                        }
+                    });
+                    window.parent.postMessage(
+                        {type:'movida-geo-credential-ready', public_id:mmExpectedId}, mmHubOrigin
+                    );
+                }
+            }
+
             const guardarDatosPerfil = async (event) => {
                 event.preventDefault();
                 setEditorStatus('');

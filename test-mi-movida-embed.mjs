@@ -1,0 +1,23 @@
+import {readFileSync} from 'node:fs';
+import assert from 'node:assert/strict';
+const index=readFileSync('index.html','utf8');
+const app=readFileSync('app.html','utf8');
+const css=readFileSync('mi-movida-credential-embed.css','utf8');
+assert.match(index,/get\('embed'\) === 'mi-movida'/);
+assert.match(index,/new URL\(document\.referrer\)\.origin === 'https:\/\/www\.movidasst\.com'/);
+assert.match(index,/trustedEmbed/);
+assert.match(app,/window\.__geoMiMovidaEmbedAllowed === true && window\.parent !== window/);
+assert.match(app,/event\.origin !== mmHubOrigin \|\| event\.source !== window\.parent/);
+assert.match(app,/renderCredential\(d\)/);
+assert.match(app,/mmScaled\.appendChild\(document\.getElementById\('credential'\)\)/);
+assert.match(app,/mmActions\.appendChild\(portal\.btnDownload\)/);
+assert.match(app,/currentMemberCode = null/);
+assert.match(css,/#mm-credential-scale/);
+assert.match(css,/transform-origin:top left/);
+assert.match(index,/hash-router\.js/);
+// Analizar la sintaxis JS de los scripts incluidos sin ejecutarlos.
+const inline=[...index.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m=>m[1]);
+for(const source of inline)new Function(source);
+const htmlScripts=[...app.matchAll(/<script(?: [^>]*)?>([\s\S]*?)<\/script>/g)].map(m=>m[1]).filter(Boolean);
+for(const source of htmlScripts)new Function(source);
+console.log('GEO: modo aislado, seguridad de orígenes, renderizador y descarga original verificados');

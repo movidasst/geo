@@ -1,0 +1,23 @@
+name: GEO · credencial aislada para Mi Movida
+on:
+  push:
+    branches: [feat/credencial-embebida-mi-movida-20261102]
+  pull_request:
+    paths:
+      - 'index.html'
+      - 'app.html'
+      - 'mi-movida-credential-embed.css'
+      - 'test-mi-movida-embed.mjs'
+      - '.github/workflows/mi-movida-embed.yml'
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: node test-mi-movida-embed.mjs
