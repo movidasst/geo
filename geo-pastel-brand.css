@@ -1,0 +1,226 @@
+/*
+ * Directorio GEO — Identidad visual pastel La Movida de SST+ (noviembre 2026).
+ * Capa de presentación: no modifica mapas, gráficas, filtros, eventos, datos,
+ * credenciales exportables ni integración embebida con Mi Movida.
+ * Mantener los selectores específicos para aislar la superficie visual.
+ */
+:root {
+  --geo-teal: #007B85;
+  --geo-navy: #00205B;
+  --geo-mint: #E9F7F2;
+  --geo-sky: #EDF5FC;
+  --geo-lime: #F1F8EB;
+  --geo-gold: #FFF7DF;
+  --geo-lavender: #F4F0FA;
+  --geo-line: #D6E9E5;
+  --geo-ink: #234154;
+  --geo-muted: #506A7A;
+  --geo-shadow: 0 10px 28px rgba(0, 65, 83, .075);
+}
+html, body { background: #F8FAFC; }
+
+/* Logo rectangular real, sobre una superficie blanca, sin deformarlo. */
+body > header {
+  background: rgba(250, 254, 252, .97) !important;
+  border-bottom-color: #D3E9E3 !important;
+  box-shadow: 0 5px 18px rgba(0, 65, 83, .08) !important;
+}
+body > header > div:first-child { min-width: 0; }
+body > header > div:first-child > div.truncate { min-width: 0; }
+body > header img.geo-header-logo {
+  display: block;
+  width: 160px !important;
+  height: 46px !important;
+  padding: 5px 9px;
+  flex-shrink: 0;
+  object-fit: contain;
+  background: #FFFFFF;
+  border: 1px solid #D6E9E4 !important;
+  border-radius: 12px !important;
+  box-shadow: 0 3px 13px rgba(0, 72, 89, .06);
+}
+body > header h1 { color: var(--geo-navy) !important; }
+body > header p { color: #006A74 !important; }
+
+/* Carga: logo horizontal sin aro circular; no intervenir en el watchdog. */
+#splash-screen {
+  background: radial-gradient(circle at 12% 18%, rgba(207, 238, 231, .8), transparent 31rem),
+              radial-gradient(circle at 93% 80%, rgba(255, 240, 195, .65), transparent 28rem),
+              #F8FAFC !important;
+}
+#splash-brand {
+  width: min(78vw, 298px) !important;
+  height: 100px !important;
+  padding: 13px 16px !important;
+  border-radius: 21px !important;
+  border: 1px solid #D3E8E2 !important;
+  box-shadow: var(--geo-shadow);
+}
+#splash-brand::after { display: none !important; }
+#splash-logo {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  border-radius: 0 !important;
+}
+#splash-title { color: var(--geo-navy) !important; }
+#splash-subtitle { color: #006F78 !important; }
+#splash-status { background: #FFFFFF !important; border-color: #D5E9E3 !important; }
+
+/* Mapa: solo controles, barras y paneles. No alterar los mapas geográficos. */
+#map-view .filter-pill {
+  background: #EFF9F5 !important;
+  color: #25495A !important;
+  border-color: #CAE5DC !important;
+  box-shadow: 0 4px 12px rgba(0, 57, 72, .045) !important;
+}
+#map-view .filter-pill.active {
+  color: #FFFFFF !important;
+  background: #007B85 !important;
+  border-color: #007B85 !important;
+}
+#map-view .filter-pill:last-child {
+  background: linear-gradient(120deg, #007B85, #168F95) !important;
+  color: #FFFFFF !important;
+  border-color: transparent !important;
+}
+#map-region-bar .map-region-chip {
+  background: #FFFFFF !important;
+  border-color: #D1E7E1 !important;
+  color: #365A69 !important;
+}
+#map-region-bar .map-region-chip.active {
+  background: #007B85 !important;
+  color: #FFFFFF !important;
+  border-color: #007B85 !important;
+}
+#map-tools-capsule,
+#map-legend-panel,
+#map-visible-card {
+  background: rgba(250, 254, 252, .97) !important;
+  border-color: #CFE6DF !important;
+  box-shadow: var(--geo-shadow) !important;
+}
+#map-visible-card > div:first-child { background: #E3F5EE !important; }
+
+/* Métricas: tarjetas claras con variaciones pastel y contraste suficiente. */
+#dashboard-view,
+#info-view {
+  background: radial-gradient(circle at 8% 6%, rgba(216, 243, 235, .74), transparent 26rem),
+              radial-gradient(circle at 95% 48%, rgba(255, 244, 214, .56), transparent 28rem),
+              #F8FAFC !important;
+}
+#dashboard-view > div > header {
+  background: linear-gradient(120deg, #E6F6F0, #EFF6FC 76%, #FFF8E6);
+  border: 1px solid #D2E7E2;
+  border-radius: 20px;
+  padding: 16px 18px;
+  box-shadow: var(--geo-shadow);
+}
+#dashboard-view > div > header h1 { color: var(--geo-navy) !important; }
+#dashboard-view .glass-card {
+  background: #FFFFFF !important;
+  border-color: var(--geo-line) !important;
+  box-shadow: var(--geo-shadow) !important;
+}
+#dashboard-view [aria-labelledby="dashboard-country-title"] {
+  background: linear-gradient(125deg, #EAF8F3, #F7FCFA) !important;
+}
+#dashboard-view #dashboard-country-scope {
+  background: #E2F3ED !important;
+  border-color: #CBE7DF !important;
+  color: #315B62 !important;
+}
+#dashboard-view #dashboard-country {
+  background: #FFFFFF !important;
+  border-color: #BEDFD7 !important;
+  color: var(--geo-navy) !important;
+}
+#dashboard-view #dash-territory-card { background: #EDF5FC !important; }
+#dashboard-view #dash-municipality-card { background: #F1F8EB !important; }
+#dashboard-view #dash-total,
+#dashboard-view h2,
+#dashboard-view h3,
+#dashboard-view h4 { color: var(--geo-navy) !important; }
+#dashboard-view #dashboard-export:not(:disabled) {
+  background: #007B85 !important;
+  color: #FFFFFF !important;
+  border-color: #007B85 !important;
+}
+#dashboard-view #dashboard-export:disabled {
+  background: #F0F5F6 !important;
+  color: #5C7280 !important;
+}
+
+/* Registro e información: su promoción oficial sigue siendo accesible. */
+#info-view .glass-card {
+  border-color: #D6E9E5 !important;
+  box-shadow: var(--geo-shadow) !important;
+}
+#info-view a.registration-entry-hero[href*="registro.movidasst.com"] {
+  background: linear-gradient(130deg, #E3F5EF 0%, #ECF6FC 65%, #FFF5D9 100%) !important;
+  border-color: #C4E3DB !important;
+  color: #234154 !important;
+  box-shadow: var(--geo-shadow) !important;
+}
+#info-view .registration-entry-title { color: var(--geo-navy) !important; }
+#info-view .registration-entry-eyebrow { color: #006B75 !important; }
+#info-view .registration-entry-copy { color: #395D6B !important; }
+#info-view .registration-entry-benefit {
+  background: rgba(255,255,255,.88) !important;
+  border-color: #D6E8E3 !important;
+  color: #325767 !important;
+}
+#info-view .registration-entry-helper { color: #456778 !important; }
+#info-view .registration-entry-helper i { color: #007B85 !important; }
+
+/* Filtros y perfiles: solo piel visual, sin cambiar controles ni posiciones. */
+#advanced-filters-sheet,
+#profile-sheet {
+  background: linear-gradient(180deg, #EBF8F3 0%, #FFFFFF 46%) !important;
+  border-color: #CDE6DF !important;
+}
+#advanced-filters-sheet input,
+#advanced-filters-sheet select { border-color: #C7E3DD !important; }
+#advanced-filters-sheet input:focus,
+#advanced-filters-sheet select:focus { border-color: #007B85 !important; }
+#member-data-editor { border-color: #D1E7E1; }
+#member-profile-privacy { border-color: #CBE5DD; }
+
+/* Credencial: cambiar solamente el fondo de la vista, NO el lienzo exportable. */
+#credencial-view { background: #F7FAFC !important; }
+
+/* Navegación: nunca alterar altura, eventos ni desplazamientos del mapa. */
+#bottom-nav {
+  background: rgba(250, 254, 251, .97) !important;
+  border-color: #D1E8E1 !important;
+}
+#bottom-nav .nav-item.active { color: #006A74 !important; }
+#bottom-nav .nav-item.active .icon-container {
+  color: #FFFFFF !important;
+  background: #007B85 !important;
+  box-shadow: 0 5px 14px rgba(0, 123, 133, .18) !important;
+}
+#btn-info-view.registration-nav-item:not(.active) .icon-container {
+  background: #FFE8A6 !important;
+}
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 3px solid #70AD47;
+  outline-offset: 2px;
+}
+@media (max-width: 639px) {
+  body > header { gap: 4px; }
+  body > header img.geo-header-logo { width: 143px !important; height: 43px !important; padding: 4px 7px; }
+  body > header > div:first-child > div.truncate { display: none !important; }
+  #dashboard-view > div > header { padding: 14px 15px; }
+}
+@media (max-width: 360px) {
+  body > header img.geo-header-logo { width: 128px !important; height: 40px !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #splash-brand, #dashboard-view .glass-card { transition: none !important; }
+}
