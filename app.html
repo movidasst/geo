@@ -4447,16 +4447,20 @@
             stateFiltros[grupo] = valor;
         }
 
-        function setFiltroPildora(tipo, btnEl) {
-            if(navigator.vibrate) navigator.vibrate(30);
+        function marcarFiltroPildora(btnEl) {
             document.querySelectorAll('.filter-pill').forEach(btn => {
                 if(!btn.innerHTML.includes('Filtros')){
                     btn.classList.remove('active', 'bg-movida-navy', 'text-white');
                     btn.classList.add('bg-white', 'text-slate-500');
                 }
             });
-            btnEl.classList.remove('bg-white', 'text-slate-500');
-            btnEl.classList.add('active', 'bg-movida-navy', 'text-white');
+            btnEl?.classList.remove('bg-white', 'text-slate-500');
+            btnEl?.classList.add('active', 'bg-movida-navy', 'text-white');
+        }
+
+        function setFiltroPildora(tipo, btnEl) {
+            if(navigator.vibrate) navigator.vibrate(30);
+            marcarFiltroPildora(btnEl);
             
             if(tipo === 'todos') { selectChip('genero', 'todos'); selectChip('laboral', 'todos'); }
             else if(tipo === 'asesores') { selectChip('laboral', 'Independiente'); selectChip('genero', 'todos'); }
@@ -4512,7 +4516,7 @@
             setTimeout(() => document.getElementById('ui-backdrop').classList.add('hidden'), 300);
         }
 
-        function limpiarFiltrosAvanzados() {
+        function restablecerFiltrosAvanzados() {
             if(document.getElementById('filtro-pais')) document.getElementById('filtro-pais').value = 'todos';
             if(document.getElementById('filtro-estado')) document.getElementById('filtro-estado').value = 'todos';
             const muniSelect = document.getElementById('filtro-municipio');
@@ -4526,7 +4530,12 @@
             stateFiltros.continente = 'todos';
             document.querySelectorAll('.map-region-chip').forEach(chip => chip.classList.toggle('active', chip.dataset.region === 'todos'));
             selectChip('academico', 'todos'); selectChip('laboral', 'todos'); selectChip('genero', 'todos');
+            marcarFiltroPildora(document.querySelector('.filter-pill'));
             actualizarVisibilidadFiltrosTerritoriales();
+        }
+
+        function limpiarFiltrosAvanzados() {
+            restablecerFiltrosAvanzados();
             aplicarFiltrosGlobales({ ajustarResultados: true }); cerrarTodosLosPaneles(); mostrarNotificacion('Filtros limpiados', 'fa-eraser');
         }
 
@@ -4540,14 +4549,20 @@
             if (estadoSelect.value === 'todos') {
                 muniSelect.disabled = true; muniSelect.classList.add('text-slate-400', 'cursor-not-allowed'); muniSelect.classList.remove('text-movida-navy');
             } else {
-                let municipiosDelEstado = new Set();
-                globalData.forEach(item => { if (item.estado && item.estado.trim() === estadoSelect.value && item.municipio) municipiosDelEstado.add(item.municipio.trim().toLowerCase()); });
-                Array.from(municipiosDelEstado).sort().forEach(mun => { let opt = document.createElement('option'); opt.value = toTitleCase(mun); opt.innerHTML = toTitleCase(mun); muniSelect.appendChild(opt); });
+                const municipios = new Map();
+                const claveEstado = claveTerritorial(estadoSelect.value);
+                globalData.forEach(item => {
+                    if (item.pais_iso2 !== 'VE' || claveTerritorial(item.estado) !== claveEstado) return;
+                    const clave = claveTerritorial(item.municipio);
+                    if (clave && !municipios.has(clave)) municipios.set(clave, toTitleCase(item.municipio));
+                });
+                [...municipios.values()].sort((a, b) => a.localeCompare(b, 'es'))
+                    .forEach(nombre => muniSelect.add(new Option(nombre, nombre)));
                 muniSelect.disabled = false; muniSelect.classList.remove('text-slate-400', 'cursor-not-allowed'); muniSelect.classList.add('text-movida-navy');
             }
         }
 
-        function toggleHeatmap() {
+        function toggleHeatmap({ aplicar = true } = {}) {
             stateFiltros.modoHeatmap = !stateFiltros.modoHeatmap;
             const btn = document.getElementById('btn-heatmap');
             if(stateFiltros.modoHeatmap) {
@@ -4555,7 +4570,7 @@
             } else {
                 btn.classList.remove('bg-movida-navy', 'text-white'); btn.classList.add('bg-white', 'text-movida-teal'); mostrarNotificacion('Marcadores activados', 'fa-location-dot');
             }
-            aplicarFiltrosGlobales();
+            if (aplicar) aplicarFiltrosGlobales();
         }
 
         function abrirPerfil(itemStr) {
@@ -4805,13 +4820,15 @@
             const paisesVisibles = new Set();
             let internacionalesVisibles = 0;
 
+            const claveEstado = claveTerritorial(stateFiltros.estado);
+            const claveMunicipio = claveTerritorial(stateFiltros.municipio);
             globalData.forEach(item => {
                 if (!esRegistroBaseValido(item)) return;
                 if (stateFiltros.pais !== 'todos' && item.pais_iso2 !== stateFiltros.pais) return;
                 if (!perteneceARegion(item.pais_iso2, stateFiltros.continente)) return;
                 if (stateFiltros.academico !== 'todos' && item._nivel_acad !== stateFiltros.academico) return;
-                if (stateFiltros.estado !== 'todos' && item.estado.trim() !== stateFiltros.estado) return;
-                if (stateFiltros.municipio !== 'todos' && (item.municipio || "").trim().toLowerCase() !== stateFiltros.municipio.toLowerCase()) return;
+                if (stateFiltros.estado !== 'todos' && claveTerritorial(item.estado) !== claveEstado) return;
+                if (stateFiltros.municipio !== 'todos' && claveTerritorial(item.municipio) !== claveMunicipio) return;
                 if (stateFiltros.laboral !== 'todos' && item._laboral_clean !== stateFiltros.laboral) return;
                 if (stateFiltros.genero !== 'todos' && item.genero !== stateFiltros.genero) return;
                 if (stateFiltros.nombreBusqueda !== "" && !(item._nombre_completo || "").toLowerCase().includes(stateFiltros.nombreBusqueda)) return;
@@ -5050,7 +5067,7 @@
 
             document.getElementById('dash-territory-card')?.classList.toggle('hidden', !esMundo && !esVenezuela);
             document.getElementById('dash-municipality-card')?.classList.toggle('hidden', !esVenezuela);
-            document.getElementById('dashboard-geography-card')?.classList.toggle('hidden', !esMundo && !esVenezuela);
+
 
             const scope = document.getElementById('dashboard-country-scope');
             if (scope) scope.innerHTML = `${banderaAmbito} Mostrando únicamente las métricas de <strong>${escapeHTML(nombreAmbito)}</strong> · ${registrosValidos.length} profesionales.`;
@@ -5060,7 +5077,7 @@
             const geographyHelp = document.getElementById('dashboard-geography-help');
             if (geographyHelp) geographyHelp.textContent = esVenezuela
                 ? 'Distribución territorial de Venezuela. Toca un estado para consultar sus municipios.'
-                : 'Muestra todos los países representados. Selecciona Venezuela para consultar estados y municipios.';
+                : 'Abre el mapa filtrado desde el país que quieras explorar.';
 
             const topCarreras = Object.values(carreras)
                 .sort((a, b) => b.total - a.total || a.nombre.localeCompare(b.nombre, 'es')).slice(0, 5);
@@ -5171,6 +5188,28 @@
             });
         }
 
+        function abrirMapaDesdeMetricas({ pais, estado, municipio }) {
+            const seleccionar = (id, nombre) => {
+                const selector = document.getElementById(id);
+                const clave = claveTerritorial(nombre);
+                const opcion = Array.from(selector.options).find(item => claveTerritorial(item.value) === clave);
+                if (!opcion) selector.add(new Option(nombre, nombre));
+                selector.value = opcion?.value ?? nombre;
+            };
+            restablecerFiltrosAvanzados();
+            seleccionar('filtro-pais', pais);
+            actualizarVisibilidadFiltrosTerritoriales();
+            if (estado) {
+                seleccionar('filtro-estado', estado);
+                actualizarMunicipios();
+                if (municipio) seleccionar('filtro-municipio', municipio);
+            }
+            if (stateFiltros.modoHeatmap) toggleHeatmap({ aplicar: false });
+            cerrarTodosLosPaneles();
+            window.switchTab('map-view');
+            aplicarFiltrosGlobales({ ajustarResultados: true });
+        }
+
         function dibujarListaEstados(datosGeog, limit = null) {
             const listDiv = document.getElementById('states-list'); listDiv.innerHTML = '';
             const btnShowMore = document.getElementById('btn-show-more-states');
@@ -5179,19 +5218,32 @@
             if(sortedCountries.length === 0) return listDiv.innerHTML = '<p class="text-sm text-slate-400 text-center">Aún no hay distribución geográfica disponible.</p>';
             const countriesToShow = limit ? sortedCountries.slice(0, limit) : sortedCountries;
             const maxCount = datosGeog[sortedCountries[0]].total;
+            const botonMapa = (filtros, nombre) =>
+                `<button type="button" class="rounded-lg border border-movida-teal px-3 py-2 text-xs font-bold text-movida-teal hover:bg-movida-teal/10"
+                    data-territorio="${escapeHTML(JSON.stringify(filtros))}" onclick="abrirMapaDesdeMetricas(JSON.parse(this.dataset.territorio))"
+                    aria-label="Ver profesionales en el mapa de ${escapeHTML(nombre)}">Ver en mapa</button>`;
             countriesToShow.forEach(iso2 => {
                 const country = datosGeog[iso2];
-                const estados = Object.values(country.estados).sort((a, b) => b.total - a.total);
+                const estados = Object.entries(country.estados).sort(([, a], [, b]) => b.total - a.total);
                 const heading = `<span class="font-bold text-slate-700">${iso2 ? banderaPais(iso2) : ''} ${escapeHTML(country.nombre)} · ${country.total}</span>`;
                 const bar = `<div aria-hidden="true" class="mt-2 w-full bg-slate-100 rounded-full h-1.5"><div class="bg-movida-teal h-1.5 rounded-full" style="width:${country.total / maxCount * 100}%"></div></div>`;
-                const detail = estados.map(estado => {
-                    const municipios = Object.values(estado.municipios).sort((a, b) => b.total - a.total);
+                const detail = estados.map(([claveEstado, estado]) => {
+                    const filtros = { pais: iso2, estado: estado.nombre };
+                    const municipios = Object.entries(estado.municipios).sort(([, a], [, b]) => b.total - a.total);
                     return `<details class="rounded-xl bg-slate-50 border p-3"><summary class="cursor-pointer text-sm font-bold">${escapeHTML(estado.nombre)} · ${estado.total}</summary>
-                        <ul class="mt-2">${municipios.map(municipio => `<li class="flex justify-between gap-3 py-1 text-sm"><span>${escapeHTML(municipio.nombre)}</span><strong>${municipio.total}</strong></li>`).join('')}</ul></details>`;
+                        ${claveEstado ? `<div class="mt-2">${botonMapa(filtros, estado.nombre)}</div>` : ''}
+                        <ul class="mt-2">${municipios.map(([claveMunicipio, municipio]) => `<li class="flex flex-wrap items-center justify-between gap-2 py-1 text-sm">
+                            <span>${escapeHTML(municipio.nombre)} · <strong>${municipio.total}</strong></span>
+                            ${claveEstado && claveMunicipio ? botonMapa({ ...filtros, municipio: municipio.nombre }, `${municipio.nombre}, ${estado.nombre}`) : ''}
+                        </li>`).join('')}</ul></details>`;
                 }).join('');
-                listDiv.insertAdjacentHTML('beforeend', estados.length
-                    ? `<details ${dashboardCountry === 'VE' ? 'open' : ''} class="rounded-xl border p-3"><summary class="cursor-pointer">${heading}</summary>${bar}<div class="mt-3 space-y-2">${detail}</div></details>`
-                    : `<div class="rounded-xl border p-3">${heading}${bar}</div>`);
+                listDiv.insertAdjacentHTML('beforeend', `<div class="rounded-xl border p-3">
+                    <div class="flex flex-wrap items-center justify-between gap-2">${heading}${iso2 ? botonMapa({ pais: iso2 }, country.nombre) : ''}</div>
+                    ${bar}
+                    ${estados.length ? `<details ${dashboardCountry === 'VE' ? 'open' : ''} class="mt-3">
+                        <summary class="cursor-pointer text-sm font-bold text-movida-navy">Estados y municipios</summary>
+                        <div class="mt-2 space-y-2">${detail}</div></details>` : ''}
+                </div>`);
             });
             if (limit && sortedCountries.length > limit) { btnShowMore.classList.remove('hidden'); btnShowMore.innerText = `Ver los ${sortedCountries.length - limit} países restantes`; } else { btnShowMore.classList.add('hidden'); }
         }
