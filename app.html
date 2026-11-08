@@ -2225,21 +2225,14 @@
 
     <!-- VISTA ANALYTICS -->
     <main id="dashboard-view" class="view-hidden absolute inset-0 z-20 overflow-y-auto pb-[120px] pt-[85px] px-2">
-        <div class="p-4 space-y-5 max-w-lg mx-auto">
+        <div class="p-4 space-y-5 max-w-5xl mx-auto">
             
-            <a href="https://registro.movidasst.com/" target="_self" class="block w-full bg-gradient-to-br from-movida-navy via-[#00307b] to-movida-teal text-white rounded-2xl p-5 shadow-glass active:scale-95 transition-transform relative overflow-hidden mt-1 border border-movida-teal/30">
-                <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl transform translate-x-10 -translate-y-10"></div>
-                <div class="flex items-center justify-between relative z-10">
-                    <div>
-                        <span class="bg-movida-yellow text-movida-navy text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md mb-2 inline-block">Súmate a la red</span>
-                        <h3 class="font-black text-lg leading-tight">¡Únete a La Movida SST Plus!</h3>
-                        <p class="text-xs text-slate-200 mt-1.5 font-medium">Regístrate y aparece en nuestro Directorio internacional.</p>
-                    </div>
-                    <div class="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center shrink-0 shadow-inner">
-                        <i class="fa-solid fa-arrow-right text-lg text-white"></i>
-                    </div>
-                </div>
-            </a>
+            <header>
+                <h1 class="text-2xl font-black text-movida-navy">Métricas del Directorio</h1>
+                <button id="dashboard-export" type="button" disabled class="mt-3 rounded-lg border px-3 py-2 text-sm font-bold text-movida-navy disabled:opacity-50" onclick="descargarMetricasCsv()">Descargar resumen CSV</button>
+                <p id="dashboard-status" class="mt-2 text-sm text-slate-600" role="status">Cargando perfiles del Directorio…</p>
+                <button id="dashboard-retry" type="button" class="hidden mt-2 rounded-lg border px-3 py-2 text-movida-navy" onclick="fetchYProcesarDatos()">Reintentar</button>
+            </header>
 
             <section class="glass-card p-4" aria-labelledby="dashboard-country-title">
                 <div class="flex items-center gap-3 mb-3">
@@ -2260,66 +2253,87 @@
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-2">
                 <div class="glass-card p-3 flex flex-col items-center justify-center text-center">
                     <p id="dash-total-label" class="text-[10px] text-slate-500 font-bold uppercase tracking-wide">Total Red</p>
-                    <p class="text-2xl font-extrabold text-movida-navy mt-1" id="dash-total">0</p>
+                    <p class="text-2xl font-extrabold text-movida-navy mt-1" id="dash-total">—</p>
                 </div>
                 <div id="dash-territory-card" class="glass-card p-3 flex flex-col items-center justify-center text-center">
                     <p id="dash-territory-label" class="text-[10px] text-slate-500 font-bold uppercase tracking-wide">Países</p>
-                    <p class="text-2xl font-extrabold text-movida-teal mt-1" id="dash-estados">0</p>
+                    <p class="text-2xl font-extrabold text-movida-teal mt-1" id="dash-estados">—</p>
                 </div>
                 <div id="dash-municipality-card" class="glass-card p-3 flex flex-col items-center justify-center text-center">
                     <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wide">Municipios VE</p>
-                    <p class="text-2xl font-extrabold text-movida-green mt-1" id="dash-municipios">0</p>
+                    <p class="text-2xl font-extrabold text-movida-green mt-1" id="dash-municipios">—</p>
                 </div>
             </div>
 
-            <!-- CARRUSEL DE GRÁFICOS -->
-            <div id="dashboard-carousel" class="w-full overflow-x-auto hide-scroll flex gap-4 snap-x snap-mandatory py-2 cursor-grab active:cursor-grabbing">
+            <!-- DISTRIBUCIONES -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <!-- Tarjeta Nivel Académico -->
-                <div class="snap-center shrink-0 w-[88vw] max-w-[350px] glass-card p-5">
+                <div class="min-w-0 glass-card p-5">
                     <h3 class="text-movida-navy font-bold text-sm uppercase tracking-wide mb-2 flex items-center gap-2"><i class="fa-solid fa-user-graduate text-movida-teal"></i> Formación académica</h3>
                     <p class="text-[11px] text-slate-500 leading-relaxed mb-4">Se muestra el nivel académico más alto informado. Las categorías con cero registros no aparecen.</p>
                     <div id="academic-summary" class="space-y-4" aria-live="polite">
                         <p class="text-center text-slate-400 text-sm py-6">Calculando formación académica…</p>
                     </div>
                 </div>
-                <div class="snap-center shrink-0 w-[88vw] max-w-[350px] glass-card p-5">
+                <div class="min-w-0 glass-card p-5">
                     <h3 class="text-movida-navy font-bold text-sm uppercase tracking-wide mb-2 flex items-center gap-2"><i class="fa-solid fa-venus-mars text-movida-teal"></i> Género</h3>
                     <p class="text-[11px] text-slate-500 leading-relaxed mb-2">Distribución por género; los registros sin información se identifican por separado.</p>
                     <div class="relative h-44 w-full flex justify-center"><canvas id="chartGenero" aria-label="Gráfico de distribución por género" role="img"></canvas></div>
                     <div id="gender-legend" class="mt-3 space-y-2" aria-live="polite"></div>
                 </div>
-                <div class="snap-center shrink-0 w-[88vw] max-w-[350px] glass-card p-5">
+                <div class="min-w-0 glass-card p-5">
                     <h3 class="text-movida-navy font-bold text-sm uppercase tracking-wide mb-2 flex items-center gap-2"><i class="fa-solid fa-briefcase text-movida-teal"></i> Situación laboral</h3>
                     <p class="text-[11px] text-slate-500 leading-relaxed mb-3">Cantidad y porcentaje según la situación laboral informada.</p>
                     <div class="relative h-52 w-full"><canvas id="chartLaboral" aria-label="Gráfico de situación laboral" role="img"></canvas></div>
                     <div id="labor-summary" class="mt-3 space-y-2" aria-live="polite"></div>
                 </div>
-                <div class="snap-center shrink-0 w-[88vw] max-w-[350px] glass-card p-5">
-                    <h3 class="text-movida-navy font-bold text-sm uppercase tracking-wide mb-2 flex items-center gap-2"><i class="fa-solid fa-id-card text-movida-teal"></i> Generaciones y edades</h3>
-                    <p class="text-[11px] text-slate-500 leading-relaxed mb-3">El nombre generacional aparece primero y debajo se muestra el rango utilizado.</p>
-                    <div class="relative h-64 w-full"><canvas id="chartEdad" aria-label="Gráfico de generaciones y rangos de edad" role="img"></canvas></div>
+                <div class="min-w-0 glass-card p-5">
+                    <h3 class="text-movida-navy font-bold text-sm uppercase tracking-wide mb-2 flex items-center gap-2"><i class="fa-solid fa-id-card text-movida-teal"></i> Rangos de edad</h3>
+                    <p class="text-[11px] text-slate-500 leading-relaxed mb-3">Distribución según la edad informada en el perfil.</p>
+                    <div class="relative h-64 w-full"><canvas id="chartEdad" aria-label="Gráfico de rangos de edad" role="img"></canvas></div>
                     <div id="age-summary" class="mt-3 space-y-2" aria-live="polite"></div>
                 </div>
             </div>
             
-            <p class="text-center text-[10px] text-slate-400 font-bold uppercase tracking-widest"><i class="fa-solid fa-arrows-left-right mr-1"></i> Desliza para ver más</p>
+
 
             <div class="glass-card p-5 mt-4">
                 <h3 class="text-movida-navy font-bold text-sm uppercase tracking-wide mb-4 flex items-center gap-2">
                     <i class="fa-solid fa-user-doctor text-movida-teal"></i> Top 5 Profesiones
                 </h3>
+                <p id="dashboard-career-coverage" class="mb-3 text-sm text-slate-600"></p>
                 <div id="professions-list" class="space-y-3"><p class="text-center text-slate-400 text-sm">Analizando perfiles...</p></div>
             </div>
 
             <div id="dashboard-geography-card" class="glass-card p-5">
                 <h3 class="text-movida-navy font-bold text-sm uppercase tracking-wide mb-4 flex items-center gap-2">
-                    <i class="fa-solid fa-earth-americas text-movida-teal"></i> Red por países
+                    <i class="fa-solid fa-earth-americas text-movida-teal"></i> <span id="dashboard-geography-title">Red por países</span>
                 </h3>
                 <p id="dashboard-geography-help" class="text-[11px] text-slate-500 leading-relaxed mb-4">Muestra todos los países representados. Venezuela conserva el detalle adicional por estado y municipio.</p>
                 <div id="states-list" class="space-y-3"><p class="text-center text-slate-400 text-sm py-4">Sincronizando...</p></div>
                 <button id="btn-show-more-states" onclick="mostrarTodosLosEstados()" class="hidden w-full mt-4 bg-slate-50 text-movida-navy border border-slate-200 font-bold text-xs py-3 rounded-xl hover:bg-slate-100 transition-colors">Ver todos los países</button>
             </div>
 
+
+            <details class="glass-card p-5 text-sm text-slate-700">
+                <summary class="cursor-pointer font-bold text-movida-navy">Cómo se calculan estas métricas</summary>
+                <p class="mt-3">Fuente: perfiles de la consulta pública del Directorio. Las distribuciones describen a la comunidad registrada. Cada porcentaje usa el total del ámbito seleccionado, incluidos los perfiles sin dato informado.</p>
+                <p class="mt-2">La edad corresponde al dato declarado en el perfil. El top de profesiones usa las carreras declaradas. El detalle territorial conserva los perfiles sin estado o municipio informado. El tablero indica cuándo se consultó la fuente.</p>
+            </details>
+
+            <a href="https://registro.movidasst.com/" target="_self" class="block w-full bg-gradient-to-br from-movida-navy via-[#00307b] to-movida-teal text-white rounded-2xl p-5 shadow-glass active:scale-95 transition-transform relative overflow-hidden mt-1 border border-movida-teal/30">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl transform translate-x-10 -translate-y-10"></div>
+                <div class="flex items-center justify-between relative z-10">
+                    <div>
+                        <span class="bg-movida-yellow text-movida-navy text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md mb-2 inline-block">Súmate a la red</span>
+                        <h3 class="font-black text-lg leading-tight">¡Únete a La Movida SST Plus!</h3>
+                        <p class="text-xs text-slate-200 mt-1.5 font-medium">Regístrate y aparece en nuestro Directorio internacional.</p>
+                    </div>
+                    <div class="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center shrink-0 shadow-inner">
+                        <i class="fa-solid fa-arrow-right text-lg text-white"></i>
+                    </div>
+                </div>
+            </a>
 
             <!-- CITA ACADÉMICA APA 7 -->
             <section id="apa-citation-card" class="glass-card p-5 border-l-4 border-movida-teal" aria-labelledby="apa-citation-title">
@@ -2339,7 +2353,7 @@
                 <div class="mt-4 bg-slate-50 border border-slate-200 rounded-2xl p-4">
                     <p class="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2">Referencia bibliográfica</p>
                     <p id="apa-reference-display" class="text-sm text-slate-700 leading-7 break-words">
-                        Linares Brea, D. (s. f.). <em>Directorio nacional de profesionales de Seguridad y Salud en el Trabajo</em> [Directorio en línea]. La Movida SST Plus. Recuperado el <span id="apa-retrieval-date">día de consulta</span>, de https://directorio.movidasst.com
+                        Linares Brea, D. (s. f.). <em>Directorio internacional de profesionales de Seguridad y Salud en el Trabajo</em> [Directorio en línea]. La Movida SST Plus. Recuperado el <span id="apa-retrieval-date">día de consulta</span>, de https://directorio.movidasst.com
                     </p>
                 </div>
 
@@ -3466,7 +3480,9 @@
         }
         
         // Variables para renderizado diferido (Lazy Loading) de Gráficos
-        let chartsDrawn = false;
+        let consultaMetricas = null;
+        let filasMetricasCsv = [];
+        let solicitudDirectorio = 0;
         let globalGenData = null;
         let globalLabData = null;
         let globalEdadData = null;
@@ -4000,7 +4016,7 @@
         function normalizarNivelAcademico(item) {
             const limpiarValorAcademico = valor => {
                 const v = normalizarTextoMetrica(valor);
-                if (!v || ['ninguno', 'ninguno / no aplica', 'no aplica', 'n/a', 'na', 'sin especificar', 'no informado'].includes(v)) return '';
+                if (!v || ['no', 'ninguna', 'ninguno', 'ninguno / no aplica', 'no aplica', 'n/a', 'na', 'sin especificar', 'no informado'].includes(v)) return '';
                 return v;
             };
 
@@ -4022,7 +4038,8 @@
         }
 
         function obtenerEdadValida(valor) {
-            const edad = Number.parseInt(valor, 10);
+            const texto = String(valor ?? '').trim();
+            const edad = /^\d+$/.test(texto) ? Number(texto) : NaN;
             return Number.isInteger(edad) && edad >= 18 && edad <= 100 ? edad : null;
         }
 
@@ -4163,7 +4180,7 @@
 
         function construirReferenciaAPA() {
             const fecha = obtenerFechaRecuperacionAPA();
-            return `Linares Brea, D. (s. f.). Directorio nacional de profesionales de Seguridad y Salud en el Trabajo [Directorio en línea]. La Movida SST Plus. Recuperado el ${fecha}, de https://directorio.movidasst.com`;
+            return `Linares Brea, D. (s. f.). Directorio internacional de profesionales de Seguridad y Salud en el Trabajo [Directorio en línea]. La Movida SST Plus. Recuperado el ${fecha}, de https://directorio.movidasst.com`;
         }
 
         function actualizarBloqueAPA() {
@@ -4300,6 +4317,13 @@
         }
 
         async function fetchYProcesarDatos() {
+            const solicitud = ++solicitudDirectorio;
+            const status = document.getElementById('dashboard-status');
+            const retry = document.getElementById('dashboard-retry');
+            if (status) status.textContent = 'Cargando perfiles del Directorio…';
+            retry?.classList.add('hidden');
+            const exportar = document.getElementById('dashboard-export');
+            if (exportar) exportar.disabled = true;
             try {
                 if (!supabaseClient) throw new Error('El cliente de Supabase no está inicializado.');
 
@@ -4332,29 +4356,15 @@
                  * La actividad se consulta por separado y se combina por correo para no
                  * perder ninguno de esos datos.
                  */
-                const [data, actividad] = await Promise.all([
-                    consultarRpcPaginada('directorio_internacional_v1'),
-                    consultarRpcPaginada('directorio_publico_actividad').catch(error => {
-                        console.error('No se pudo cargar la actividad de Estudia:', error);
-                        return [];
-                    })
-                ]);
-
-                const normalizarCorreoActividad = valor => String(valor || '').trim().toLowerCase();
-                const actividadPorCorreo = new Map(
-                    actividad
-                        .filter(item => normalizarCorreoActividad(item.correo))
-                        .map(item => [normalizarCorreoActividad(item.correo), item])
-                );
+                const actividadPendiente = consultarRpcPaginada('directorio_publico_actividad').catch(error => {
+                    console.error('No se pudo cargar la actividad de Estudia:', error);
+                    return [];
+                });
+                const data = await consultarRpcPaginada('directorio_internacional_v1');
+                if (solicitud !== solicitudDirectorio) return;
 
                 data.forEach(item => {
-                    const actividadItem = actividadPorCorreo.get(normalizarCorreoActividad(item.correo)) || {};
-                    item.puntos = numeroActividad(actividadItem.puntos);
-                    item.nivel = actividadItem.nivel || 'Participante';
-                    item.nivel_icono = actividadItem.nivel_icono || '🥉';
-                    item.posicion_actividad = actividadItem.posicion_actividad || null;
-                    item.estudios_participados = numeroActividad(actividadItem.estudios_participados);
-
+                    item._pais_metricas = paisMetrica(item);
                     item.estado = (item.estado || '').toString().trim();
                     item.municipio = (item.municipio || '').toString().trim();
                     item.pais_iso2 = (item.pais_iso2 || 'VE').toString().trim().toUpperCase();
@@ -4363,13 +4373,6 @@
 
                     item._laboral_clean = normalizarLaboral(item.laboral || item.Laboral || item.LABORAL);
                     item._nivel_acad = normalizarNivelAcademico(item);
-
-                    const actividad = datosActividad(item);
-                    item.puntos = actividad.puntos;
-                    item.nivel = actividad.nivel;
-                    item.nivel_icono = actividad.icono;
-                    item.posicion_actividad = actividad.posicion;
-                    item.estudios_participados = actividad.estudios;
 
                     const nom = (item.nombres || item.Nombres || '').toString().trim();
                     const ape = (item.apellidos || item.Apellidos || '').toString().trim();
@@ -4383,16 +4386,48 @@
 
                 globalData = data;
                 poblarSelectorPaisesMetricas(globalData);
-                aplicarFiltrosGlobales();
+                consultaMetricas = new Date();
                 procesarDatosParaDashboard(globalData);
+                if (status) status.textContent = data.length
+                    ? 'Datos consultados el ' + consultaMetricas.toLocaleString('es', { dateStyle: 'medium', timeStyle: 'short' })
+                    : 'El Directorio no devolvió perfiles.';
+
+                const actividad = await actividadPendiente;
+                if (solicitud !== solicitudDirectorio) return;
+                const correo = valor => String(valor || '').trim().toLowerCase();
+                const actividadPorCorreo = new Map(actividad.filter(item => correo(item.correo))
+                    .map(item => [correo(item.correo), item]));
+                data.forEach(item => {
+                    const fuente = actividadPorCorreo.get(correo(item.correo)) || {};
+                    const valores = datosActividad({
+                        ...item,
+                        puntos: numeroActividad(fuente.puntos),
+                        nivel: fuente.nivel || 'Participante',
+                        nivel_icono: fuente.nivel_icono || '🥉',
+                        posicion_actividad: fuente.posicion_actividad || null,
+                        estudios_participados: numeroActividad(fuente.estudios_participados)
+                    });
+                    item.puntos = valores.puntos;
+                    item.nivel = valores.nivel;
+                    item.nivel_icono = valores.icono;
+                    item.posicion_actividad = valores.posicion;
+                    item.estudios_participados = valores.estudios;
+                });
+                aplicarFiltrosGlobales();
 
                 if (data.length === 0) {
                     mostrarNotificacion('El directorio público no devolvió registros', 'fa-database');
                 }
             } catch (error) {
+                if (solicitud !== solicitudDirectorio) return;
+                if (status) status.textContent = consultaMetricas
+                    ? 'No se pudo actualizar. Se muestran los datos de la consulta anterior.'
+                    : 'No se pudieron cargar los perfiles del Directorio.';
+                retry?.classList.remove('hidden');
+                if (exportar) exportar.disabled = !filasMetricasCsv.length;
                 const detalle = error?.message || String(error);
                 mostrarNotificacion('Error cargando la base de datos', 'fa-triangle-exclamation');
-                mostrarErrorVisible('No se pudo leer Supabase', `${detalle} Revise la URL, la clave pública y las funciones directorio_publico_actividad()/directorio_publico().`);
+                mostrarErrorVisible('No se pudo leer Supabase', `${detalle} Revise la URL, la clave pública y las función directorio_internacional_v1().`);
             } finally {
                 ocultarSplash();
             }
@@ -4855,13 +4890,26 @@
             if (internacionalesEl) internacionalesEl.innerText = internacionalesVisibles;
         }
 
+        function paisMetrica(item) {
+            const iso = String(item.pais_iso2 ?? '').trim().toUpperCase();
+            return item._pais_metricas ?? (/^[A-Z]{2}$/.test(iso) ? iso : '');
+        }
+
+        function nombrePaisMetrica(iso) {
+            return iso ? nombrePais(iso) : 'País sin informar';
+        }
+
+        function claveTerritorial(valor) {
+            return normalizarTextoMetrica(valor).replace(/\s+/g, ' ');
+        }
+
         function poblarSelectorPaisesMetricas(data) {
             const select = document.getElementById('dashboard-country');
             if (!select) return;
             const paises = new Map();
-            (Array.isArray(data) ? data : []).filter(esRegistroBaseValido).forEach(item => {
-                const iso2 = String(item.pais_iso2 || 'VE').trim().toUpperCase();
-                if (iso2) paises.set(iso2, item.pais_nombre || nombrePais(iso2));
+            data.forEach(item => {
+                const iso2 = paisMetrica(item);
+                paises.set(iso2, nombrePaisMetrica(iso2));
             });
             const opciones = Array.from(paises.entries()).sort((a, b) => {
                 if (a[0] === 'VE') return -1;
@@ -4869,24 +4917,24 @@
                 return String(a[1]).localeCompare(String(b[1]), 'es', { sensitivity: 'base' });
             });
             select.innerHTML = '<option value="todos">🌎 Mundo · Toda la red</option>' + opciones.map(([iso2, nombre]) =>
-                `<option value="${escapeHTML(iso2)}">${banderaPais(iso2)} ${escapeHTML(nombre)}</option>`
+                `<option value="${escapeHTML(iso2)}">${iso2 ? banderaPais(iso2) : "—"} ${escapeHTML(nombre)}</option>`
             ).join('');
             if (!paises.has(dashboardCountry) && dashboardCountry !== 'todos') dashboardCountry = 'todos';
             select.value = dashboardCountry;
         }
 
         function cambiarPaisMetricas(iso2) {
-            dashboardCountry = String(iso2 || 'todos').trim().toUpperCase();
+            dashboardCountry = String(iso2 ?? 'todos').trim().toUpperCase();
             if (dashboardCountry === 'TODOS') dashboardCountry = 'todos';
             procesarDatosParaDashboard(globalData);
             document.getElementById('dashboard-view')?.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function procesarDatosParaDashboard(data) {
-            const todosLosRegistros = (Array.isArray(data) ? data : []).filter(esRegistroBaseValido);
+            const todosLosRegistros = data;
             const registrosValidos = dashboardCountry === 'todos'
                 ? todosLosRegistros
-                : todosLosRegistros.filter(item => String(item.pais_iso2 || 'VE').toUpperCase() === dashboardCountry);
+                : todosLosRegistros.filter(item => paisMetrica(item) === dashboardCountry);
 
             const porMunicipio = new Set();
             const paisesRepresentados = new Set();
@@ -4901,7 +4949,14 @@
                 '61 años o más': 0,
                 'Sin especificar': 0
             };
-            const carreras = {};
+            const catalogoEstados = new Map(Object.entries(datosVenezuela).map(([estado, municipios]) =>
+                [claveTerritorial(estado), {
+                    nombre: estado,
+                    municipios: new Map(municipios.map(municipio => [claveTerritorial(municipio), municipio]))
+                }]
+            ));
+            const carreras = Object.create(null);
+            let carrerasInformadas = 0;
             const statsAcademico = {
                 total: registrosValidos.length,
                 doctorado: 0,
@@ -4914,27 +4969,35 @@
             };
 
             registrosValidos.forEach(item => {
-                const paisIso2 = String(item.pais_iso2 || 'VE').toUpperCase();
-                const paisNombre = item.pais_nombre || nombrePais(paisIso2);
-                paisesRepresentados.add(paisIso2);
+                const paisIso2 = paisMetrica(item);
+                const paisNombre = nombrePaisMetrica(paisIso2);
+                if (paisIso2) paisesRepresentados.add(paisIso2);
                 const estado = (item.estado || '').toString().trim();
                 const municipio = (item.municipio || '').toString().trim();
 
                 if (!datosGeograficosGlobal[paisIso2]) {
-                    datosGeograficosGlobal[paisIso2] = { total: 0, nombre: paisNombre, estados: {} };
+                    datosGeograficosGlobal[paisIso2] = { total: 0, nombre: paisNombre, estados: Object.create(null) };
                 }
                 datosGeograficosGlobal[paisIso2].total++;
 
-                if (paisIso2 === 'VE' && estado) {
-                    const municipioContable = municipio || 'Sin especificar';
-                    if (municipio) porMunicipio.add(`${estado}_${municipio}`);
-
-                    if (!datosGeograficosGlobal[paisIso2].estados[estado]) {
-                        datosGeograficosGlobal[paisIso2].estados[estado] = { total: 0, municipios: {} };
-                    }
-                    datosGeograficosGlobal[paisIso2].estados[estado].total++;
-                    datosGeograficosGlobal[paisIso2].estados[estado].municipios[municipioContable] =
-                        (datosGeograficosGlobal[paisIso2].estados[estado].municipios[municipioContable] || 0) + 1;
+                if (paisIso2 === 'VE') {
+                    const claveEstado = claveTerritorial(estado);
+                    const estadoCatalogo = catalogoEstados.get(claveEstado);
+                    const claveMunicipio = claveTerritorial(municipio);
+                    if (claveEstado && claveMunicipio) porMunicipio.add(JSON.stringify([claveEstado, claveMunicipio]));
+                    const estados = datosGeograficosGlobal.VE.estados;
+                    const detalle = estados[claveEstado] ??= {
+                        nombre: estadoCatalogo?.nombre || estado || 'Estado sin informar',
+                        total: 0,
+                        municipios: Object.create(null)
+                    };
+                    detalle.total++;
+                    const municipioCatalogo = estadoCatalogo?.municipios.get(claveMunicipio);
+                    const fila = detalle.municipios[claveMunicipio] ??= {
+                        nombre: municipioCatalogo || municipio || 'Municipio sin informar',
+                        total: 0
+                    };
+                    fila.total++;
                 }
 
                 const genero = normalizarGenero(item.genero || item.Genero || item.GENERO) || 'Sin especificar';
@@ -4962,24 +5025,26 @@
                 else if (nivel === 'Otro nivel') statsAcademico.otro++;
                 else statsAcademico.sinEspecificar++;
 
-                const carreraOriginal = (item.carrera || item.Carrera || '').toString().trim();
-                const gradoOriginal = (item.grado || item.Grado || '').toString().trim();
-                const profesion = carreraOriginal
-                    ? item._profesion_clean
-                    : (gradoOriginal ? toTitleCase(gradoOriginal).replace(/\btsu\b/ig, 'TSU').replace(/\bsst\b/ig, 'SST') : '');
-                if (profesion) carreras[profesion] = (carreras[profesion] || 0) + 1;
+                const carrera = String(item.carrera || item.Carrera || '').trim();
+                const claveCarrera = claveTerritorial(carrera);
+                if (claveCarrera && !['no', 'ninguna', 'ninguno', 'no aplica', 'n/a', 'sin especificar', 'no informado'].includes(claveCarrera)) {
+                    const profesion = item._profesion_clean && item.carrera ? item._profesion_clean : toTitleCase(carrera);
+                    const fila = carreras[claveTerritorial(profesion)] ??= { nombre: profesion, total: 0 };
+                    fila.total++;
+                    carrerasInformadas++;
+                }
             });
 
             const esMundo = dashboardCountry === 'todos';
             const esVenezuela = dashboardCountry === 'VE';
-            const nombreAmbito = esMundo ? 'toda la red internacional' : nombrePais(dashboardCountry);
-            const banderaAmbito = esMundo ? '🌎' : banderaPais(dashboardCountry);
+            const nombreAmbito = esMundo ? 'Toda la red internacional' : nombrePaisMetrica(dashboardCountry);
+            const banderaAmbito = esMundo ? '🌎' : (dashboardCountry ? banderaPais(dashboardCountry) : '');
 
             document.getElementById('dash-total').innerText = registrosValidos.length;
             document.getElementById('dash-total-label').innerText = esMundo ? 'Total red' : 'Profesionales';
             document.getElementById('dash-territory-label').innerText = esVenezuela ? 'Estados' : 'Países';
             document.getElementById('dash-estados').innerText = esVenezuela
-                ? Object.keys(datosGeograficosGlobal.VE?.estados || {}).length
+                ? Object.keys(datosGeograficosGlobal.VE?.estados || {}).filter(Boolean).length
                 : paisesRepresentados.size;
             document.getElementById('dash-municipios').innerText = porMunicipio.size;
 
@@ -4989,13 +5054,32 @@
 
             const scope = document.getElementById('dashboard-country-scope');
             if (scope) scope.innerHTML = `${banderaAmbito} Mostrando únicamente las métricas de <strong>${escapeHTML(nombreAmbito)}</strong> · ${registrosValidos.length} profesionales.`;
+            document.getElementById('dashboard-geography-title').textContent = esVenezuela ? 'Venezuela por estado y municipio' : 'Red por países';
+            document.getElementById('dashboard-career-coverage').textContent =
+                `${carrerasInformadas} de ${registrosValidos.length} perfiles informaron una carrera.`;
             const geographyHelp = document.getElementById('dashboard-geography-help');
             if (geographyHelp) geographyHelp.textContent = esVenezuela
                 ? 'Distribución territorial de Venezuela. Toca un estado para consultar sus municipios.'
                 : 'Muestra todos los países representados. Selecciona Venezuela para consultar estados y municipios.';
 
-            dibujarResumenAcademico(statsAcademico);
-            dibujarTopCarreras(carreras);
+            const topCarreras = Object.values(carreras)
+                .sort((a, b) => b.total - a.total || a.nombre.localeCompare(b.nombre, 'es')).slice(0, 5);
+            const academico = dibujarResumenAcademico(statsAcademico);
+            dibujarTopCarreras(topCarreras);
+            const total = registrosValidos.length;
+            const distribuir = (indicador, serie) => Object.entries(serie).map(([nombre, cantidad]) =>
+                [indicador, nombre, cantidad, total, porcentaje(cantidad, total, 1)]
+            );
+            filasMetricasCsv = total ? [
+                ['Total', nombreAmbito, total, total, 100],
+                ...distribuir('Género', genData),
+                ...distribuir('Situación laboral', labData),
+                ...distribuir('Edad', edadData),
+                ...academico.map(fila => ['Formación', fila.label, fila.cantidad, total, porcentaje(fila.cantidad, total, 1)]),
+                ...topCarreras.map(fila => ['Carreras declaradas (top 5)', fila.nombre, fila.total, carrerasInformadas, porcentaje(fila.total, carrerasInformadas, 1)]),
+                ...Object.values(datosGeograficosGlobal).map(pais => ['País', pais.nombre, pais.total, total, porcentaje(pais.total, total, 1)])
+            ] : [];
+            document.getElementById('dashboard-export').disabled = !filasMetricasCsv.length;
             dibujarListaEstados(datosGeograficosGlobal, 5);
 
             globalGenData = genData;
@@ -5003,14 +5087,37 @@
             globalEdadData = edadData;
 
             const dashboardVisible = document.getElementById('dashboard-view')?.classList.contains('view-active');
-            if (dashboardVisible && typeof window.Chart !== 'undefined') {
-                chartsDrawn = dibujarGraficos(globalGenData, globalLabData, globalEdadData) === true;
+            if (dashboardVisible) {
+                dibujarGraficos(globalGenData, globalLabData, globalEdadData);
             }
+        }
+
+        function descargarMetricasCsv() {
+            if (!consultaMetricas || !filasMetricasCsv.length) return;
+            const escapar = valor => {
+                const texto = String(valor);
+                const seguro = /^[\s]*[=+@-]/.test(texto) ? "'" + texto : texto;
+                return '"' + seguro.replace(/"/g, '""') + '"';
+            };
+            const filas = [
+                ['Consulta (UTC)', 'Ámbito', 'Indicador', 'Categoría', 'Cantidad', 'Base', 'Porcentaje'],
+                ...filasMetricasCsv.map(fila => [consultaMetricas.toISOString(),
+                    dashboardCountry === 'todos' ? 'Toda la red' : nombrePaisMetrica(dashboardCountry), ...fila])
+            ];
+            const csv = filas.map(fila => fila.map(escapar).join(',')).join('\r\n');
+            const url = URL.createObjectURL(new Blob(['\uFEFF', csv], { type: 'text/csv;charset=utf-8' }));
+            const enlace = document.createElement('a');
+            enlace.href = url;
+            enlace.download = 'metricas-directorio-geo.csv';
+            document.body.appendChild(enlace);
+            enlace.click();
+            enlace.remove();
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
         }
 
         function dibujarResumenAcademico(stats) {
             const contenedor = document.getElementById('academic-summary');
-            if (!contenedor) return;
+            if (!contenedor) return [];
 
             const total = Number(stats?.total || 0);
             const filas = [
@@ -5026,7 +5133,7 @@
 
             if (!filas.length || total <= 0) {
                 contenedor.innerHTML = '<p class="text-center text-slate-400 text-sm py-6">No hay datos académicos disponibles.</p>';
-                return;
+                return [];
             }
 
             contenedor.innerHTML = filas.map(fila => {
@@ -5045,11 +5152,11 @@
                         </div>
                     </div>`;
             }).join('');
+            return filas;
         }
 
-        function dibujarTopCarreras(carrerasObj) {
+        function dibujarTopCarreras(sorted) {
             const listDiv = document.getElementById('professions-list'); listDiv.innerHTML = '';
-            const sorted = Object.keys(carrerasObj).sort((a,b) => carrerasObj[b] - carrerasObj[a]).slice(0, 5);
             if(sorted.length === 0) return listDiv.innerHTML = '<p class="text-sm text-slate-400 text-center">No hay datos suficientes.</p>';
             sorted.forEach((carrera, index) => {
                 let color = index === 0 ? 'text-movida-yellow' : (index === 1 ? 'text-slate-400' : (index === 2 ? 'text-amber-700' : 'text-movida-teal/50'));
@@ -5057,72 +5164,49 @@
                     <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-100">
                         <div class="flex items-center gap-3 overflow-hidden">
                             <span class="font-black ${color} w-4 text-center">${index + 1}</span>
-                            <span class="font-semibold text-slate-700 text-xs truncate">${escapeHTML(carrera)}</span>
+                            <span class="font-semibold text-slate-700 text-xs truncate">${escapeHTML(carrera.nombre)}</span>
                         </div>
-                        <span class="text-xs font-bold bg-white text-movida-navy border border-slate-200 px-2 py-1 rounded-md">${carrerasObj[carrera]}</span>
+                        <span class="text-xs font-bold bg-white text-movida-navy border border-slate-200 px-2 py-1 rounded-md">${carrera.total}</span>
                     </div>`;
             });
         }
 
         function dibujarListaEstados(datosGeog, limit = null) {
             const listDiv = document.getElementById('states-list'); listDiv.innerHTML = '';
+            const btnShowMore = document.getElementById('btn-show-more-states');
+            btnShowMore.classList.add('hidden');
             const sortedCountries = Object.keys(datosGeog).sort((a,b) => datosGeog[b].total - datosGeog[a].total);
             if(sortedCountries.length === 0) return listDiv.innerHTML = '<p class="text-sm text-slate-400 text-center">Aún no hay distribución geográfica disponible.</p>';
             const countriesToShow = limit ? sortedCountries.slice(0, limit) : sortedCountries;
             const maxCount = datosGeog[sortedCountries[0]].total;
-
-            countriesToShow.forEach((iso2, idx) => {
+            countriesToShow.forEach(iso2 => {
                 const country = datosGeog[iso2];
-                const width = (country.total / maxCount) * 100;
-                const esVenezuela = iso2 === 'VE';
-                const estados = esVenezuela ? Object.keys(country.estados || {}).sort((a,b) => country.estados[b].total - country.estados[a].total) : [];
-                let detailHTML = '';
-
-                if (estados.length) {
-                    detailHTML = `<div id="country-detail-${idx}" class="hidden mt-3 pt-3 border-t border-slate-100 space-y-3">`;
-                    detailHTML += '<p class="text-[9px] font-black text-slate-400 uppercase tracking-widest"><i class="fa-solid fa-map-location-dot text-movida-teal mr-1"></i> Estados y municipios de Venezuela</p>';
-                    estados.forEach((estado, stateIdx) => {
-                        const state = country.estados[estado];
-                        const municipios = Object.keys(state.municipios).sort((a,b) => state.municipios[b] - state.municipios[a]);
-                        detailHTML += `<div class="rounded-xl bg-slate-50 border border-slate-100 p-2.5"><button type="button" class="w-full flex justify-between items-center text-left" onclick="event.stopPropagation();document.getElementById('state-detail-${idx}-${stateIdx}').classList.toggle('hidden')"><span class="text-xs font-bold text-slate-700">${escapeHTML(estado)}</span><span class="text-[10px] font-black text-movida-navy">${state.total}</span></button><div id="state-detail-${idx}-${stateIdx}" class="hidden mt-2 pt-2 border-t border-slate-200">`;
-                        municipios.forEach(mun => { detailHTML += `<div class="flex justify-between gap-3 py-1 text-[10px]"><span class="text-slate-600 truncate">${escapeHTML(mun)}</span><strong class="text-slate-500">${state.municipios[mun]}</strong></div>`; });
-                        detailHTML += '</div></div>';
-                    });
-                    detailHTML += '</div>';
-                }
-
-                listDiv.innerHTML += `
-                    <div class="bg-white p-3 rounded-xl border border-slate-100 shadow-sm ${estados.length ? 'cursor-pointer hover:border-movida-teal' : ''} transition-colors" ${estados.length ? `onclick="document.getElementById('country-detail-${idx}').classList.toggle('hidden')"` : ''}>
-                        <div class="flex justify-between items-center mb-1.5 gap-3">
-                            <span class="font-bold text-slate-700 text-sm flex items-center gap-2 min-w-0"><span class="text-xl">${banderaPais(iso2)}</span><span class="truncate">${escapeHTML(country.nombre || nombrePais(iso2))}</span>${estados.length ? '<i class="fa-solid fa-chevron-down text-[10px] text-slate-300"></i>' : ''}</span>
-                            <span class="text-movida-navy font-bold text-sm bg-movida-bg px-2 py-0.5 rounded-md">${country.total}</span>
-                        </div>
-                        <div class="w-full bg-slate-100 rounded-full h-1.5"><div class="bg-movida-teal h-1.5 rounded-full" style="width:${width}%"></div></div>
-                        ${detailHTML}
-                    </div>`;
+                const estados = Object.values(country.estados).sort((a, b) => b.total - a.total);
+                const heading = `<span class="font-bold text-slate-700">${iso2 ? banderaPais(iso2) : ''} ${escapeHTML(country.nombre)} · ${country.total}</span>`;
+                const bar = `<div aria-hidden="true" class="mt-2 w-full bg-slate-100 rounded-full h-1.5"><div class="bg-movida-teal h-1.5 rounded-full" style="width:${country.total / maxCount * 100}%"></div></div>`;
+                const detail = estados.map(estado => {
+                    const municipios = Object.values(estado.municipios).sort((a, b) => b.total - a.total);
+                    return `<details class="rounded-xl bg-slate-50 border p-3"><summary class="cursor-pointer text-sm font-bold">${escapeHTML(estado.nombre)} · ${estado.total}</summary>
+                        <ul class="mt-2">${municipios.map(municipio => `<li class="flex justify-between gap-3 py-1 text-sm"><span>${escapeHTML(municipio.nombre)}</span><strong>${municipio.total}</strong></li>`).join('')}</ul></details>`;
+                }).join('');
+                listDiv.insertAdjacentHTML('beforeend', estados.length
+                    ? `<details ${dashboardCountry === 'VE' ? 'open' : ''} class="rounded-xl border p-3"><summary class="cursor-pointer">${heading}</summary>${bar}<div class="mt-3 space-y-2">${detail}</div></details>`
+                    : `<div class="rounded-xl border p-3">${heading}${bar}</div>`);
             });
-            const btnShowMore = document.getElementById('btn-show-more-states');
             if (limit && sortedCountries.length > limit) { btnShowMore.classList.remove('hidden'); btnShowMore.innerText = `Ver los ${sortedCountries.length - limit} países restantes`; } else { btnShowMore.classList.add('hidden'); }
         }
 
         function mostrarTodosLosEstados() { dibujarListaEstados(datosGeograficosGlobal, null); }
 
         function dibujarGraficos(genData, labData, edadData) {
-            if (!window.Chart) {
-                mostrarNotificacion('Chart.js no se cargó', 'fa-chart-pie');
-                return false;
-            }
-
-            if (window.ChartDataLabels) {
-                try {
-                    if (!Chart.registry?.plugins?.get('datalabels')) Chart.register(window.ChartDataLabels);
-                } catch (_) {
-                    try { Chart.register(window.ChartDataLabels); } catch (__) {}
+            const chartDisponible = Boolean(window.Chart);
+            if (chartDisponible) {
+                if (window.ChartDataLabels && !Chart.registry?.plugins?.get('datalabels')) {
+                    Chart.register(window.ChartDataLabels);
                 }
+                Chart.defaults.font.family = "'Outfit', sans-serif";
+                Chart.defaults.color = '#475569';
             }
-
-            Chart.defaults.font.family = "'Outfit', sans-serif";
-            Chart.defaults.color = '#475569';
 
             const numeroSeguro = valor => {
                 const n = Number(valor);
@@ -5203,30 +5287,22 @@
             const edadSerie = construirSerie(edadData, [
                 {
                     key: 'Menores de 30',
-                    label: 'Generación Z',
-                    legendLabel: '<strong>Generación Z</strong><br><span class="text-[10px] font-medium text-slate-400">Menores de 30 años</span>',
-                    chartLabel: ['Generación Z', 'Menores de 30 años'],
+                    label: 'Menores de 30',
                     color: '#70ad47'
                 },
                 {
                     key: '30 a 45 años',
-                    label: 'Millennials',
-                    legendLabel: '<strong>Millennials</strong><br><span class="text-[10px] font-medium text-slate-400">30 a 45 años</span>',
-                    chartLabel: ['Millennials', '30 a 45 años'],
+                    label: '30 a 45 años',
                     color: '#007b85'
                 },
                 {
                     key: '46 a 60 años',
-                    label: 'Generación X',
-                    legendLabel: '<strong>Generación X</strong><br><span class="text-[10px] font-medium text-slate-400">46 a 60 años</span>',
-                    chartLabel: ['Generación X', '46 a 60 años'],
+                    label: '46 a 60 años',
                     color: '#00205b'
                 },
                 {
                     key: '61 años o más',
-                    label: 'Baby boomers',
-                    legendLabel: '<strong>Baby boomers</strong><br><span class="text-[10px] font-medium text-slate-400">61 años o más</span>',
-                    chartLabel: ['Baby boomers', '61 años o más'],
+                    label: '61 años o más',
                     color: '#ffb600'
                 },
                 {
@@ -5241,7 +5317,8 @@
 
             if (chartInstances.edad) chartInstances.edad.destroy();
             const canvasEdad = document.getElementById('chartEdad');
-            if (canvasEdad && edadSerie.rows.length) {
+            if (canvasEdad) canvasEdad.parentElement.hidden = !chartDisponible;
+            if (chartDisponible && canvasEdad && edadSerie.rows.length) {
                 chartInstances.edad = new Chart(canvasEdad.getContext('2d'), {
                     type: 'bar',
                     data: {
@@ -5269,7 +5346,8 @@
 
             if (chartInstances.lab) chartInstances.lab.destroy();
             const canvasLaboral = document.getElementById('chartLaboral');
-            if (canvasLaboral && laboralSerie.rows.length) {
+            if (canvasLaboral) canvasLaboral.parentElement.hidden = !chartDisponible;
+            if (chartDisponible && canvasLaboral && laboralSerie.rows.length) {
                 chartInstances.lab = new Chart(canvasLaboral.getContext('2d'), {
                     type: 'bar',
                     data: {
@@ -5296,7 +5374,8 @@
 
             if (chartInstances.gen) chartInstances.gen.destroy();
             const canvasGenero = document.getElementById('chartGenero');
-            if (canvasGenero && generoSerie.rows.length) {
+            if (canvasGenero) canvasGenero.parentElement.hidden = !chartDisponible;
+            if (chartDisponible && canvasGenero && generoSerie.rows.length) {
                 chartInstances.gen = new Chart(canvasGenero.getContext('2d'), {
                     type: 'doughnut',
                     data: {
@@ -5342,16 +5421,6 @@
             renderResumen('gender-legend', generoSerie.rows, totalGenero);
 
             return true;
-        }
-
-        function initCarouselDrag() {
-            const slider = document.getElementById('dashboard-carousel');
-            if(!slider) return;
-            let isDown = false; let startX; let scrollLeft;
-            slider.addEventListener('mousedown', (e) => { isDown = true; slider.classList.remove('snap-x', 'snap-mandatory'); startX = e.pageX - slider.offsetLeft; scrollLeft = slider.scrollLeft; });
-            slider.addEventListener('mouseleave', () => { isDown = false; slider.classList.add('snap-x', 'snap-mandatory'); });
-            slider.addEventListener('mouseup', () => { isDown = false; slider.classList.add('snap-x', 'snap-mandatory'); });
-            slider.addEventListener('mousemove', (e) => { if (!isDown) return; e.preventDefault(); const x = e.pageX - slider.offsetLeft; const walk = (x - startX) * 1.5; slider.scrollLeft = scrollLeft - walk; });
         }
 
         function initCredenciales() {
@@ -7728,7 +7797,7 @@
             if(tabId === 'map-view') {
                 setTimeout(() => { if(map) map.invalidateSize() }, 300);
             } else if (tabId === 'dashboard-view' && globalGenData) {
-                chartsDrawn = dibujarGraficos(globalGenData, globalLabData, globalEdadData) === true;
+                dibujarGraficos(globalGenData, globalLabData, globalEdadData);
             }
         }
 
@@ -7740,19 +7809,14 @@
             // El splash nunca bloquea la navegación.
             setTimeout(ocultarSplash, 700);
 
-            await esperarHasta(() => Boolean(window.intlTelInput), 7000);
-            await cargarCoordenadasPaises();
-
-            try { initCarouselDrag(); } catch (error) { console.error('Carrusel:', error); }
-            try { initCredenciales(); }
-            catch (error) { mostrarErrorVisible('El módulo de credenciales no pudo iniciarse', error.message || String(error)); }
-
             const iniciarSupabase = (async () => {
                 const listo = await esperarHasta(
                     () => Boolean(window.supabase && typeof window.supabase.createClient === 'function'),
                     7000
                 );
                 if (!listo) {
+                    const status = document.getElementById('dashboard-status');
+                    if (status) status.textContent = 'No se pudo conectar con la fuente. Recarga la página para reintentar.';
                     mostrarErrorVisible('Supabase no cargó', 'La aplicación abrió, pero no pudo descargar los datos. Revise la conexión, el CDN o la política CSP del alojamiento.');
                     return;
                 }
@@ -7763,6 +7827,12 @@
                     mostrarErrorVisible('Supabase no pudo iniciarse', error.message || String(error));
                 }
             })();
+
+            await esperarHasta(() => Boolean(window.intlTelInput), 7000);
+            await cargarCoordenadasPaises();
+
+            try { initCredenciales(); }
+            catch (error) { mostrarErrorVisible('El módulo de credenciales no pudo iniciarse', error.message || String(error)); }
 
             const iniciarLeaflet = (async () => {
                 const listo = await esperarHasta(
