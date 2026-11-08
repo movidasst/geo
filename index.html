@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#00205b">
+  <meta name="theme-color" content="#007B85">
   <meta name="description" content="Directorio internacional La Movida de SST+: descubre profesionales de Seguridad y Salud en el Trabajo, credenciales, ranking e insignias y conecta con la comunidad.">
   <meta name="robots" content="index,follow,max-image-preview:large">
   <link rel="canonical" href="https://directorio.movidasst.com/">
@@ -48,6 +48,11 @@
         html = html.replace(mainBefore, mainAfter);
         html = html.replace(validatorBefore, validatorAfter);
 
+        // Logo visible en cabecera y carga; sin modificar el lienzo de la credencial.
+        html = html.replace("<img src=\"/logo-oficial-movida-sst-plus.png\" alt=\"Logo oficial La Movida de SST Plus\" class=\"w-11 h-11 rounded-full bg-white object-contain shrink-0\">", "<img src=\"https://www.movidasst.com/logo-horizontal-movida-sst-plus.webp\" alt=\"Logo horizontal oficial de La Movida de SST+\" class=\"geo-header-logo shrink-0\" width=\"160\" height=\"46\" loading=\"eager\" decoding=\"async\">");
+        html = html.replace("id=\"splash-logo\"\n                src=\"/logo-oficial-movida-sst-plus.png\"\n                width=\"54\"\n                height=\"54\"\n                alt=\"Logo La Movida SST\"", "id=\"splash-logo\"\n                src=\"https://www.movidasst.com/logo-horizontal-movida-sst-plus.webp\"\n                width=\"260\"\n                height=\"76\"\n                alt=\"Logo horizontal oficial de La Movida de SST+\"");
+        html = html.replace('<meta name="theme-color" content="#00205b">', '<meta name="theme-color" content="#007B85">');
+
         // El modo incrustado sólo se habilita si el HUB oficial es el origen de la carga.
         const embedRequested = new URLSearchParams(location.search).get('embed') === 'mi-movida';
         let trustedEmbed = false;
@@ -61,7 +66,7 @@
           html = html.replace('</head>', embedBoot + '</head>');
         }
         if (!html.includes('</head>')) throw new Error('No se encontró la cabecera de la aplicación base.');
-        html = html.replace('</head>', '<link rel="stylesheet" href="./map-layout-responsive.css?v=20261021-mapa-v1"><script defer src="https://www.movidasst.com/analytics.js?v=20261025-ga4com2"><\/script></head>');
+        html = html.replace('</head>', '<link rel="stylesheet" href="./map-layout-responsive.css?v=20261021-mapa-v1"><link rel="stylesheet" href="./geo-pastel-brand.css?v=20261108-1"><script defer src="https://www.movidasst.com/analytics.js?v=20261025-ga4com2"><\/script></head>');
 
         if (!html.includes('</body>')) throw new Error('No se encontró el cierre de la aplicación base.');
         html = html.replace('</body>', '<script src="./geo335-patch.js?v=20260826-geo335-v1"><\/script><script src="./corporate-cta.js?v=20260829-corporate-v1"><\/script><script src="./hash-router.js?v=20260829-router-v1"><\/script><script src="./competency-badges.js?v=20260920-finanzas-v7"><\/script><script src="./mentoring-cta.js?v=20261021-mentoring-v1"><\/script><script src="./perfil-deeplink.js?v=20261025-ranking-v1"><\/script></body>');
