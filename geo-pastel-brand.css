@@ -224,3 +224,33 @@ select:focus-visible {
 @media (prefers-reduced-motion: reduce) {
   #splash-brand, #dashboard-view .glass-card { transition: none !important; }
 }
+
+/* Accesos sociales del encabezado: compactos, accesibles y sin alterar el mapa. */
+body > header .geo-header-actions { display: flex; align-items: center; flex-shrink: 0; min-width: 0; }
+body > header .geo-social-links { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+body > header .geo-social-link {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 42px; height: 42px; min-width: 42px;
+  border: 1px solid #D5E8E4; border-radius: 13px;
+  font-size: 21px; text-decoration: none; line-height: 1;
+  box-shadow: 0 2px 8px rgba(0,65,83,.05);
+  transition: background-color .16s ease, transform .16s ease, border-color .16s ease;
+}
+body > header .geo-social-whatsapp { color: #128C4A; background: #E8F8EC; border-color: #CAEBD4; }
+body > header .geo-social-instagram { color: #B72F83; background: #FCEBF5; border-color: #F0D5E5; }
+body > header .geo-social-linkedin { color: #0A66C2; background: #EAF3FD; border-color: #D0E3F7; }
+body > header .geo-social-link:focus-visible { outline: 3px solid #007B85; outline-offset: 3px; }
+@media(hover:hover) {
+  body > header .geo-social-link:hover { transform: translateY(-2px); border-color: #92C7C0; background: #FFFFFF; }
+}
+@media(max-width:639px) {
+  body > header .geo-social-links { gap: 6px; }
+  body > header .geo-social-link { width: 39px; height: 39px; min-width: 39px; font-size: 20px; border-radius: 12px; }
+}
+@media(max-width:360px) {
+  body > header .geo-social-links { gap: 4px; }
+  body > header .geo-social-link { width: 36px; height: 36px; min-width: 36px; font-size: 18px; border-radius: 11px; }
+}
+@media(prefers-reduced-motion:reduce) {
+  body > header .geo-social-link { transition: none; }
+}
